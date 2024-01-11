@@ -8,30 +8,31 @@ import {
 } from "@nextui-org/react";
 import { DarkModeSwitch } from "./darkmodeswitch";
 import {useAuth0} from "@auth0/auth0-react";
-import {object} from "yup";
+import {useAppDispatch} from "../../app/hooks.ts";
+import {loginAsync, logoutAsync} from "../../app/slices/auth";
 
 export const UserDropdown = () => {
-  const { isAuthenticated } = useAuth0();
-  const { logout } = useAuth0();
-  const { loginWithRedirect } = useAuth0();
-  const handleLogout = () => {
-    logout({
+  const { isAuthenticated,logout,loginWithRedirect,user } = useAuth0();
+  const dispatch = useAppDispatch();
+  const handleLogout = async () => {
+    await logout({
       logoutParams: {
         returnTo: window.location.origin,
       },
     });
+    dispatch(logoutAsync());
   };
-
 
   const handleLogin = async () => {
     await loginWithRedirect({
       appState: {
-        returnTo: "/",
+        returnTo: "/callback",
       },
       authorizationParams: {
         prompt: "login",
       },
     });
+    dispatch(loginAsync(user as AuthUser));
   };
   return (
     <Dropdown>

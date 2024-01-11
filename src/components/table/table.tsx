@@ -6,14 +6,14 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import { columns, users } from "./data";
-import { RenderUserCell } from "./render-user-cell.tsx";
+import {ReactNode} from "react";
+// import { columns, users } from "./data";
+// import { RenderUserCell } from "./render-user-cell.tsx";
 
-export const TableWrapper = () => {
+export const TableWrapper = (columns:Column[],data:object[],renderCell:(u:object) => ReactNode) => {
   return (
     <div className=" w-full flex flex-col gap-4">
       <Table aria-label="">
-
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn
@@ -25,12 +25,12 @@ export const TableWrapper = () => {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody items={users}>
+        <TableBody items={data}>
           {(item) => (
             <TableRow>
               {(columnKey) => (
                 <TableCell>
-                  {RenderUserCell({ user: item, columnKey: columnKey })}
+                  {renderCell({ user: item, columnKey: columnKey })}
                 </TableCell>
               )}
             </TableRow>

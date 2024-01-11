@@ -1,10 +1,8 @@
-import React from "react";
+// interface Props {
+//   color?: string;
+// }
 
-interface Props {
-  color?: string;
-}
-
-export const Community = ({ color = "white" }: Props) => {
+export const Community = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

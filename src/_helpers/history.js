@@ -1,5 +1,6 @@
-// custom history object to allow navigation outside react components
+    // custom history object to allow navigation outside react components
 export const history = {
-    navigate: null,
-    location: null
+    navigate: Function,
+    location: {state: {from: {pathname: '/'}
+    }}
 };

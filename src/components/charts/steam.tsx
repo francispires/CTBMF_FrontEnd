@@ -1,4 +1,3 @@
-import React from "react";
 import Chart, { Props } from "react-apexcharts";
 
 const state: Props["series"] = [

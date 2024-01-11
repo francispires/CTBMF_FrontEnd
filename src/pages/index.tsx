@@ -1,8 +1,6 @@
-import type { NextPage } from "next";
-import { Content } from "../components/home/content";
+import {Content} from "../components/home/content.tsx";
 
-const Home: NextPage = () => {
+const Home = () => {
   return <Content />;
 };
-
 export default Home;

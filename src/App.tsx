@@ -1,4 +1,3 @@
-window.global ||= window;
 import {useAuth0} from "@auth0/auth0-react";
 import {PageLoader} from "./components/page-loader.jsx";
 import {Route, Routes} from "react-router-dom";
@@ -12,8 +11,6 @@ import {AdminPage} from "./pages/admin-page.jsx";
 import {CallbackPage} from "./pages/callback-page.jsx";
 import {NotFoundPage} from "./pages/not-found-page.jsx";
 import {Accounts} from "./components/accounts/accounts.tsx";
-
-
 
 const App = () => {
     const { isLoading } = useAuth0();

@@ -6,7 +6,7 @@ import {NextUIProvider} from "@nextui-org/react";
 import {BrowserRouter} from "react-router-dom";
 import {Auth0ProviderWithNavigate} from "./auth0-provider-with-navigate.jsx";
 import {Provider} from "react-redux";
-import store from './_store/store'
+import {store} from './app/store'
 import {Layout} from "./components/layout/layout.tsx";
 //export default MyApp;
 

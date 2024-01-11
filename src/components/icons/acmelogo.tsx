@@ -1,5 +1,3 @@
-import React from "react";
-
 export const AcmeLogo = () => (
   <svg
     className="bg-background border border-divider rounded-lg w-11 h-9"

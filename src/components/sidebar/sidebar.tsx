@@ -1,6 +1,5 @@
 import { Sidebar } from "./sidebar.styles";
 import {Avatar, Tooltip} from "@nextui-org/react";
-import { CompaniesDropdown } from "./companies-dropdown";
 import { HomeIcon } from "../icons/sidebar/home-icon";
 import { PaymentsIcon } from "../icons/sidebar/payments-icon";
 import { BalanceIcon } from "../icons/sidebar/balance-icon";
@@ -15,6 +14,8 @@ import { FilterIcon } from "../icons/sidebar/filter-icon";
 import { useSidebarContext } from "../layout/layout-context";
 import React from "react";
 import {useAuth0} from "@auth0/auth0-react";
+import {BottomIcon} from "../icons/sidebar/bottom-icon.tsx";
+import {AcmeIcon} from "../icons/acme-icon.tsx";
 
 class MenuItem {
   constructor(icon: React.JSX.Element, title: string) {
@@ -47,12 +48,23 @@ export const SidebarWrapper = () => {
         })}
       >
         <div className={Sidebar.Header()}>
-          <CompaniesDropdown />
+          <div className="flex items-center gap-2">
+            <AcmeIcon />
+            <div className="flex flex-col gap-4">
+              <h3 className="text-xl font-medium m-0 text-default-900 -mb-4 whitespace-nowrap">
+                CTBMF
+              </h3>
+              <span className="text-xs font-medium text-default-500">
+              Preparatório
+            </span>
+            </div>
+            <BottomIcon />
+          </div>
         </div>
         <div className="flex flex-col justify-between h-full">
           <div className={Sidebar.Body()}>
             <SidebarItem
-              title="Início"
+              title="Minha Área"
               icon={<HomeIcon />}
               isActive={router.pathname === "/"}
               href="/"
@@ -66,7 +78,7 @@ export const SidebarWrapper = () => {
               />
               <SidebarItem
                 isActive={router.pathname === "/questions"}
-                title="Questões"
+                title="Banco de Questões"
                 icon={<PaymentsIcon />}
               />
               <CollapseItems

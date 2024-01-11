@@ -1,4 +1,3 @@
-import { TableWrapper } from "../table/table";
 import { CardBalance1 } from "./card-balance1";
 import { CardBalance2 } from "./card-balance2";
 import { CardBalance3 } from "./card-balance3";
@@ -53,7 +52,6 @@ export const Content = () => (
           View All
         </Link>
       </div>
-      <TableWrapper />
     </div>
   </div>
 );

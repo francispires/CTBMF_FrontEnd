@@ -1,5 +1,3 @@
-import React from "react";
-
 export const BalanceIcon = () => {
   return (
     <svg

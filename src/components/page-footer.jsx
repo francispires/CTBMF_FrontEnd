@@ -1,5 +1,4 @@
 import React from "react";
-import { PageFooterHyperlink } from "./page-footer-hyperlink.jsx";
 
 export const PageFooter = () => {
   const resourceList = [

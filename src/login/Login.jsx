@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { history } from '../_helpers';
-import { authActions } from '../_store/auth.slice.js';
+import { authActions } from '../app/slices/auth/index.ts';
 
 export { Login };
 

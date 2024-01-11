@@ -1,3 +1,3 @@
 export * from './fake-backend';
-export * from './fetch-wrapper';
+export * from './fetch-wrapper.ts';
 export * from './history';
