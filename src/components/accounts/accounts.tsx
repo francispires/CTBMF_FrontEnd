@@ -1,14 +1,12 @@
-import {useEffect} from "react";
 import { useAppSelector, useAppDispatch } from '../../app/hooks.ts'
 import {fetchAllUsersAsync, userActions} from "../../app/slices/user";
 import {RenderUserCell} from "../table/render-user-cell.tsx";
-import AsyncTable from "../table/async-table.tsx";
-import {decrement} from "../../features/counter/counterSlice.ts";
-
+import AsyncTable from "../table/async-table";
+  
 export const Accounts = () => {
     const dispatch = useAppDispatch()
 
-    const { users,paging,isLoading } = useAppSelector(state => state.users);
+    const { users, paging, isLoading } = useAppSelector(state => state.users);
 
     const columns = [
         {name: 'userName', uid: 'userName'},
@@ -31,7 +29,6 @@ export const Accounts = () => {
         {name: 'phoneVerified', uid: 'phoneVerified'},
         {name: 'blocked', uid: 'blocked'},
         {name: 'Ações', uid: 'actions'},
-
     ] as Column[];
 
     const initialVisibleColumns = ["nickName","email", "userId",  "emailVerified", "actions"];

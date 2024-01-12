@@ -1,7 +1,6 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {fetchAllUsers} from './api.ts';
 import {fetchCount} from "../../../features/counter/counterAPI.ts";
-import {counterSlice} from "../../../features/counter/counterSlice.ts";
 
 const initialState = createInitialState();
 

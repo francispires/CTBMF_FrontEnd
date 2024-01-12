@@ -3,7 +3,7 @@ import React from "react";
 import { FeedbackIcon } from "../icons/navbar/feedback-icon";
 import { GithubIcon } from "../icons/navbar/github-icon";
 import { SupportIcon } from "../icons/navbar/support-icon";
-import { SearchIcon } from "../icons/SearchIcon.tsx";
+// import { SearchIcon } from "../icons/SearchIcon.tsx";
 import { BurguerButton } from "./burguer-button";
 import { NotificationsDropdown } from "./notifications-dropdown";
 import { UserDropdown } from "./user-dropdown";
@@ -27,7 +27,7 @@ export const NavbarWrapper = ({ children }: Props) => {
         </NavbarContent>
         <NavbarContent className="w-full max-md:hidden">
           <Input
-            startContent={<SearchIcon />}
+            startContent={null}
             isClearable
             className="w-full"
             classNames={{
