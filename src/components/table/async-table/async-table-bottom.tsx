@@ -6,20 +6,20 @@ interface TableBottomContentProps<T> {
   selectedKeys: Selection,
   filteredItems: T[],
   paging: Pagination,
-  fetchData: (pagination: PaginatedRequest<T>) => PagedResponse<T>,
+  fetchData: (pagination: PagedRequest) => PagedResponse<T>,
 }
 
 export function TableBottomContent<T>(props: TableBottomContentProps<T>) {
   const dispatch = useAppDispatch()
 
   const handlePageChange = (pageNumber: number) => {
-    const p = { page: pageNumber, perPage: props.paging.pageSize, sort: "", filter: { text: "" } } as PaginatedRequest<T>;
+    const p = { currentPage: pageNumber, pageSize: props.paging.pageSize, sort: ""} as PagedRequest;
     dispatch(props.fetchData(p));
   }
 
   useEffect(() => {
     handlePageChange(1);
-  }, [props.paging.pageSize, props.paging.pageNumber, props.paging.totalPages]);
+  }, [props.paging.pageSize, props.paging.currentPage, props.paging.pageCount]);
 
   return (
     <div className="py-2 px-2 flex justify-between items-center">
@@ -33,8 +33,8 @@ export function TableBottomContent<T>(props: TableBottomContentProps<T>) {
         showControls
         showShadow
         color="primary"
-        page={props.paging.pageNumber}
-        total={props.paging.totalPages}
+        page={props.paging.currentPage}
+        total={props.paging.pageCount}
         onChange={(p) => { handlePageChange(p) }}
       />
       <div className="hidden sm:flex w-[30%] justify-end gap-2">

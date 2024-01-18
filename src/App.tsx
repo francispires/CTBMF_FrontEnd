@@ -1,3 +1,4 @@
+import React from "react";
 import {useAuth0} from "@auth0/auth0-react";
 import {PageLoader} from "./components/page-loader.jsx";
 import {Route, Routes} from "react-router-dom";
@@ -11,7 +12,8 @@ import {AdminPage} from "./pages/admin-page.jsx";
 import {CallbackPage} from "./pages/callback-page.jsx";
 import {NotFoundPage} from "./pages/not-found-page.jsx";
 import {Accounts} from "./components/accounts/accounts.tsx";
-
+import {Disciplines} from "./components/disciplines";
+import {DashBoard} from "./components/dashboard/dashBoard.tsx";
 const App = () => {
     const { isLoading } = useAuth0();
 
@@ -29,8 +31,10 @@ const App = () => {
     return (
             <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/dashboard" element={<DashBoard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/users" element={<Accounts />} />
+                <Route path="/disciplines" element={<Disciplines />} />
                 <Route
                     path="/profile"
                     element={<AuthenticationGuard component={ProfilePage} />}

@@ -1,6 +1,6 @@
-import {Content} from "../components/home/content.tsx";
+import {Home as H} from "../components/home/home.tsx";
 
 const Home = () => {
-  return <Content />;
+  return <H />;
 };
 export default Home;

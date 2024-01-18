@@ -1,11 +1,9 @@
-// A mock function to mimic making an async request for data
 import {fetchWrapper} from '../../../_helpers';
 import {get} from "../../../_helpers/api.ts";
 
-
-export async function fetchAllUsers(request: PaginatedRequest<UsersRequest>) {
+export async function fetchAllUsers(request: PagedRequest) {
     const apiUrl = "http://localhost:6060/api";
-    const url = `${apiUrl}/users/all?page=${(Number(request.page))}&sort=${request.sort}&perpage=${request.perPage}&includeTotals=true`;
+    const url = `${apiUrl}/users/all?page=${(Number(request.currentPage))}&sort=${request.sort}&perpage=${request.pageSize}&includeTotals=true`;
     return await get<PagedResponse<AuthUser>>(url);
 }
 export function logout() {

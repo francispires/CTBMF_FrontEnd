@@ -32,9 +32,8 @@ export const AddUser = () => {
                 <ModalBody>
                   <Input label="Email" variant="bordered" />
                   <Input label="Nome" variant="bordered" />
-                  <Input label="Sobreneom" variant="bordered" />
+                  <Input label="Sobrenome" variant="bordered" />
                   <Input label="Celular" variant="bordered" />
-
                   <Input label="Senha" type="password" variant="bordered" />
                   <Input
                     label="Confirma Senha"

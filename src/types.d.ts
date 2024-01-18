@@ -12,6 +12,52 @@ interface Column {
     sortable?: boolean,
 }
 
+type Discipline = {
+    picture: string;
+    id: string,
+    name: string,
+    description: string,
+    image: string,
+    parentId: string | null,
+    parentName: string | null,
+    parent:Discipline | null,
+    childs: Discipline[]| null,
+    childsCount: number| null,
+    questions: Question[] | null
+}
+
+interface Institution {
+    id: string,
+    name: string,
+    state: string,
+    stadual: boolean,
+    private: boolean,
+    questions: Question[] | null
+    questionbanks: QuestionBank[] | null
+}
+
+type Question = {
+    id: string,
+    year: number,
+    Board: string,
+    Image: string,
+    Text: string,
+    Score: number,
+    institutionId: string,
+    institution: Institution,
+    questionBankId: string,
+    questionBank: QuestionBank,
+    quizAttemptId: string,
+    quizAttempt: QuizAttempt,
+    alternatives: Alternative[] | null,
+    observations: Observation[] | null,
+    answers: Answer[] | null,
+    observationRequests: ObservationRequest[] | null,
+    disciplines: Discipline[] | null
+
+}
+
+
 type AuthUser = {
     status: "default" | "primary" | "secondary" | "success" | "warning" | "danger" | undefined;
     createdAt:string
@@ -41,22 +87,26 @@ type AuthUser = {
 };
 
 type Pagination = {
-    pageNumber: number;
+    currentPage: number;
     pageSize: number;
-    totalCount: number;
-    totalPages: number;
+    rowCount: number;
+    pageCount: number;
 };
 
 type PagedResponse<T> = {
     type: string;
-    data: T[];
-    pagination: Pagination;
+    queryable: T[];
+    currentPage: number;
+    pageSize: number;
+    rowCount: number;
+    pageCount: number;
+    hasMore: boolean;
 }
-interface PaginatedRequest<T>{
-    perPage: number,
-    page: number,
+interface PagedRequest{
+    pageSize: number,
+    currentPage: number,
     sort: string,
-    filter: T
+    filter: string
 }
 
 type GetUsersResponse = {

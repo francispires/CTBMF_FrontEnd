@@ -2,14 +2,12 @@ import Chart, { Props } from "react-apexcharts";
 
 const state: Props["series"] = [
   {
-    color: "green",
-    name: "Acertos",
-    data: [31, 40, 28, 51, 42, 56, 89],
+    name: "Series1",
+    data: [31, 40, 28, 51, 42, 109, 100],
   },
   {
-    color: "red",
-    name: "Erros",
-    data: [11, 32, 45, 85, 34, 15, 41],
+    name: "Series2",
+    data: [11, 32, 45, 32, 34, 52, 41],
   },
 ];
 
@@ -29,13 +27,14 @@ const options: Props["options"] = {
     id: "basic-bar",
     fontFamily: "Inter, sans-serif",
     foreColor: "hsl(var(--nextui-default-800))",
-    stacked: false,
+    stacked: true,
     toolbar: {
       show: false,
     },
   },
+
   xaxis: {
-    categories: ["07/01", "14/01", "21/01", "28/01", "04/02", "11/02", "18/02"],
+    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
     labels: {
       // show: false,
       style: {
@@ -53,7 +52,6 @@ const options: Props["options"] = {
   yaxis: {
     labels: {
       style: {
-        // hsl(var(--nextui-content1-foreground))
         colors: "hsl(var(--nextui-default-800))",
         fontFamily: "Inter, sans-serif",
       },
@@ -77,7 +75,7 @@ const options: Props["options"] = {
   //markers: false,
 };
 
-export const Steam = () => {
+export const Bar = () => {
   return (
     <>
       <div className="w-full z-20">

@@ -6,6 +6,7 @@ export default defineConfig({
   define: {
     global: {},
   },
+  base: "/CTBMF_FrontEnd",
   plugins: [react()],
   preview: {
     port: 4041,

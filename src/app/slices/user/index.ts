@@ -9,10 +9,10 @@ function createInitialState() {
         users: [] as AuthUser[],
         isLoading: false,
         paging: {
-            pageNumber: 1,
+            currentPage: 1,
             pageSize: 2,
-            totalCount: 10,
-            totalPages: 3,
+            rowCount: 10,
+            pageCount: 3,
         } as Pagination,
         error: {},
     }
@@ -26,7 +26,7 @@ function createInitialState() {
 // typically used to make async requests.
 export const fetchAllUsersAsync = createAsyncThunk(
     'auth/fetchAllUsers',
-    async (request: PaginatedRequest<UsersRequest>) => {
+    async (request: PagedRequest) => {
         return fetchAllUsers(request);
     }
 );
@@ -44,7 +44,7 @@ export const usersSlice = createSlice({
     initialState,
     reducers: {
         gotoPage: (state, action: PayloadAction<number>) => {
-            state.paging.pageNumber = action.payload;
+            state.paging.currentPage = action.payload;
         },
         setPageSize: (state, action: PayloadAction<number>) => {
             state.paging.pageSize = action.payload;
@@ -56,12 +56,16 @@ export const usersSlice = createSlice({
                 state.isLoading = true;
                 state.error = {};
             })
-            .addCase(fetchAllUsersAsync.fulfilled, (state, action) => {
-                const response = action.payload as PagedResponse<AuthUser>;
-                state.users = response.data;
-                state.paging = response.pagination as Pagination;
-                state.isLoading = false;
-            })
+            .addCase(fetchAllUsersAsync.fulfilled,
+                (state, action) => {
+                    const response = action.payload as PagedResponse<AuthUser>;
+                    state.users = response.queryable;
+                    state.paging.currentPage = response.currentPage;
+                    state.paging.pageSize = response.pageSize;
+                    state.paging.rowCount = response.rowCount;
+                    state.paging.pageCount = response.pageCount;
+                    state.isLoading = false;
+                })
             .addCase(fetchAllUsersAsync.rejected, (state, action) => {
                 state.error = action.error;
                 state.isLoading = false;

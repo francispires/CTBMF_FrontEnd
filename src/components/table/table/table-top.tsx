@@ -1,8 +1,6 @@
-import React from "react";
+import React, {JSX} from "react";
 import { ChevronDownIcon } from "../../icons/ChevronDownIcon.tsx";
 import { capitalize } from "../utils.ts";
-import { PlusIcon } from "../../icons/PlusIcon.tsx";
-import { useAppDispatch } from "../../../app/hooks.ts";
 import { statusOptions } from "../../../old_store/datat.ts";
 
 import {
@@ -15,39 +13,35 @@ import {
     Selection,
 } from "@nextui-org/react";
 
-interface TableTopContentProps<T> {
+interface TableTopContentProps {
     Columns: Column[],
     filterValue: string;
-    paging: Pagination,
     customFieldFilter: Selection,
+    rowsCount: number,
     visibleColumns: Selection,
-    fetchData: (pagination: PagedRequest) => PagedResponse<T>,
-    setPaging: (value: Pagination) => void;
-    setFilterValue: (value: string) => void;
+    onFilterChange: (value: string) => void;
+    onPageSizeChange: (value: number) => void;
     setCustomFieldFilter: (value: Selection) => void;
     setVisibleColumns: (value: Selection) => void;
+    addNew?:JSX.Element,
+    pageSize: number;
 }
 
-export function TableTopContent<T>(props: TableTopContentProps<T>) {
-    const dispatch = useAppDispatch()
-
-    const onRowsPerPageChange = React.useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-        const p = { currentPage: props.paging.currentPage, pageSize: Number(e.target.value), sort: "", filter: "" } as PagedRequest;
-        dispatch(props.fetchData(p));
+export function TableTopContent(props: TableTopContentProps) {
+    const onPageSizeChange = React.useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+        props.onPageSizeChange(Number(e.target.value));
     }, []);
 
-    const onSearchChange = React.useCallback((value?: string) => {
+    const onFilterChange = React.useCallback((value?: string) => {
         if (value) {
-            props.setFilterValue(value);
-            props.setPaging({ ...props.paging, currentPage: 1 });
+            props.onFilterChange(value);
         } else {
-            props.setFilterValue("");
+            props.onFilterChange("");
         }
     }, []);
 
     const onClear = React.useCallback(() => {
-        props.setFilterValue("");
-        props.setPaging({ ...props.paging, currentPage: 1 });
+        props.onFilterChange("");
     }, [])
 
     return (
@@ -56,11 +50,11 @@ export function TableTopContent<T>(props: TableTopContentProps<T>) {
                 <Input
                     isClearable
                     className="w-full sm:max-w-[44%]"
-                    placeholder="Search by name..."
+                    placeholder="Pesquise..."
                     startContent={null}
                     value={props.filterValue}
-                    onClear={() => onClear()}
-                    onValueChange={onSearchChange}
+                    onClear={onClear}
+                    onValueChange={onFilterChange}
                 />
                 <div className="flex gap-3">
                     <Dropdown>
@@ -105,18 +99,17 @@ export function TableTopContent<T>(props: TableTopContentProps<T>) {
                             ))}
                         </DropdownMenu>
                     </Dropdown>
-                    <Button color="primary" endContent={<PlusIcon />}>
-                        Add New
-                    </Button>
+                    {props.addNew}
                 </div>
             </div>
             <div className="flex justify-between items-center">
-                <span className="text-default-400 text-small">{props.paging.pageCount} registros</span>
+                <span className="text-default-400 text-small">{props.rowsCount} registros</span>
                 <label className="flex items-center text-default-400 text-small">
                     Linhas por página:
-                    <select
+                    <select defaultValue={props.pageSize}
                         className="bg-transparent outline-none text-default-400 text-small"
-                        onChange={onRowsPerPageChange}>
+                        onChange={onPageSizeChange}>
+                        <option value="5">5</option>
                         <option value="10">10</option>
                         <option value="20">20</option>
                         <option value="50">50</option>

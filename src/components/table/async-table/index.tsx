@@ -22,7 +22,7 @@ type Props<T> = {
     isLoading?: boolean,
     initialVisibleColumns?: string[],
     RenderCell: (user: T, columnKey: string) => ReactNode,
-    fetchData: (pagination: PaginatedRequest<T>) => PagedResponse<T>,
+    fetchData: (pagination: PagedRequest) => PagedResponse<T>,
     goto: (n: number) => void,
     onRowsPerPageChange: (n: number) => void,
 }

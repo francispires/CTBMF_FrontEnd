@@ -1,24 +1,20 @@
-import { useAppSelector, useAppDispatch } from '../../app/hooks.ts'
-import {fetchAllUsersAsync, userActions} from "../../app/slices/user";
 import {RenderUserCell} from "../table/render-user-cell.tsx";
-import AsyncTable from "../table/async-table";
-  
+import TTable from "../table/table";
+import {AddUser} from "./add-user.tsx";
+import React from "react";
 export const Accounts = () => {
-    const dispatch = useAppDispatch()
-
-    const { users, paging, isLoading } = useAppSelector(state => state.users);
 
     const columns = [
-        {name: 'userName', uid: 'userName'},
-        {name: 'Usuário', uid: 'nickName'},
-        {name: 'firstName', uid: 'firstName'},
-        {name: 'lastName', uid: 'lastName'},
-        {name: 'fullName', uid: 'fullName'},
+        {name: 'userName', uid: 'userName',sortable:true},
+        {name: 'Usuário', uid: 'nickName',sortable:true},
+        {name: 'firstName', uid: 'firstName',sortable:true},
+        {name: 'lastName', uid: 'lastName',sortable:true},
+        {name: 'fullName', uid: 'fullName',sortable:true},
         {name: 'picture', uid: 'picture'},
-        {name: 'status', uid: 'status'},
-        {name: 'createdAt', uid: 'createdAt'},
-        {name: 'lastIpAddress', uid: 'lastIpAddress'},
-        {name: 'lastLogin', uid: 'lastLogin'},
+        {name: 'status', uid: 'status',sortable:true},
+        {name: 'createdAt', uid: 'createdAt',sortable:true},
+        {name: 'lastIpAddress', uid: 'lastIpAddress',sortable:true},
+        {name: 'lastLogin', uid: 'lastLogin',sortable:true},
         {name: 'lastPasswordReset', uid: 'lastPasswordReset'},
         {name: 'loginsCount', uid: 'loginsCount'},
         {name: 'updatedAt', uid: 'updatedAt'},
@@ -35,18 +31,15 @@ export const Accounts = () => {
 
     return (
         <div className="my-5 max-w-[99rem] mx-auto w-full flex flex-col gap-10">
-            <AsyncTable<AuthUser>
-                paging={paging}
-                fetchData={fetchAllUsersAsync}
-                goto={(n:number) => dispatch(userActions.gotoPage(n))}
-                onRowsPerPageChange={(n:number) => dispatch(userActions.setPageSize(n))}
-                isLoading={isLoading}
-                Columns={columns}
-                Data={users}
+            <TTable<AuthUser>
+                key={"user_id"}
+                rowId={"user_id"}
                 RenderCell={RenderUserCell}
-                rowId={"userId"}
+                Columns={columns}
+                url={"users/all"}
                 initialVisibleColumns={initialVisibleColumns}
-            ></AsyncTable>
+                addNew={<AddUser />}>
+            </TTable>
         </div>
     );
 };

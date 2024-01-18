@@ -14,7 +14,6 @@ import { FilterIcon } from "../icons/sidebar/filter-icon";
 import { useSidebarContext } from "../layout/layout-context";
 import React from "react";
 import {useAuth0} from "@auth0/auth0-react";
-import {BottomIcon} from "../icons/sidebar/bottom-icon.tsx";
 import {AcmeIcon} from "../icons/acme-icon.tsx";
 
 class MenuItem {
@@ -58,7 +57,6 @@ export const SidebarWrapper = () => {
               Preparatório
             </span>
             </div>
-            <BottomIcon />
           </div>
         </div>
         <div className="flex flex-col justify-between h-full">
@@ -74,7 +72,7 @@ export const SidebarWrapper = () => {
                 isActive={router.pathname === "/dashboard"}
                 title="Dashboard"
                 icon={<AccountsIcon />}
-                href="accounts"
+                href="dashboard"
               />
               <SidebarItem
                 isActive={router.pathname === "/questions"}
@@ -100,6 +98,7 @@ export const SidebarWrapper = () => {
               />
               <SidebarItem
                 isActive={router.pathname === "/disciplines"}
+                href="disciplines"
                 title="Disciplinas"
                 icon={<ReportsIcon />}
               />
