@@ -127,7 +127,7 @@ export default function TTable<T>(props: Props<T>) {
             </TableHeader>
 
             <TableBody
-                emptyContent={"No users found"}
+                emptyContent={"Sem registros"}
                 items={paging.filter ? data?.queryable : data?.queryable ?? []}
                 loadingContent={<Spinner />}
                 loadingState={loadingState}

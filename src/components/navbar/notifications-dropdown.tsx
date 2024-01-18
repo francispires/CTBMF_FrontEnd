@@ -17,16 +17,16 @@ export const NotificationsDropdown = () => {
         </NavbarItem>
       </DropdownTrigger>
       <DropdownMenu className="w-80" aria-label="Avatar Actions">
-        <DropdownSection title="Notificacions">
+        <DropdownSection title="Notificações">
           <DropdownItem
             classNames={{
               base: "py-2",
               title: "text-base font-semibold",
             }}
             key="1"
-            description="Sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim."
+            description="Aproveite e comece seus estudos com um sparring feito especialmente para você."
           >
-            📣 Edit your information
+            📣 O sparring está disponível!
           </DropdownItem>
           <DropdownItem
             key="2"
@@ -34,19 +34,9 @@ export const NotificationsDropdown = () => {
               base: "py-2",
               title: "text-base font-semibold",
             }}
-            description="Sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim."
+            description="Com um plano de estudo customizado você vai conseguir alcançar seus objetivos mais rápido."
           >
-            🚀 Say goodbye to paper receipts!
-          </DropdownItem>
-          <DropdownItem
-            key="3"
-            classNames={{
-              base: "py-2",
-              title: "text-base font-semibold",
-            }}
-            description="Sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim."
-          >
-            📣 Edit your information
+            🚀 Monte seu plano de estudos!
           </DropdownItem>
         </DropdownSection>
       </DropdownMenu>

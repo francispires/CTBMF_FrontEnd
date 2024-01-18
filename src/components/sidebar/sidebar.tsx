@@ -65,14 +65,14 @@ export const SidebarWrapper = () => {
               title="Minha Área"
               icon={<HomeIcon />}
               isActive={router.pathname === "/"}
-              href="/"
+              href=""
             />
             <SidebarMenu title="Aluno">
               <SidebarItem
                 isActive={router.pathname === "/dashboard"}
                 title="Dashboard"
                 icon={<AccountsIcon />}
-                href="dashboard"
+                href="#dashboard"
               />
               <SidebarItem
                 isActive={router.pathname === "/questions"}
@@ -92,13 +92,13 @@ export const SidebarWrapper = () => {
             <SidebarMenu title="Coordenador">
               <SidebarItem
                 isActive={router.pathname === "/users"}
-                href="users"
+                href="#users"
                 title="Usuários"
                 icon={<CustomersIcon />}
               />
               <SidebarItem
                 isActive={router.pathname === "/disciplines"}
-                href="disciplines"
+                href="#disciplines"
                 title="Disciplinas"
                 icon={<ReportsIcon />}
               />

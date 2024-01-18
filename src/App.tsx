@@ -31,21 +31,21 @@ const App = () => {
     return (
             <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/dashboard" element={<DashBoard />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/users" element={<Accounts />} />
-                <Route path="/disciplines" element={<Disciplines />} />
+                <Route path="dashboard" element={<DashBoard />} />
+                <Route path="login" element={<Login />} />
+                <Route path="users" element={<Accounts />} />
+                <Route path="disciplines" element={<Disciplines />} />
                 <Route
-                    path="/profile"
+                    path="profile"
                     element={<AuthenticationGuard component={ProfilePage} />}
                 />
-                <Route path="/public" element={<PublicPage />} />
+                <Route path="public" element={<PublicPage />} />
                 <Route
-                    path="/protected"
+                    path="protected"
                     element={<AuthenticationGuard component={ProtectedPage} />}
                 />
                 <Route
-                    path="/admin"
+                    path="admin"
                     element={<AuthenticationGuard component={AdminPage} />}
                 />
                 <Route path="/callback" element={<CallbackPage />} />
