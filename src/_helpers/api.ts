@@ -7,9 +7,9 @@ axios.interceptors.request.use(function (config) {
     return config;
 });
 
-export async function get<T>(url:string,abortSignal?: AbortSignal) {
+export async function get<T>(url: string, abortSignal?: AbortSignal) {
     try {
-        const { data, status } = await axios.get<T>(
+        const {data, status} = await axios.get<T>(
             url,
             {
                 signal: abortSignal,
@@ -39,9 +39,15 @@ export async function get<T>(url:string,abortSignal?: AbortSignal) {
     }
 }
 
-export async function post<T>(url:string,body: T) {
+export async function post<T>(url: string, body: T, file?: File) {
     try {
-        const { data, status } = await axios.post<T>(url,body);
+        const config = file ? {
+            headers: {
+                "content-type": "multipart/form-data"
+            },
+        } : {};
+        if (file) {url = url + '/file';}
+        const {data, status} = await axios.post(url, {...body, file}, config);
         console.log(JSON.stringify(data, null, 4));
         console.log('response status is: ', status);
         return data;
@@ -57,9 +63,10 @@ export async function post<T>(url:string,body: T) {
         }
     }
 }
-export async function uploadFile(url:string,formData: FormData,onUploadProgress:any) {
+
+export async function uploadFile(url: string, formData: FormData, onUploadProgress: any) {
     try {
-        const { data, status } = await axios.post(url,formData,onUploadProgress);
+        const {data, status} = await axios.post(url, formData, onUploadProgress);
         console.log(JSON.stringify(data, null, 4));
         console.log('response status is: ', status);
         return data;
@@ -75,6 +82,7 @@ export async function uploadFile(url:string,formData: FormData,onUploadProgress:
         }
     }
 }
+
 function authToken() {
     return store.getState().auth.user?.token;
 }

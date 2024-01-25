@@ -15,6 +15,10 @@ import Select2 from "../select";
 import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
 import {string,object} from "yup";
 import {ImageUp} from "../../_helpers/image-up";
+import UploadButton from "@rpldy/upload-button";
+import React from "react";
+import Uploady from "@rpldy/uploady";
+import UploadPreview from "@rpldy/upload-preview";
 
 const createSchema = object({
   name: string().required("Nome é obrigatório"),
@@ -71,7 +75,10 @@ export const AddDiscipline = () => {
                             //     name={"discipline"}
                             //     id={""} upUrl={"disciplines/upload"}
                             //     currentUrl={"https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"} />
-                            <ImageUp src={"https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"}></ImageUp>
+                            <>
+
+                            </>
+
                         );
                       }}
                   />
@@ -85,6 +92,8 @@ export const AddDiscipline = () => {
                       render={({ field }) => {
                         return (
                             <Select2
+                                valueProp={"id"}
+                                textProp={"name"}
                                 {...field}
                                 url={"disciplines"}
                                 selectionMode="single"

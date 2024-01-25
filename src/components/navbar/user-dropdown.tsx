@@ -6,7 +6,6 @@ import {
   DropdownTrigger,
   NavbarItem,
 } from "@nextui-org/react";
-import { DarkModeSwitch } from "./darkmodeswitch";
 import {useAuth0} from "@auth0/auth0-react";
 import {useAppDispatch} from "../../app/hooks.ts";
 import {loginAsync, logoutAsync} from "../../app/slices/auth";

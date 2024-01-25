@@ -10,6 +10,7 @@ interface Column {
     name: string,
     uid: string,
     sortable?: boolean,
+    filterable?: boolean,
 }
 
 type Discipline = {
@@ -33,10 +34,10 @@ interface Institution {
     stadual: boolean,
     private: boolean,
     questions: Question[] | null
-    questionbanks: QuestionBank[] | null
+    questionBanks: QuestionBank[] | null
 }
 
-type Question = {
+type Questiona = {
     id: string,
     year: number,
     Board: string,
@@ -45,8 +46,10 @@ type Question = {
     Score: number,
     institutionId: string,
     institution: Institution,
+    institutionName: string,
     questionBankId: string,
     questionBank: QuestionBank,
+    questionBankName: string,
     quizAttemptId: string,
     quizAttempt: QuizAttempt,
     alternatives: Alternative[] | null,
@@ -54,7 +57,6 @@ type Question = {
     answers: Answer[] | null,
     observationRequests: ObservationRequest[] | null,
     disciplines: Discipline[] | null
-
 }
 
 

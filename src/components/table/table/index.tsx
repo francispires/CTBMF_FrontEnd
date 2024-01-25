@@ -15,25 +15,28 @@ import {
 import {useQuery} from "@tanstack/react-query";
 import {get} from "../../../_helpers/api.ts";
 
-
 type Props<T> = {
     url: string,
+    what: string,
     Columns: Column[],
     initialVisibleColumns?: string[],
     rowId: string,
     addNew?:JSX.Element,
+    editItem?:JSX.Element,
+    confirmRemoval?:JSX.Element,
     RenderCell: (t: T, columnKey: string) => ReactNode
 }
 
 export default function TTable<T>(props: Props<T>) {
     const [filterValue, setFilterValue] = React.useState("");
+    const [appliedFilter, setAppliedFilter] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
     const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(props.initialVisibleColumns));
     const [customFieldFilter, setCustomFieldFilter] = React.useState<Selection>("all");
     const [paging, setPaging] = React.useState({ currentPage: 1, pageSize: 10, sort: "", filter: "" } as PagedRequest);
     const [rowCount, setRowCount] = React.useState(0);
     const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
-        column: "age",
+        column: props.Columns[0].uid,
         direction: "ascending"
     });
 
@@ -43,7 +46,6 @@ export default function TTable<T>(props: Props<T>) {
     }, [visibleColumns]);
 
     const renderCell = React.useCallback(props.RenderCell, []);
-
     const fetchData = async (pagination: PagedRequest,sort:string,filter:string) => {
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
         const url = `${apiUrl}/${props.url}?currentPage=${pagination.currentPage}&pageSize=${pagination.pageSize}&sort=${sort}&filter=${filter}`;
@@ -53,11 +55,12 @@ export default function TTable<T>(props: Props<T>) {
     }
 
     const parseSortDescriptor = () => {
-        return sortDescriptor.column + ":" + (sortDescriptor.direction==="ascending"?"1":"-1");
+        return sortDescriptor.column + " " + (sortDescriptor.direction==="ascending"?"Asc":"Desc");
     };
 
-    const { isLoading, data } = useQuery({ queryKey: ['qryKey',{...paging,sortDescriptor,filterValue}],
-        queryFn: () => fetchData(paging,parseSortDescriptor(),filterValue) });
+    const { isLoading, data } = useQuery({ queryKey: ['qryKey',{...paging,sortDescriptor,filterValue},props.what],
+        queryFn: () => fetchData(paging,parseSortDescriptor(),appliedFilter) });
+
     const changePage = (pageNumber: number) => {
         setPaging({ ...paging, currentPage: pageNumber });
     }
@@ -67,6 +70,11 @@ export default function TTable<T>(props: Props<T>) {
 
     const setFilter = (filter: string) => {
         //setPaging({ ...paging, filter: filter });
+        const fill = props.Columns
+            .filter((column) => column.filterable)
+            .map((column) => `${column.uid}:${filter}`)
+            .join(" OR ");
+        setAppliedFilter(fill);
         setFilterValue(filter);
     }
 
@@ -74,6 +82,7 @@ export default function TTable<T>(props: Props<T>) {
 
     return (
         <Table
+            className={"max-h-[65%]"}
             key={"ttt"}
             onSortChange={setSortDescriptor}
             onSelectionChange={setSelectedKeys}
@@ -125,7 +134,6 @@ export default function TTable<T>(props: Props<T>) {
                     </TableColumn>
                 )}
             </TableHeader>
-
             <TableBody
                 emptyContent={"Sem registros"}
                 items={paging.filter ? data?.queryable : data?.queryable ?? []}
@@ -133,8 +141,9 @@ export default function TTable<T>(props: Props<T>) {
                 loadingState={loadingState}
             >
                 {(item) => (
-                    <TableRow key={item[props.rowId as keyof T] as Key}>
-                        {(columnKey) => <TableCell>{renderCell(item, columnKey as string)}</TableCell>}
+                    <TableRow key={props.rowId? item[props.rowId as keyof T] as Key:JSON.stringify(item)}>
+                        {(columnKey) => <TableCell>{renderCell(item, columnKey as string)}
+                        </TableCell>}
                     </TableRow>
                 )}
             </TableBody>

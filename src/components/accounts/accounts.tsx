@@ -32,6 +32,7 @@ export const Accounts = () => {
     return (
         <div className="my-5 max-w-[99rem] mx-auto w-full flex flex-col gap-10">
             <TTable<AuthUser>
+                what={"Usuários"}
                 key={"user_id"}
                 rowId={"user_id"}
                 RenderCell={RenderUserCell}

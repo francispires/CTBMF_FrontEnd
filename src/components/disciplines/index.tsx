@@ -18,8 +18,9 @@ export const Disciplines = () => {
     const initialVisibleColumns = ["name","description","parentName", "childsCount", "actions"];
 
     return (
-        <div className="my-5 max-w-[90rem] mx-auto w-full flex flex-col gap-10">
+        <div className="my-5 max-w-[99rem] mx-auto w-full flex flex-col gap-10">
             <TTable<Discipline>
+                what={"Disciplinas"}
                 rowId={"Id"}
                 RenderCell={RenderDisciplineCell}
                 Columns={columns}

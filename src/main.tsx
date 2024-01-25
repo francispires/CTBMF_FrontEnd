@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import {NextUIProvider} from "@nextui-org/react";
-import { HashRouter} from "react-router-dom";
+import {BrowserRouter} from "react-router-dom";
 import {Auth0ProviderWithNavigate} from "./auth0-provider-with-navigate.jsx";
 import {Provider} from "react-redux";
 import {store} from './app/store'
@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
 
         <Provider store={store}>
-            <HashRouter>
+            <BrowserRouter>
                 <Auth0ProviderWithNavigate>
                         <NextUIProvider>
                             <Layout>
@@ -25,7 +25,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                             </Layout>
                         </NextUIProvider>
                 </Auth0ProviderWithNavigate>
-            </HashRouter>
+            </BrowserRouter>
         </Provider>
 
     </React.StrictMode>,

@@ -14,9 +14,10 @@ import {NotFoundPage} from "./pages/not-found-page.jsx";
 import {Accounts} from "./components/accounts/accounts.tsx";
 import {Disciplines} from "./components/disciplines";
 import {DashBoard} from "./components/dashboard/dashBoard.tsx";
+import {Questions} from "./components/questions";
+import {Institutions} from "./components/institutions";
 const App = () => {
     const { isLoading } = useAuth0();
-
     if (isLoading) {
         return (
             <div className="page-layout">
@@ -24,32 +25,28 @@ const App = () => {
             </div>
         );
     }
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-
-
     return (
             <Routes>
+                {/*Public*/}
                 <Route path="/" element={<HomePage />} />
-                <Route path="dashboard" element={<DashBoard />} />
-                <Route path="login" element={<Login />} />
-                <Route path="users" element={<Accounts />} />
-                <Route path="disciplines" element={<Disciplines />} />
-                <Route
-                    path="profile"
-                    element={<AuthenticationGuard component={ProfilePage} />}
-                />
-                <Route path="public" element={<PublicPage />} />
-                <Route
-                    path="protected"
-                    element={<AuthenticationGuard component={ProtectedPage} />}
-                />
-                <Route
-                    path="admin"
-                    element={<AuthenticationGuard component={AdminPage} />}
-                />
+                <Route path="/public" element={<PublicPage />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/banco-de-questoes" element={<Login />} />
+                {/*System*/}
                 <Route path="/callback" element={<CallbackPage />} />
                 <Route path="*" element={<NotFoundPage />} />
+
+                {/*Authorize*/}
+                <Route path="/dashboard" element={<DashBoard />} />
+                <Route path="/profile" element={<AuthenticationGuard component={ProfilePage} />} />
+                {/*Teacher*/}
+                <Route path="/users" element={<AuthenticationGuard component={Accounts} />} />
+                <Route path="/disciplines" element={<AuthenticationGuard component={Disciplines} />} />
+                <Route path="/questions" element={<AuthenticationGuard component={Questions} />} />
+                <Route path="/institutions" element={<AuthenticationGuard component={Institutions} />} />
+                {/*Admin*/}
+                <Route path="/protected" element={<AuthenticationGuard component={ProtectedPage} />} />
+                <Route path="/admin" element={<AuthenticationGuard component={AdminPage} />}/>
             </Routes>
     );
 };

@@ -4,57 +4,52 @@ import {
     Button,
     DropdownMenu,
     DropdownItem,
-    DropdownSection, cn, Image, Popover, PopoverTrigger, PopoverContent
+    DropdownSection, cn, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter
 } from "@nextui-org/react";
 import {VerticalDotsIcon} from "../icons/VerticalDotsIcon.tsx";
 import {CopyDocumentIcon} from "../icons/CopyDocumentIcon.tsx";
 import {EditDocumentIcon} from "../icons/EditDocumentIcon.tsx";
 import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
-import React from "react";
+import {InstitutionResponseDto} from "../../types_custom.ts";
 
-export const RenderDisciplineCell = (discipline: Discipline, columnKey: string) => {
+export const RenderInstitutionCell = (institution: InstitutionResponseDto, columnKey: string) => {
     const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
-    //const cellValue = discipline[columnKey as keyof Discipline];
+    const cellValue = institution[columnKey as keyof InstitutionResponseDto];
+
+
+    let open = true;
 
     switch (columnKey) {
-        case "name":
+        case "text":
             return (
                 <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{discipline.name}</p>
-                </div>
-            );
-        case "description":
-            return (
-                <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{discipline.description}</p>
-                </div>
-            );
-        case "image":
-            return (
-                <Image src={discipline.picture}></Image>
-            );
-        case "parentId":
-        return (
-            <div className="flex flex-col">
-                <p className="text-bold text-small capitalize">{discipline.parentId}</p>
-            </div>
-        );
-        case "childsCount":
-            return (
-                <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{discipline.childsCount}</p>
-                </div>
-            );
-        case "parentName":
-            return (
-                <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{discipline.parentName}</p>
+                    <p title={cellValue} className="text-bold text-small capitalize">{`${cellValue?.toString().slice(0, 20)} ...`}</p>
                 </div>
             );
         case "actions":
             return (
                 <div className="relative flex justify-end items-center gap-2">
+                    <Modal isOpen={open} onOpenChange={()=>{open = (false)}} isDismissable={false}>
+                        <ModalContent>
+                            {(onClose) => (
+                                <>
+                                    <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                                    <ModalBody>
+                                    <p>Confirmaçao</p>
+                                    </ModalBody>
+                                    <ModalFooter>
+                                        <Button color="danger" variant="light" onPress={onClose}>
+                                            Fechar
+                                        </Button>
+                                        <Button color="primary" onPress={onClose}>
+                                            Confirmar
+                                        </Button>
+                                    </ModalFooter>
+                                </>
+                            )}
+                        </ModalContent>
+                    </Modal>
                     <Dropdown>
                         <DropdownTrigger>
                             <Button isIconOnly size="sm" variant="light">
@@ -63,24 +58,18 @@ export const RenderDisciplineCell = (discipline: Discipline, columnKey: string) 
                         </DropdownTrigger>
                         <DropdownMenu disabledKeys={"hide"}  variant="faded" aria-label="Dropdown menu with description">
                             <DropdownSection title="Ações" showDivider>
-                                <Popover showArrow placement="bottom">
-                                    <PopoverTrigger>
                                         <DropdownItem
+
                                             key="details"
                                             shortcut="⌘D"
-                                            description="Exibe os detalhes da disciplina"
+                                            description="Exibe os detalhes da instituição"
                                             startContent={<CopyDocumentIcon className={iconClasses} />}
                                         >Detalhes</DropdownItem>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="p-1">
-                                        <Button>Aasd</Button>
-                                    </PopoverContent>
-                                </Popover>
 
                                 <DropdownItem
                                     key="edit"
                                     shortcut="⌘⇧E"
-                                    description="Editar a disciplina"
+                                    description="Editar a instituição"
                                     startContent={<EditDocumentIcon className={iconClasses} />}
                                 >Editar</DropdownItem>
                             </DropdownSection>
@@ -90,7 +79,7 @@ export const RenderDisciplineCell = (discipline: Discipline, columnKey: string) 
                                     className="text-danger"
                                     color="danger"
                                     shortcut="⌘⇧R"
-                                    description="Remove a disciplina"
+                                    description="Remove a instituição"
                                     startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
                                 >Remover</DropdownItem>
                             </DropdownSection>
@@ -101,7 +90,7 @@ export const RenderDisciplineCell = (discipline: Discipline, columnKey: string) 
         default:
             return (
                 <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize"></p>
+                    <p className="text-bold text-small capitalize">{cellValue}</p>
                 </div>
             );
     }

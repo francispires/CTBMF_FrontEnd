@@ -1,21 +1,21 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React, {useEffect} from "react";
-import { NavBar } from "../components/navigation/desktop/nav-bar.jsx";
-import { MobileNavBar } from "../components/navigation/mobile/mobile-nav-bar.jsx";
 import { PageLayout } from "../components/page-layout.jsx";
 import {useAppDispatch} from "../app/hooks.ts";
 import {loginAsync} from "../app/slices/auth/index.ts";
+import {useNavigate} from "react-router-dom";
 
 export const CallbackPage = () => {
     const { error,user,isAuthenticated,getAccessTokenSilently } = useAuth0();
     const dispatch = useAppDispatch();
-
+    const navigate = useNavigate();
     useEffect(() => {
         async function fetchToken() {
             const token = await getAccessTokenSilently();
             dispatch(loginAsync({...user, token: token}));
         }
-        fetchToken();
+        fetchToken().then(() => navigate("/"));
+
     }, [error,user,isAuthenticated]);
 
   if (error) {
@@ -34,12 +34,5 @@ export const CallbackPage = () => {
       </PageLayout>
     );
   }
-
-  return (
-    <div className="page-layout">
-      <NavBar />
-      <MobileNavBar />
-      <div className="page-layout__content" />
-    </div>
-  );
+    return navigate("/");
 };

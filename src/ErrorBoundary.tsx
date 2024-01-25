@@ -19,12 +19,12 @@ class ErrorBoundary extends Component<Props, State> {
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        console.error("Uncaught error:", error, errorInfo);
+        console.error("Erro:", error, errorInfo);
     }
 
     public render() {
         if (this.state.hasError) {
-            return <h1>Sorry.. there was an error</h1>;
+            return <h1 className={"text-danger center"}>Desculpe, houve um erro</h1>;
         }
 
         return this.props.children;

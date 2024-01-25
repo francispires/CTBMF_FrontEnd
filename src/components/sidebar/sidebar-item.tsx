@@ -1,7 +1,8 @@
 import React from "react";
 import { useSidebarContext } from "../layout/layout-context";
 import clsx from "clsx";
-import {Link} from "@nextui-org/react";
+import {Link} from "react-router-dom";
+
 
 interface Props {
   title: string;
@@ -20,7 +21,7 @@ export const SidebarItem = ({ icon, title, isActive, href = "" }: Props) => {
   };
   return (
     <Link
-      href={href}
+      to={href}
       className="text-default-900 active:bg-none max-w-full"
     >
       <div
