@@ -5,8 +5,8 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CTBMF - Preparatóio BucoMaxilo</title>
-    <script type="module" crossorigin src="/assets/index-t78xy7YY.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-eLZvn98M.css">
+    <script type="module" crossorigin src="/assets/index-Pxgh0q8W.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-QKQCcGrh.css">
   </head>
   <body>
   <script type="text/javascript">
@@ -21,6 +21,9 @@
     // the correct url will be waiting in the browser's history for
     // the single page app to route accordingly.
     (function(l) {
+      if ('production'==='development') {
+        return;
+      }
       if (l.search[1] === '/' ) {
         var decoded = l.search.slice(1).split('&').map(function(s) {
           return s.replace(/~and~/g, '&')
