@@ -82,7 +82,7 @@ export default function TTable<T>(props: Props<T>) {
 
     return (
         <Table
-            className={"max-h-[65%]"}
+            className={""}
             key={"ttt"}
             onSortChange={setSortDescriptor}
             onSelectionChange={setSelectedKeys}
@@ -127,7 +127,7 @@ export default function TTable<T>(props: Props<T>) {
                 {(column) => (
                     <TableColumn
                         key={column.uid}
-                        align={column.uid === "actions" ? "center" : "start"}
+                        align={column.uid === "actions" ? "center" : "center"}
                         allowsSorting={column.sortable}
                     >
                         {column.name}
@@ -142,7 +142,7 @@ export default function TTable<T>(props: Props<T>) {
             >
                 {(item) => (
                     <TableRow key={props.rowId? item[props.rowId as keyof T] as Key:JSON.stringify(item)}>
-                        {(columnKey) => <TableCell>{renderCell(item, columnKey as string)}
+                        {(columnKey) => <TableCell align={"center"}>{renderCell(item, columnKey as string)}
                         </TableCell>}
                     </TableRow>
                 )}

@@ -34,5 +34,6 @@ export const CallbackPage = () => {
       </PageLayout>
     );
   }
-    return navigate("/");
+    navigate("/");
+  return (<> </>)
 };

@@ -10,7 +10,6 @@ import {VerticalDotsIcon} from "../icons/VerticalDotsIcon.tsx";
 import {CopyDocumentIcon} from "../icons/CopyDocumentIcon.tsx";
 import {EditDocumentIcon} from "../icons/EditDocumentIcon.tsx";
 import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
-import React from "react";
 
 export const RenderDisciplineCell = (discipline: Discipline, columnKey: string) => {
     const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";

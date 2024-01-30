@@ -1,10 +1,7 @@
-import { Link } from "@nextui-org/react";
 import Calendar from "../calendar";
 import {MyCard} from "../layout/MyCard.tsx";
 import {QuestionRight} from "../charts/question-right.tsx";
 import {UserCard} from "./user-card.tsx";
-import React from "react";
-
 
 export const Home = () => (
   <div className="h-full lg:px-6">

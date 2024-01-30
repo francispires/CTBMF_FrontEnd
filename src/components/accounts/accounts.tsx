@@ -1,7 +1,6 @@
 import {RenderUserCell} from "../table/render-user-cell.tsx";
 import TTable from "../table/table";
 import {AddUser} from "./add-user.tsx";
-import React from "react";
 export const Accounts = () => {
 
     const columns = [

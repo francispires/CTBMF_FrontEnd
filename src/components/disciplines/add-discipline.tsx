@@ -14,11 +14,6 @@ import {Controller, useForm} from "react-hook-form";
 import Select2 from "../select";
 import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
 import {string,object} from "yup";
-import {ImageUp} from "../../_helpers/image-up";
-import UploadButton from "@rpldy/upload-button";
-import React from "react";
-import Uploady from "@rpldy/uploady";
-import UploadPreview from "@rpldy/upload-preview";
 
 const createSchema = object({
   name: string().required("Nome é obrigatório"),
@@ -38,7 +33,7 @@ export const AddDiscipline = () => {
     resolver: yupResolver(createSchema)
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: Discipline) => {
     alert(JSON.stringify(data));
     const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
     await post<Discipline>(`${apiUrl}/disciplines`, data as Discipline);
@@ -64,24 +59,6 @@ export const AddDiscipline = () => {
                   Nova Disciplina
                 </ModalHeader>
                 <ModalBody>
-                  <Controller
-                      name="picture"
-                      control={control}
-                      render={({ /*field*/ }) => {
-                        return (
-                            // <ImageUpload
-                            //     {...field}
-                            //     folder={"ctbmfdisciplines"}
-                            //     name={"discipline"}
-                            //     id={""} upUrl={"disciplines/upload"}
-                            //     currentUrl={"https://nextui-docs-v2.vercel.app/images/hero-card-complete.jpeg"} />
-                            <>
-
-                            </>
-
-                        );
-                      }}
-                  />
                   <Input {...register("name")} label="Nome" variant="bordered" />
                   {errors.name && <p>{errors.name.message}</p>}
                   <Input {...register("description")} label="Descrição" variant="bordered" />
@@ -111,7 +88,7 @@ export const AddDiscipline = () => {
                   <Button color="danger" variant="flat" onClick={onClose}>
                     Fechar
                   </Button>
-                  <Button type={"submit"} onSubmit={onSubmit} color="primary">
+                  <Button type={"submit"} color="primary">
                     Salvar
                   </Button>
                 </ModalFooter>

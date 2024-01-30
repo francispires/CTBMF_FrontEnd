@@ -4,52 +4,49 @@ import {
     Button,
     DropdownMenu,
     DropdownItem,
-    DropdownSection, cn, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter
+    DropdownSection, cn
 } from "@nextui-org/react";
 import {VerticalDotsIcon} from "../icons/VerticalDotsIcon.tsx";
 import {CopyDocumentIcon} from "../icons/CopyDocumentIcon.tsx";
 import {EditDocumentIcon} from "../icons/EditDocumentIcon.tsx";
 import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
+
 import {InstitutionResponseDto} from "../../types_custom.ts";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCheck, faXmark} from "@fortawesome/free-solid-svg-icons";
 
 export const RenderInstitutionCell = (institution: InstitutionResponseDto, columnKey: string) => {
     const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
-    const cellValue = institution[columnKey as keyof InstitutionResponseDto];
-
-
-    let open = true;
+    const cellValue =
+        institution[columnKey as keyof InstitutionResponseDto];
 
     switch (columnKey) {
         case "text":
             return (
                 <div className="flex flex-col">
-                    <p title={cellValue} className="text-bold text-small capitalize">{`${cellValue?.toString().slice(0, 20)} ...`}</p>
+                    <p title={cellValue.toString()} className="text-bold text-small capitalize">{`${cellValue?.toString().slice(0, 20)} ...`}</p>
+                </div>
+            );
+        case "stadual":
+            return (
+                <div className="flex flex-col center">
+                    {cellValue ?
+                        <FontAwesomeIcon className={"text-success"} icon={faCheck}/> :
+                        <FontAwesomeIcon className={"text-danger"} icon={faXmark} />}
+                </div>
+            );
+        case "privateInstitution":
+            return (
+                <div className="flex flex-col center">
+                    {cellValue ?
+                        <FontAwesomeIcon className={"text-success"} icon={faCheck}/> :
+                        <FontAwesomeIcon className={"text-danger"} icon={faXmark}/>}
                 </div>
             );
         case "actions":
             return (
                 <div className="relative flex justify-end items-center gap-2">
-                    <Modal isOpen={open} onOpenChange={()=>{open = (false)}} isDismissable={false}>
-                        <ModalContent>
-                            {(onClose) => (
-                                <>
-                                    <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
-                                    <ModalBody>
-                                    <p>Confirmaçao</p>
-                                    </ModalBody>
-                                    <ModalFooter>
-                                        <Button color="danger" variant="light" onPress={onClose}>
-                                            Fechar
-                                        </Button>
-                                        <Button color="primary" onPress={onClose}>
-                                            Confirmar
-                                        </Button>
-                                    </ModalFooter>
-                                </>
-                            )}
-                        </ModalContent>
-                    </Modal>
                     <Dropdown>
                         <DropdownTrigger>
                             <Button isIconOnly size="sm" variant="light">
@@ -90,7 +87,7 @@ export const RenderInstitutionCell = (institution: InstitutionResponseDto, colum
         default:
             return (
                 <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{cellValue}</p>
+                    <p className="text-bold text-small capitalize">{cellValue.toString()}</p>
                 </div>
             );
     }

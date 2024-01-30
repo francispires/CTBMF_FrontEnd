@@ -1,4 +1,3 @@
-import React from "react";
 import {useAuth0} from "@auth0/auth0-react";
 import {PageLoader} from "./components/page-loader.jsx";
 import {Route, Routes} from "react-router-dom";
