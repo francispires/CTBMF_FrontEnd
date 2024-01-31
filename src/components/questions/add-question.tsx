@@ -16,6 +16,7 @@ import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
 import {object} from "yup";
 import {QuestionRequestDto} from "../../types_custom.ts";
 import {useState} from "react";
+import ImageUpload from "../image-upload/index.tsx";
 
 
 const createSchema = object({});
@@ -60,6 +61,7 @@ export const AddQuestion = () => {
                     isOpen={isOpen}
                     onOpenChange={onOpenChange}
                     placement="top-center"
+                    className="max-h-[calc(100vh-50px)] overflow-auto"
                 >
                     <ModalContent>
                         {(onClose) => (
@@ -69,7 +71,7 @@ export const AddQuestion = () => {
                                         Nova Questão
                                     </ModalHeader>
                                     <ModalBody>
-                                        <input type="file" onChange={(e) => e.target.files && setFile(e.target.files[0])}/>
+                                        <ImageUpload setFile={setFile} />
 
                                         <Input {...register("board")} label="Banca" variant="bordered"/>
                                         {errors.board &&

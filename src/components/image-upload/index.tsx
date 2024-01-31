@@ -1,0 +1,174 @@
+import { ChangeEvent, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { PlusIcon } from '../icons/PlusIcon';
+
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup/src/yup.js';
+
+import Cropper, { Area } from 'react-easy-crop'
+import { Button } from '@nextui-org/react';
+import getCroppedImg from './crop-functions';
+import { DeleteDocumentIcon } from '../icons/DeleteDocumentIcon';
+
+const profileFormSchema = yup.object({
+  image: yup
+    .mixed<File>()
+    .notRequired()
+    .test('fileType', 'Arquivo inválido', (file) => {
+      if (!file) return true;
+
+      const acceptedFormats = ['image/jpg', 'image/jpeg', 'image/png'];
+      return acceptedFormats.includes(file.type);
+    })
+    .test('fileSize', 'Tamanho limite excedido (5MB)', (file) => {
+      if (!file) return true;
+
+      return file.size <= 1024 * 1024 * 5; // 5MB
+    }),
+});
+
+type ImageFormData = yup.InferType<typeof profileFormSchema>;
+
+interface ImageUploadProps {
+  setFile: (file: File | undefined) => void
+}
+
+export default function ImageUpload({ setFile }: ImageUploadProps) {
+  const {
+    register,
+    reset,
+    getValues,
+    trigger,
+    formState: { errors },
+  } = useForm<ImageFormData>({
+    resolver: yupResolver(profileFormSchema),
+    mode: 'onChange',
+  });
+
+  const [isCroppingImage, setIsCroppingImage] = useState<boolean>(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+
+  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }
+
+  const saveCroppedImage = async () => {
+    if (!imagePreview || !croppedAreaPixels) return;
+
+    try {
+      const croppedImage = await getCroppedImg(
+        imagePreview,
+        croppedAreaPixels
+      )
+
+      setImagePreview(String(croppedImage))
+      setFile(new File([croppedImage as Blob], `${new Date().getTime()}-image`, { type: 'jpg' }));
+      setIsCroppingImage(false);
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setFile(undefined)
+    setImagePreview(null)
+  }
+
+  async function handleInputFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files) return;
+
+    const file = files.item(0);
+
+    if (file) {
+      reset(
+        {
+          ...getValues(),
+          image: undefined,
+        },
+        { keepErrors: true },
+      );
+
+      register('image', {
+        value: file,
+      });
+
+      await trigger('image');
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      setIsCroppingImage(true);
+    } else {
+      register('image', {
+        value: undefined,
+      });
+    }
+  }
+
+  return (
+    <>
+      <div className="flex flex-col items-center justify-center px-6 relative">
+        <label className="w-52 h-[138px] rounded-2xl overflow-hidden bg-gradient-to-r from-[#8ED5A0] to-[#E6CC73] p-1 cursor-pointer">
+          <div className="rounded-xl overflow-hidden flex justify-center items-center bg-white h-full w-full">
+            {!imagePreview && <PlusIcon className="w-16 h-16 text-gray-300" />}
+            <input
+              type="file"
+              accept="image/jpg, image/jpeg, image/png"
+              onChange={handleInputFileChange}
+              className="hidden"
+            />
+
+            {!errors.image && imagePreview && (
+              <img src={imagePreview} alt="Imagem da questão" className="w-full h-full object-cover" />
+            )}
+
+          </div>
+        </label>
+
+        {isCroppingImage && imagePreview && (
+          <div className="flex flex-col">
+            <Cropper
+              image={imagePreview}
+              crop={crop}
+              zoom={zoom}
+              aspect={16 / 9}
+              onCropChange={setCrop}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+              style={{ containerStyle: { background: 'white' } }}
+            />
+            <Button className="z-10 border-none absolute bottom-[2px] right-[calc(50%-40px)] h-8" color='primary' onClick={saveCroppedImage}>Cortar</Button>
+          </div>
+        )}
+
+        {errors.image ? (
+          <span className="mt-4 text-sm text-red-400 text-center">Escolha uma imagem válida jpg, jpeg ou png (opcional)</span>
+        ) : (
+          <>
+            {imagePreview ? (
+              <button
+                className="
+                  flex items-center gap-2 mt-2 text-sm text-center transition-all
+                  text-red-400 bg-none border-none hover:text-red-300"
+                onClick={handleRemoveImage}
+              >
+                Remover
+                <DeleteDocumentIcon />
+              </button>
+            ) : (
+              <span className="mt-4 text-sm text-center">Escolha a imagem da questão (opcional)</span>
+            )}
+          </>
+        )}
+      </div>
+    </>
+  );
+}
