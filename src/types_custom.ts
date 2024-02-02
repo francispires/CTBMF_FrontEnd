@@ -40,10 +40,10 @@ export class AuthClient {
 
     protected processSignIn(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -78,10 +78,10 @@ export class AuthClient {
 
     protected processSignUp(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -116,10 +116,10 @@ export class AuthClient {
 
     protected processCreate(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -154,10 +154,10 @@ export class AuthClient {
 
     protected processRemove(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -219,10 +219,10 @@ export class DisciplinesClient {
 
     protected processGetAll(response: Response): Promise<PagedResultOfDisciplineResponseDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PagedResultOfDisciplineResponseDto.fromJS(resultData200);
             return result200;
@@ -262,7 +262,7 @@ export class DisciplinesClient {
 
     protected processCreate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -308,7 +308,7 @@ export class DisciplinesClient {
 
     protected processGet(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -354,7 +354,7 @@ export class DisciplinesClient {
 
     protected processDelete(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -380,7 +380,7 @@ export class DisciplinesClient {
      * @param body The updated body to be saved
      * @return True on success, false otherwise
      */
-    async update(id: string, body: DisciplineRequestDto): Promise<FileResponse | null> {
+    update(id: string, body: DisciplineRequestDto): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/disciplines/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -398,13 +398,14 @@ export class DisciplinesClient {
             }
         };
 
-        let _response = await this.http.fetch(url_, options_);
-        return this.processUpdate(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
     }
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -461,7 +462,7 @@ export class DisciplinesClient {
 
     protected processCreateAsync2(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -514,7 +515,7 @@ export class DisciplinesClient {
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -563,7 +564,7 @@ export class ErrorClient {
 
     protected processHandleErrorDevelopmentGET(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -601,7 +602,7 @@ export class ErrorClient {
 
     protected processHandleErrorDevelopmentPOST(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -650,10 +651,10 @@ export class MessagesClient {
 
     protected processGetPublicMessage(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -684,10 +685,10 @@ export class MessagesClient {
 
     protected processGetProtectedMessage(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -718,10 +719,10 @@ export class MessagesClient {
 
     protected processGetAdminMessage(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -783,10 +784,10 @@ export class QuestionBankClient {
 
     protected processGetAll(response: Response): Promise<PagedResultOfQuestionBankResponseDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PagedResultOfQuestionBankResponseDto.fromJS(resultData200);
             return result200;
@@ -826,7 +827,7 @@ export class QuestionBankClient {
 
     protected processCreate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -872,7 +873,7 @@ export class QuestionBankClient {
 
     protected processGet(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -918,7 +919,7 @@ export class QuestionBankClient {
 
     protected processDelete(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -969,7 +970,7 @@ export class QuestionBankClient {
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1020,7 +1021,7 @@ export class QuestionBankClient {
 
     protected processCreateAsync2(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1073,7 +1074,7 @@ export class QuestionBankClient {
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1122,7 +1123,7 @@ export class QuestionClient {
 
     protected processGetMyAnswers(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1142,14 +1143,26 @@ export class QuestionClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    boards(): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/questions/boards";
+    boards(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined): Promise<PagedResultOfSelectListItem> {
+        let url_ = this.baseUrl + "/api/questions/boards?";
+        if (currentPage === null)
+            throw new Error("The parameter 'currentPage' cannot be null.");
+        else if (currentPage !== undefined)
+            url_ += "CurrentPage=" + encodeURIComponent("" + currentPage) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (sort !== undefined && sort !== null)
+            url_ += "Sort=" + encodeURIComponent("" + sort) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             }
         };
 
@@ -1158,26 +1171,22 @@ export class QuestionClient {
         });
     }
 
-    protected processBoards(response: Response): Promise<FileResponse | null> {
+    protected processBoards(response: Response): Promise<PagedResultOfSelectListItem> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfSelectListItem.fromJS(resultData200);
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<FileResponse | null>(null as any);
+        return Promise.resolve<PagedResultOfSelectListItem>(null as any);
     }
 
     /**
@@ -1218,10 +1227,10 @@ export class QuestionClient {
 
     protected processGetAll(response: Response): Promise<PagedResultOfQuestionResponseDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PagedResultOfQuestionResponseDto.fromJS(resultData200);
             return result200;
@@ -1261,7 +1270,7 @@ export class QuestionClient {
 
     protected processCreate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1307,7 +1316,7 @@ export class QuestionClient {
 
     protected processGet(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1353,7 +1362,7 @@ export class QuestionClient {
 
     protected processDelete(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1404,7 +1413,7 @@ export class QuestionClient {
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1424,7 +1433,7 @@ export class QuestionClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    createAsync2(id: string | undefined, year: number | undefined, board: string | undefined, image: string | null | undefined, text: string | null | undefined, score: number | undefined, active: boolean | undefined, institutionId: string | null | undefined, questionBankId: string | null | undefined, quizAttemptId: string | null | undefined, file: FileParameter | null | undefined): Promise<FileResponse | null> {
+    createAsync2(id: string | undefined, year: number | undefined, board: string | undefined, image: string | null | undefined, text: string | null | undefined, score: number | undefined, active: boolean | undefined, questionNumber: number | null | undefined, institutionId: string | null | undefined, questionBankId: string | null | undefined, quizAttemptId: string | null | undefined, alternatives: AlternativeRequestDto[] | undefined, file: FileParameter | null | undefined): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/questions/file";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1453,12 +1462,18 @@ export class QuestionClient {
             throw new Error("The parameter 'active' cannot be null.");
         else
             content_.append("Active", active.toString());
+        if (questionNumber !== null && questionNumber !== undefined)
+            content_.append("QuestionNumber", questionNumber.toString());
         if (institutionId !== null && institutionId !== undefined)
             content_.append("InstitutionId", institutionId.toString());
         if (questionBankId !== null && questionBankId !== undefined)
             content_.append("QuestionBankId", questionBankId.toString());
         if (quizAttemptId !== null && quizAttemptId !== undefined)
             content_.append("QuizAttemptId", quizAttemptId.toString());
+        if (alternatives === null || alternatives === undefined)
+            throw new Error("The parameter 'alternatives' cannot be null.");
+        else
+            alternatives.forEach(item_ => content_.append("Alternatives", item_.toString()));
         if (file !== null && file !== undefined)
             content_.append("File", file.data, file.fileName ? file.fileName : "File");
 
@@ -1477,7 +1492,7 @@ export class QuestionClient {
 
     protected processCreateAsync2(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1530,7 +1545,7 @@ export class QuestionClient {
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1599,10 +1614,10 @@ export class InstitutionsClient {
 
     protected processGetAll(response: Response): Promise<PagedResultOfInstitutionResponseDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PagedResultOfInstitutionResponseDto.fromJS(resultData200);
             return result200;
@@ -1642,7 +1657,7 @@ export class InstitutionsClient {
 
     protected processCreate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1688,7 +1703,7 @@ export class InstitutionsClient {
 
     protected processGet(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1734,7 +1749,7 @@ export class InstitutionsClient {
 
     protected processDelete(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1785,7 +1800,7 @@ export class InstitutionsClient {
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1846,7 +1861,7 @@ export class InstitutionsClient {
 
     protected processCreateAsync2(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1899,7 +1914,7 @@ export class InstitutionsClient {
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1948,7 +1963,7 @@ export class AnswerClient {
 
     protected processGetMyAnswers(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -1986,7 +2001,7 @@ export class AnswerClient {
 
     protected processGenerateFakeAnswers(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -2044,10 +2059,10 @@ export class AnswerClient {
 
     protected processGetAll(response: Response): Promise<PagedResultOfAnswerResponseDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PagedResultOfAnswerResponseDto.fromJS(resultData200);
             return result200;
@@ -2087,7 +2102,7 @@ export class AnswerClient {
 
     protected processCreate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -2133,7 +2148,7 @@ export class AnswerClient {
 
     protected processGet(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -2179,7 +2194,7 @@ export class AnswerClient {
 
     protected processDelete(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -2230,7 +2245,7 @@ export class AnswerClient {
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -2289,7 +2304,7 @@ export class AnswerClient {
 
     protected processCreateAsync2(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -2342,7 +2357,7 @@ export class AnswerClient {
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -2398,10 +2413,10 @@ export class UserClient {
 
     protected processGetPermissions(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -2439,10 +2454,10 @@ export class UserClient {
 
     protected processAddPermission(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -2480,10 +2495,10 @@ export class UserClient {
 
     protected processGetRoles(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -2521,10 +2536,10 @@ export class UserClient {
 
     protected processAddRole(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -2558,10 +2573,10 @@ export class UserClient {
 
     protected processGet(response: Response): Promise<Message> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any;
+            let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = Message.fromJS(resultData200);
             return result200;
@@ -2604,7 +2619,7 @@ export class UserClient {
 
     protected processGet2(response: Response): Promise<FileResponse | null> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
             const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
             let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
@@ -3034,7 +3049,7 @@ export interface IPagedResult {
 
 /** PagedResult{TSource} */
 export class PagedResultOfDisciplineResponseDto extends PagedResult implements IPagedResultOfDisciplineResponseDto {
-    declare queryable: DisciplineResponseDto[];
+    queryable!: DisciplineResponseDto[];
 
     constructor(data?: IPagedResultOfDisciplineResponseDto) {
         super(data);
@@ -3243,12 +3258,17 @@ export class QuestionRequestDto extends HasFile implements IQuestionRequestDto {
     text?: string | undefined;
     score!: number;
     active!: boolean;
+    questionNumber?: number | undefined;
     institutionId?: string | undefined;
     questionBankId?: string | undefined;
     quizAttemptId?: string | undefined;
+    alternatives!: AlternativeRequestDto[];
 
     constructor(data?: IQuestionRequestDto) {
         super(data);
+        if (!data) {
+            this.alternatives = [];
+        }
     }
 
     init(_data?: any) {
@@ -3261,9 +3281,15 @@ export class QuestionRequestDto extends HasFile implements IQuestionRequestDto {
             this.text = _data["text"];
             this.score = _data["score"];
             this.active = _data["active"];
+            this.questionNumber = _data["questionNumber"];
             this.institutionId = _data["institutionId"];
             this.questionBankId = _data["questionBankId"];
             this.quizAttemptId = _data["quizAttemptId"];
+            if (Array.isArray(_data["alternatives"])) {
+                this.alternatives = [] as any;
+                for (let item of _data["alternatives"])
+                    this.alternatives!.push(AlternativeRequestDto.fromJS(item));
+            }
         }
     }
 
@@ -3283,9 +3309,15 @@ export class QuestionRequestDto extends HasFile implements IQuestionRequestDto {
         data["text"] = this.text;
         data["score"] = this.score;
         data["active"] = this.active;
+        data["questionNumber"] = this.questionNumber;
         data["institutionId"] = this.institutionId;
         data["questionBankId"] = this.questionBankId;
         data["quizAttemptId"] = this.quizAttemptId;
+        if (Array.isArray(this.alternatives)) {
+            data["alternatives"] = [];
+            for (let item of this.alternatives)
+                data["alternatives"].push(item.toJSON());
+        }
         super.toJSON(data);
         return data;
     }
@@ -3299,9 +3331,11 @@ export interface IQuestionRequestDto extends IHasFile {
     text?: string | undefined;
     score: number;
     active: boolean;
+    questionNumber?: number | undefined;
     institutionId?: string | undefined;
     questionBankId?: string | undefined;
     quizAttemptId?: string | undefined;
+    alternatives: AlternativeRequestDto[];
 }
 
 export class QuestionResponseDto extends QuestionRequestDto implements IQuestionResponseDto {
@@ -4857,7 +4891,7 @@ export interface IDiscipline extends IBaseEntity {
 
 /** PagedResult{TSource} */
 export class PagedResultOfQuestionBankResponseDto extends PagedResult implements IPagedResultOfQuestionBankResponseDto {
-    declare queryable: QuestionBankResponseDto[];
+    queryable!: QuestionBankResponseDto[];
 
     constructor(data?: IPagedResultOfQuestionBankResponseDto) {
         super(data);
@@ -5107,8 +5141,146 @@ export interface IInstitutionResponseDto extends IInstitutionRequestDto {
 }
 
 /** PagedResult{TSource} */
+export class PagedResultOfSelectListItem extends PagedResult implements IPagedResultOfSelectListItem {
+    queryable!: SelectListItem[];
+
+    constructor(data?: IPagedResultOfSelectListItem) {
+        super(data);
+        if (!data) {
+            this.queryable = [];
+        }
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["queryable"])) {
+                this.queryable = [] as any;
+                for (let item of _data["queryable"])
+                    this.queryable!.push(SelectListItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PagedResultOfSelectListItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfSelectListItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.queryable)) {
+            data["queryable"] = [];
+            for (let item of this.queryable)
+                data["queryable"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+/** PagedResult{TSource} */
+export interface IPagedResultOfSelectListItem extends IPagedResult {
+    queryable: SelectListItem[];
+}
+
+export class SelectListItem implements ISelectListItem {
+    disabled!: boolean;
+    group?: SelectListGroup | undefined;
+    selected!: boolean;
+    text?: string | undefined;
+    value?: string | undefined;
+
+    constructor(data?: ISelectListItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.disabled = _data["disabled"];
+            this.group = _data["group"] ? SelectListGroup.fromJS(_data["group"]) : <any>undefined;
+            this.selected = _data["selected"];
+            this.text = _data["text"];
+            this.value = _data["value"];
+        }
+    }
+
+    static fromJS(data: any): SelectListItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new SelectListItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["disabled"] = this.disabled;
+        data["group"] = this.group ? this.group.toJSON() : <any>undefined;
+        data["selected"] = this.selected;
+        data["text"] = this.text;
+        data["value"] = this.value;
+        return data;
+    }
+}
+
+export interface ISelectListItem {
+    disabled: boolean;
+    group?: SelectListGroup | undefined;
+    selected: boolean;
+    text?: string | undefined;
+    value?: string | undefined;
+}
+
+export class SelectListGroup implements ISelectListGroup {
+    disabled!: boolean;
+    name?: string | undefined;
+
+    constructor(data?: ISelectListGroup) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.disabled = _data["disabled"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): SelectListGroup {
+        data = typeof data === 'object' ? data : {};
+        let result = new SelectListGroup();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["disabled"] = this.disabled;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface ISelectListGroup {
+    disabled: boolean;
+    name?: string | undefined;
+}
+
+/** PagedResult{TSource} */
 export class PagedResultOfQuestionResponseDto extends PagedResult implements IPagedResultOfQuestionResponseDto {
-    declare queryable: QuestionResponseDto[];
+    queryable!: QuestionResponseDto[];
 
     constructor(data?: IPagedResultOfQuestionResponseDto) {
         super(data);
@@ -5154,7 +5326,7 @@ export interface IPagedResultOfQuestionResponseDto extends IPagedResult {
 
 /** PagedResult{TSource} */
 export class PagedResultOfInstitutionResponseDto extends PagedResult implements IPagedResultOfInstitutionResponseDto {
-    declare queryable: InstitutionResponseDto[];
+    queryable!: InstitutionResponseDto[];
 
     constructor(data?: IPagedResultOfInstitutionResponseDto) {
         super(data);
@@ -5200,7 +5372,7 @@ export interface IPagedResultOfInstitutionResponseDto extends IPagedResult {
 
 /** PagedResult{TSource} */
 export class PagedResultOfAnswerResponseDto extends PagedResult implements IPagedResultOfAnswerResponseDto {
-    declare queryable: AnswerResponseDto[];
+    queryable!: AnswerResponseDto[];
 
     constructor(data?: IPagedResultOfAnswerResponseDto) {
         super(data);

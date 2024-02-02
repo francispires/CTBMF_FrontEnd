@@ -7,6 +7,7 @@ import {useSelect2List} from "../../_helpers/useSelect2List.ts";
 export type Props = {
     url: string,
     allowsCustomValue?: boolean,
+    defaultInputValue?:string,
     placeholder?: string,
     className?: string,
     label?: string,
@@ -41,6 +42,7 @@ export default function Select2<T>({...props}:Props) {
                 className="max-w"
                 variant="bordered"
                 isLoading={isLoading}
+                defaultInputValue={props.defaultInputValue}
                 defaultItems={items}
                 label={props.label}
                 placeholder={props.placeholder}

@@ -1,4 +1,4 @@
-import React, {JSX, Key, ReactNode} from "react";
+import React, {JSX, Key, ReactNode, useCallback, useState} from "react";
 import { TableTopContent } from "./table-top.tsx";
 import { TableBottomContent } from "./table-bottom.tsx";
 
@@ -13,6 +13,7 @@ import {
     SortDescriptor, Spinner
 } from "@nextui-org/react";
 import {useQuery} from "@tanstack/react-query";
+
 import {get} from "../../../_helpers/api.ts";
 
 type Props<T> = {
@@ -23,19 +24,19 @@ type Props<T> = {
     rowId: string,
     addNew?:JSX.Element,
     editItem?:JSX.Element,
-    confirmRemoval?:JSX.Element,
-    RenderCell: (t: T, columnKey: string) => ReactNode
+    confirmRemoval?:(id: string) => ReactNode
+    RenderCell: (t: T, columnKey: string,confirmRemoval?:(id:string)=>ReactNode) => ReactNode
 }
 
 export default function TTable<T>(props: Props<T>) {
-    const [filterValue, setFilterValue] = React.useState("");
-    const [appliedFilter, setAppliedFilter] = React.useState("");
-    const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
-    const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(props.initialVisibleColumns));
-    const [customFieldFilter, setCustomFieldFilter] = React.useState<Selection>("all");
-    const [paging, setPaging] = React.useState({ currentPage: 1, pageSize: 10, sort: "", filter: "" } as PagedRequest);
-    const [rowCount, setRowCount] = React.useState(0);
-    const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
+    const [filterValue, setFilterValue] = useState("");
+    const [appliedFilter, setAppliedFilter] = useState("");
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
+    const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(props.initialVisibleColumns));
+    const [customFieldFilter, setCustomFieldFilter] = useState<Selection>("all");
+    const [paging, setPaging] = useState({ currentPage: 1, pageSize: 10, sort: "", filter: "" } as PagedRequest);
+    const [rowCount, setRowCount] = useState(0);
+    const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         column: props.Columns[0].uid,
         direction: "ascending"
     });
@@ -45,7 +46,7 @@ export default function TTable<T>(props: Props<T>) {
         return props.Columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
     }, [visibleColumns]);
 
-    const renderCell = React.useCallback(props.RenderCell, []);
+    const renderCell = useCallback(props.RenderCell,[]);
     const fetchData = async (pagination: PagedRequest,sort:string,filter:string) => {
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
         const url = `${apiUrl}/${props.url}?currentPage=${pagination.currentPage}&pageSize=${pagination.pageSize}&sort=${sort}&filter=${filter}`;
@@ -142,7 +143,8 @@ export default function TTable<T>(props: Props<T>) {
             >
                 {(item) => (
                     <TableRow key={props.rowId? item[props.rowId as keyof T] as Key:JSON.stringify(item)}>
-                        {(columnKey) => <TableCell align={"center"}>{renderCell(item, columnKey as string)}
+                        {(columnKey) => <TableCell align={"center"}>
+                            {renderCell(item, columnKey as string,props.confirmRemoval)}
                         </TableCell>}
                     </TableRow>
                 )}
