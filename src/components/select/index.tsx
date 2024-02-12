@@ -1,5 +1,5 @@
 import React from "react";
-import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
+import {Autocomplete, AutocompleteItem, cn} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {useSelect2List} from "../../_helpers/useSelect2List.ts";
 
@@ -9,18 +9,22 @@ export type Props = {
     allowsCustomValue?: boolean,
     defaultInputValue?:string,
     placeholder?: string,
-    className?: string,
     label?: string,
     valueProp: string,
     textProp: string,
+    value?: string,
     selectionMode?: "single" | "multiple",
+    setValue: (value: string) => void,
+    useKey?: boolean,
 };
 
-export default function Select2<T>({...props}:Props) {
+export default function Select2<T>({ className="",...props }) {
     const [isOpen, setIsOpen] = React.useState(false);
     const {items, hasMore, isLoading, onLoadMore} = useSelect2List<T>(props.url,props.valueProp,props.textProp);
     const [, setValue] = React.useState("");
+    const [useKeyAsValue] = React.useState(props.useKey || false);
     const [, setSelectedKey] = React.useState<React.Key | null>(null);
+        
     const [, scrollerRef] = useInfiniteScroll({
         hasMore,
         isEnabled: isOpen,
@@ -29,17 +33,23 @@ export default function Select2<T>({...props}:Props) {
     });
     const onSelectionChange = (key: React.Key) => {
         setSelectedKey(key);
+        if (useKeyAsValue) {
+            props.setValue(key as string);
+        }
     };
 
     const onInputChange = (value: string) => {
-        setValue(value)
+        setValue(value);
+        if (!useKeyAsValue){
+            props.setValue(value);
+        }
     };
 
     return (
         <div className="flex w-full flex-col">
             <Autocomplete
+                className={cn(className)}
                 allowsCustomValue={props.allowsCustomValue || false}
-                className="max-w"
                 variant="bordered"
                 isLoading={isLoading}
                 defaultInputValue={props.defaultInputValue}
@@ -53,7 +63,7 @@ export default function Select2<T>({...props}:Props) {
                 onInputChange={onInputChange}
             >
                 {(item) => (
-                    <AutocompleteItem key={item.text || JSON.stringify(item)} className="capitalize">
+                    <AutocompleteItem key={item.value || JSON.stringify(item)} className="capitalize">
                         {item.text}
                     </AutocompleteItem>
                 )}

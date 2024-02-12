@@ -20,7 +20,7 @@ import { ptForm  } from 'yup-locale-pt';
 import { setLocale } from 'yup';
 setLocale(ptForm);
 
-import {AlternativeRequestDto, QuestionRequestDto} from "../../types_custom.ts";
+import {AlternativeRequestDto, QuestionBankRequestDto, QuestionRequestDto} from "../../types_custom.ts";
 
 import ImageUpload from "../image-upload/index.tsx";
 import {PlusIcon} from "../icons/PlusIcon.tsx";
@@ -48,7 +48,7 @@ const createSchema = object().shape({
 //         })
 //     ).required('Pelo menos uma alternativa correta é obrigatória'),
 });
-export const AddQuestion = () => {
+export const AddQuestionBank = () => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const queryClient = useQueryClient();
     const [file, setFile] = useState<File>();
@@ -77,48 +77,6 @@ export const AddQuestion = () => {
         });
     },3000)
 
-    const addAlternative = () => {
-        const al =
-            new AlternativeRequestDto({
-                questionId: "",
-                correct: false,
-                text: "",
-                aiExplanation: "",
-                id: alternatives.length.toString()
-            });
-        setAlternatives([...alternatives, al]);
-    }
-
-    const changeAlternative = (event: React.ChangeEvent<HTMLInputElement>) => {
-        debugger
-        const id = event.currentTarget.getAttribute("data-id");
-        const index = alternatives.findIndex(x => x.id === id);
-        if (index !== -1) {
-            const tempArray = alternatives.slice();
-            tempArray[index]["text"] = event.currentTarget.value;
-            setAlternatives(tempArray);
-        } else {
-            console.log('no match');
-        }
-    }
-    const toggleCorrect = (event: React.MouseEvent<HTMLButtonElement>) => {
-        const id = event.currentTarget.getAttribute("data-id");
-        const index = alternatives.findIndex(x => x.id === id);
-        if (index !== -1) {
-            const tempArray = alternatives.slice();
-            const isCorrect = tempArray[index]["correct"];
-            if (!isCorrect) {
-                tempArray.map((a) => {
-                    a.correct = false;
-                });
-            }
-            tempArray[index]["correct"] = !isCorrect;
-            setAlternatives(tempArray);
-        } else {
-            console.log('no match');
-        }
-    }
-
     const handleSetActive = (checked: boolean) => {
         setIsActive(checked);
     }
@@ -133,22 +91,13 @@ export const AddQuestion = () => {
         handleSubmit,
         control,
         formState: { errors }
-    } = useForm<QuestionRequestDto>({
+    } = useForm<QuestionBankRequestDto>({
         resolver: yupResolver(createSchema)
     });
 
-    //useEffect(() => {reset(question);}, []);
-
-    const onSubmit = async (data: QuestionRequestDto) => {
-        data.alternatives = alternatives.map((a) => {
-            a.id = typeof (parseInt(a.id)) === "number" ? "" : a.id;
-            return a;
-        });
-        data.file = file;
-        data.board = board;
-        data.institutionId = institutionId;
+    const onSubmit = async (data: QuestionBankRequestDto) => {
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
-        await post<QuestionRequestDto>(`${apiUrl}/questions/create`, data as QuestionRequestDto, file);
+        await post<QuestionBankRequestDto>(`${apiUrl}/question_banks/create`, data as QuestionBankRequestDto, file);
         setFile(undefined);
         await queryClient.invalidateQueries({ queryKey: ['qryKey'] });
         onClose();
@@ -172,7 +121,7 @@ export const AddQuestion = () => {
                             <>
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <ModalHeader className="flex flex-col gap-1">
-                                        Questão
+                                        Banco de Questões
                                     </ModalHeader>
                                     <ModalBody>
                                         <ImageUpload setFile={setFile} />

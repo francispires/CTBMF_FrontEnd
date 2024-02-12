@@ -59,8 +59,8 @@ export default function TTable<T>(props: Props<T>) {
         return sortDescriptor.column + " " + (sortDescriptor.direction==="ascending"?"Asc":"Desc");
     };
 
-    const { isLoading, data } = useQuery({ queryKey: ['qryKey',{...paging,sortDescriptor,filterValue},props.what],
-        queryFn: () => fetchData(paging,parseSortDescriptor(),appliedFilter) });
+        const { isLoading, data } = useQuery({ queryKey: ['qryKey',{...paging,sortDescriptor,filterValue},props.what],
+            queryFn: () => fetchData(paging,parseSortDescriptor(),appliedFilter) });
 
     const changePage = (pageNumber: number) => {
         setPaging({ ...paging, currentPage: pageNumber });

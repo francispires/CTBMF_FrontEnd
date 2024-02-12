@@ -69,9 +69,9 @@ export const AddDiscipline = () => {
                       render={({ field }) => {
                         return (
                             <Select2
+                                {...field}
                                 valueProp={"id"}
                                 textProp={"name"}
-                                {...field}
                                 url={"disciplines"}
                                 selectionMode="single"
                                 className="max-w-xs"

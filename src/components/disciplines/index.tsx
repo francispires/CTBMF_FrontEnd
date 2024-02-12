@@ -5,7 +5,6 @@ import {RenderDisciplineCell} from "./render-discipline-cell.tsx";
 export const Disciplines = () => {
 
     const columns = [
-
         {name: 'name', uid: 'name',sortable:true},
         {name: 'description', uid: 'description',sortable:true},
         {name: 'image', uid: 'image',sortable:true},

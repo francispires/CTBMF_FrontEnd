@@ -15,6 +15,8 @@ import {Disciplines} from "./components/disciplines";
 import {DashBoard} from "./components/dashboard/dashBoard.tsx";
 import {Questions} from "./components/questions";
 import {Institutions} from "./components/institutions";
+import {QuestionBank} from "./components/question-bank";
+import {UserQuestions} from "./pages/UserQuestions.tsx";
 const App = () => {
     const { isLoading } = useAuth0();
     if (isLoading) {
@@ -31,6 +33,7 @@ const App = () => {
                 <Route path="/public" element={<PublicPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/banco-de-questoes" element={<Login />} />
+                <Route path="/questoes" element={<UserQuestions />} />
                 {/*System*/}
                 <Route path="/callback" element={<CallbackPage />} />
                 <Route path="*" element={<NotFoundPage />} />
@@ -43,6 +46,7 @@ const App = () => {
                 <Route path="/disciplines" element={<AuthenticationGuard component={Disciplines} />} />
                 <Route path="/questions" element={<AuthenticationGuard component={Questions} />} />
                 <Route path="/institutions" element={<AuthenticationGuard component={Institutions} />} />
+                <Route path="/question-banks" element={<QuestionBank />} />
                 {/*Admin*/}
                 <Route path="/protected" element={<AuthenticationGuard component={ProtectedPage} />} />
                 <Route path="/admin" element={<AuthenticationGuard component={AdminPage} />}/>

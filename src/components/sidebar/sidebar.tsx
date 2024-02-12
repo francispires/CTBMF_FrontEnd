@@ -84,6 +84,12 @@ export const SidebarWrapper = () => {
                 title="Banco de Questões"
                 icon={<PaymentsIcon />}
               />
+              <SidebarItem
+                  isActive={router.pathname === "/questoes"}
+                  href="/questoes"
+                  title="questoes"
+                  icon={<PaymentsIcon />}
+              />
               <CollapseItems
                 icon={<ReportsIcon />}
                 items={[
@@ -118,6 +124,12 @@ export const SidebarWrapper = () => {
                       isActive={router.pathname === "/institutions"}
                       href="institutions"
                       title="Instiuições"
+                      icon={<ReportsIcon />}
+                  />
+                  <SidebarItem
+                      isActive={router.pathname === "/question-banks"}
+                      href="question-banks"
+                      title="Banco de Questões"
                       icon={<ReportsIcon />}
                   />
                   <SidebarItem
