@@ -13,9 +13,9 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import {post} from "../../_helpers/api.ts";
 import {Controller, useForm} from "react-hook-form";
-import Select2 from "../select";
+import Select2 from "../select2";
 import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
-import {array, boolean, number, object, string} from "yup";
+import {boolean, number, object, string} from "yup";
 import { ptForm  } from 'yup-locale-pt';
 import { setLocale } from 'yup';
 setLocale(ptForm);
@@ -90,7 +90,6 @@ export const AddQuestion = () => {
     }
 
     const changeAlternative = (event: React.ChangeEvent<HTMLInputElement>) => {
-        debugger
         const id = event.currentTarget.getAttribute("data-id");
         const index = alternatives.findIndex(x => x.id === id);
         if (index !== -1) {

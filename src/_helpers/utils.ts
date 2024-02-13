@@ -21,3 +21,13 @@ export class Utils{
         return allColumns.map((c) => c.uid).filter(value => value !== "id");
     }
 }
+
+export const clean = (arr: string[]) => {
+    return arr.filter((x) => x);
+}
+
+export const addParams = (url: URL, name:string,params: string[]) => {
+    clean(params).map((p) => {
+        url.searchParams.append(name, p);
+    });
+}

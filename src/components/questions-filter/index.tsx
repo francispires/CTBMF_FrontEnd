@@ -1,84 +1,94 @@
-import Select2 from "../select";
 import {Button, Switch} from "@nextui-org/react";
+import SelectStatic from "../select";
 
 type Props = {
+    random: boolean | undefined;
+    setRandom: ((isSelected: boolean) => void) | undefined;
+    onlyCorrects: boolean | undefined;
+    setOnlyCorrects: ((isSelected: boolean) => void) | undefined;
+    onlyAnswereds: boolean | undefined;
+    setOnlyAnswereds: ((isSelected: boolean) => void) | undefined;
     FilterChanged: React.MouseEventHandler<HTMLButtonElement> | undefined;
-    setBoard: (value: string) => void,
-    board: string,
-    setInstitutionId: (value: string) => void,
-    institutionId: string,
-    setDiscipline: (value: string) => void,
-    discipline: string,
-    setYear: (value: string) => void,
-    year: string,
-    setQuestionId: (value: string) => void,
-    questionId: string
+    setBoards: (value: string[]) => void,
+    boards: string[],
+    setInstitutionIds: (value: string[]) => void,
+    institutionIds: string[],
+    setDisciplines: (value: string[]) => void,
+    disciplines: string[],
+    setYears: (value: string[]) => void,
+    years: string[],
+    setQuestionNumber: (value: number) => void,
+    questionNumber: number | undefined
 };
 
 
-export const QuestionsFilter = (props:Props) => {
+export const QuestionsFilter = (props: Props) => {
 
     return (
-    <>
-        <div className="grid md:grid-cols-4 grid-cols-1 2xl:grid-cols-4 gap-5 justify-center w-full">
-            <Select2
-                setValue={props.setBoard}
-                value={props.board}
-                defaultInputValue={props.board}
-                valueProp={"text"}
-                textProp={"text"}
-                allowsCustomValue={true}
-                url={"questions/boards"}
-                selectionMode="multiple"
-                label="Banca"
-                placeholder="Selecione uma Banca">
-            </Select2>
-            <Select2
-                setValue={props.setInstitutionId}
-                value={props.institutionId}
-                defaultInputValue={props.institutionId}
-                valueProp={"value"}
-                textProp={"text"}
-                allowsCustomValue={true}
-                url={"institutions"}
-                selectionMode="multiple"
-                label="Instituição"
-                placeholder="Selecione uma Instituição"></Select2>
-            <Select2 setValue={props.setDiscipline}
-                     value={props.discipline}
-                     defaultInputValue={props.discipline}
-                     valueProp={"value"}
-                     textProp={"text"}
-                     allowsCustomValue={true}
-                     url={"disciplines"}
-                     selectionMode="multiple"
-                     label="Disciplina"
-                     placeholder="Selecione uma Disciplina"></Select2>
-            <Select2 setValue={props.setYear}
-                     value={props.year}
-                     defaultInputValue={props.year}
-                     valueProp={"value"}
-                     textProp={"text"}
-                     allowsCustomValue={true}
-                     url={"questions/years"}
-                     selectionMode="multiple"
-                     label="Ano"
-                     placeholder="Selecione um Ano"></Select2>
-            <Select2 setValue={props.setQuestionId}
-                     value={props.questionId}
-                     defaultInputValue={props.questionId}
-                     valueProp={"value"}
-                     textProp={"text"}
-                     allowsCustomValue={true}
-                     url={"questions/ids"}
-                     selectionMode="multiple"
-                     label="Id da Questão"
-                     placeholder="Id da Questão"></Select2>
-            <Switch defaultSelected>Somente Respondidas</Switch>
-            <Switch defaultSelected>Somente Corretas</Switch>
-            <Switch defaultSelected>Aleatórias</Switch>
-            <Button onClick={props.FilterChanged}>Filtrar</Button>
-        </div>
-    </>
+        <>
+            <div className="grid md:grid-cols-4 grid-cols-1 2xl:grid-cols-4 gap-5 justify-center w-full">
+                <SelectStatic
+                    setValues={props.setBoards}
+                    valueProp={"text"}
+                    textProp={"text"}
+                    allowsCustomValue={false}
+                    url={"questions/boards"}
+                    selectionMode="multiple"
+                    label="Banca"
+                    placeholder="Selecione uma Banca">
+                </SelectStatic>
+                <SelectStatic
+                    setValues={props.setInstitutionIds}
+                    value={props.institutionIds}
+                    defaultInputValue={props.institutionIds}
+                    valueProp={"id"}
+                    textProp={"name"}
+                    allowsCustomValue={false}
+                    url={"institutions"}
+                    selectionMode="multiple"
+                    label="Instituição"
+                    placeholder="Selecione uma Instituição">
+                </SelectStatic>
+                <SelectStatic
+                    setValues={props.setDisciplines}
+                    value={props.disciplines}
+                    defaultInputValue={props.disciplines}
+                    valueProp={"value"}
+                    textProp={"text"}
+                    allowsCustomValue={false}
+                    url={"disciplines"}
+                    selectionMode="multiple"
+                    label="Disciplina"
+                    placeholder="Selecione uma Disciplina"></SelectStatic>
+                <SelectStatic
+                    setValues={props.setYears}
+                    value={props.years}
+                    defaultInputValue={props.years}
+                    valueProp={"value"}
+                    textProp={"text"}
+                    allowsCustomValue={false}
+                    url={"questions/years"}
+                    selectionMode="multiple"
+                    label="Ano"
+                    placeholder="Selecione um Ano">
+                </SelectStatic>
+                <SelectStatic
+                    setValues={props.setQuestionNumber}
+                    value={props.questionNumber}
+                    defaultInputValue={props.questionNumber}
+                    valueProp={"value"}
+                    textProp={"text"}
+                    allowsCustomValue={false}
+                    url={"questions/numbers"}
+                    selectionMode="multiple"
+                    label="Id da Questão"
+                    placeholder="Id da Questão">
+                </SelectStatic>
+                <Switch isSelected={props.onlyAnswereds} onValueChange={props.setOnlyAnswereds}>Somente Respondidas</Switch>
+                <Switch isSelected={props.onlyCorrects} onValueChange={props.setOnlyCorrects}>Somente Respondidas</Switch>
+                <Switch isSelected={props.random} onValueChange={props.setRandom}>Somente Respondidas</Switch>
+                <Button onClick={props.FilterChanged}>Filtrar</Button>
+            </div>
+        </>
     );
 }

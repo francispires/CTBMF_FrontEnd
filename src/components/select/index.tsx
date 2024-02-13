@@ -1,7 +1,9 @@
-import React from "react";
-import {Autocomplete, AutocompleteItem, cn} from "@nextui-org/react";
-import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
+import {Chip, cn, Select,  SelectItem} from "@nextui-org/react";
 import {useSelect2List} from "../../_helpers/useSelect2List.ts";
+import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
+import {useState} from "react";
+import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
+import {clean} from "../../_helpers/utils.ts";
 
 
 export type Props = {
@@ -15,59 +17,66 @@ export type Props = {
     value?: string,
     selectionMode?: "single" | "multiple",
     setValue: (value: string) => void,
+    setValues?: (value: string[]) => void,
     useKey?: boolean,
 };
 
-export default function Select2<T>({ className="",...props }) {
-    const [isOpen, setIsOpen] = React.useState(false);
+export default function SelectStatic<T>({ className="",...props }) {
+    const [isOpen, setIsOpen] = useState(false);
     const {items, hasMore, isLoading, onLoadMore} = useSelect2List<T>(props.url,props.valueProp,props.textProp);
-    const [, setValue] = React.useState("");
-    const [useKeyAsValue] = React.useState(props.useKey || false);
-    const [, setSelectedKey] = React.useState<React.Key | null>(null);
-        
+    const [values, setValues] = useState(new Set<string>([]));
     const [, scrollerRef] = useInfiniteScroll({
         hasMore,
         isEnabled: isOpen,
-        shouldUseLoader: true, // We don't want to show the loader at the bottom of the list
+        shouldUseLoader: true,
         onLoadMore,
     });
-    const onSelectionChange = (key: React.Key) => {
-        setSelectedKey(key);
-        if (useKeyAsValue) {
-            props.setValue(key as string);
-        }
+
+    const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const set = new Set(e.target.value.split(","));
+        setValues(set);
+
+        props.setValues(Array.from(set).filter((s)=>s));
     };
 
-    const onInputChange = (value: string) => {
-        setValue(value);
-        if (!useKeyAsValue){
-            props.setValue(value);
-        }
-    };
+    const clearItems = () => {
+        setValues(new Set([""]));
+        props.setValues([]);
+    }
 
     return (
         <div className="flex w-full flex-col">
-            <Autocomplete
+            <Select
+                endContent={!clean(Array.from(values)).length || <DeleteDocumentIcon onClick={clearItems} />}
                 className={cn(className)}
-                allowsCustomValue={props.allowsCustomValue || false}
-                variant="bordered"
-                isLoading={isLoading}
-                defaultInputValue={props.defaultInputValue}
-                defaultItems={items}
+                isMultiline={true}
+                size={"lg"}
                 label={props.label}
+                selectionMode={props.selectionMode || "multiple"}
                 placeholder={props.placeholder}
+                selectedKeys={values}
+                items={items}
                 scrollRef={scrollerRef}
-                multiple={props.selectionMode === "multiple"}
+                isLoading={isLoading}
                 onOpenChange={setIsOpen}
-                onSelectionChange={onSelectionChange}
-                onInputChange={onInputChange}
+                onChange={handleSelectionChange}
+                renderValue={(items) => {
+                    return (
+                        <div className="flex flex-wrap gap-2">
+                            {items.map((item) => (
+                                <Chip key={item.key}>{item.textValue}</Chip>
+                            ))}
+                        </div>
+                    );
+                }}
             >
-                {(item) => (
-                    <AutocompleteItem key={item.value || JSON.stringify(item)} className="capitalize">
+                {items.map((item) => (
+                    <SelectItem key={item.value || JSON.stringify(item)} value={item.value}>
                         {item.text}
-                    </AutocompleteItem>
-                )}
-            </Autocomplete>
+                    </SelectItem>
+                ))}
+
+            </Select>
         </div>
 );
 }

@@ -6,7 +6,7 @@ export type SelectItem = {
 };
 
 export function useSelect2List<T>(url:string,valueProp:string,textProp:string) {
-    const [items, setItems] = React.useState<SelectItem[]>([]);
+    const [items, setItems] = React.useState< SelectItem[]>([]);
     const [hasMore, setHasMore] = React.useState(true);
     const [isLoading, setIsLoading] = React.useState(false);
     const [offset, setOffset] = React.useState(0);

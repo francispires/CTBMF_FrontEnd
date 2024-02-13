@@ -6,28 +6,16 @@ import {
     DropdownItem,
     DropdownSection, cn
 } from "@nextui-org/react";
-import { VerticalDotsIcon } from "../icons/VerticalDotsIcon.tsx";
-import { CopyDocumentIcon } from "../icons/CopyDocumentIcon.tsx";
-import { EditDocumentIcon } from "../icons/EditDocumentIcon.tsx";
-import { DeleteDocumentIcon } from "../icons/DeleteDocumentIcon.tsx";
-import { QuestionResponseDto } from "../../types_custom.ts";
-import { ReactNode } from "react";
+import {VerticalDotsIcon} from "../icons/VerticalDotsIcon.tsx";
+import {CopyDocumentIcon} from "../icons/CopyDocumentIcon.tsx";
+import {EditDocumentIcon} from "../icons/EditDocumentIcon.tsx";
+import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
+import {QuestionResponseDto} from "../../types_custom.ts";
 
-export const RenderQuestionCell = (
-    question: QuestionResponseDto,
-    columnKey: string,
-    confirmRemoval?: (id: string) => ReactNode,
-    editItem?: (id: string) => void
-) => {
+export const RenderQuestionCell = (question: QuestionResponseDto, columnKey: string) => {
     const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
     const cellValue = question[columnKey as keyof QuestionResponseDto];
-
-    function handleEditItem() {
-        if (editItem) {
-            editItem(question.id)
-        }
-    }
 
     switch (columnKey) {
         case "text":
@@ -45,7 +33,7 @@ export const RenderQuestionCell = (
                                 <VerticalDotsIcon className="text-default-300" />
                             </Button>
                         </DropdownTrigger>
-                        <DropdownMenu disabledKeys={"hide"} variant="faded" aria-label="Dropdown menu with description">
+                        <DropdownMenu disabledKeys={"hide"}  variant="faded" aria-label="Dropdown menu with description">
                             <DropdownSection title="Ações" showDivider>
                                 <DropdownItem
                                     key="details"
@@ -58,11 +46,7 @@ export const RenderQuestionCell = (
                                     shortcut="⌘⇧E"
                                     description="Editar a questão"
                                     startContent={<EditDocumentIcon className={iconClasses} />}
-                                    className="relative border"
-                                    onClick={handleEditItem}
-                                >
-                                    Editar
-                                </DropdownItem>
+                                >Editar</DropdownItem>
                             </DropdownSection>
                             <DropdownSection title="Zona Perigosa">
                                 <DropdownItem

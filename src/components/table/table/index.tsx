@@ -23,14 +23,9 @@ type Props<T> = {
     initialVisibleColumns?: string[],
     rowId: string,
     addNew?:JSX.Element,
-    editItem?: (id: string) => void,
-    confirmRemoval?: (id: string) => ReactNode
-    RenderCell: (
-        t: T,
-        columnKey: string,
-        confirmRemoval?:(id:string) => ReactNode,
-        editItem?: (id: string) => void,
-    ) => ReactNode
+    editItem?:JSX.Element,
+    confirmRemoval?:(id: string) => ReactNode
+    RenderCell: (t: T, columnKey: string,confirmRemoval?:(id:string)=>ReactNode) => ReactNode
 }
 
 export default function TTable<T>(props: Props<T>) {
@@ -149,7 +144,7 @@ export default function TTable<T>(props: Props<T>) {
                 {(item) => (
                     <TableRow key={props.rowId? item[props.rowId as keyof T] as Key:JSON.stringify(item)}>
                         {(columnKey) => <TableCell align={"center"}>
-                            {renderCell(item, columnKey as string, props.confirmRemoval, props.editItem)}
+                            {renderCell(item, columnKey as string,props.confirmRemoval)}
                         </TableCell>}
                     </TableRow>
                 )}

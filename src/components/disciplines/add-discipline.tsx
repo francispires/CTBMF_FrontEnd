@@ -11,7 +11,7 @@ import {
 import {useQueryClient} from "@tanstack/react-query";
 import {post} from "../../_helpers/api.ts";
 import {Controller, useForm} from "react-hook-form";
-import Select2 from "../select";
+import Select2 from "../select2";
 import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
 import {string,object} from "yup";
 
