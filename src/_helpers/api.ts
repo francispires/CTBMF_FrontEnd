@@ -64,6 +64,31 @@ export async function post<T>(url: string, body: T, file?: File) {
     }
 }
 
+export async function patch<T>(url: string, body: T, file?: File) {
+    try {
+        const config = file ? {
+            headers: {
+                "content-type": "multipart/form-data"
+            },
+        } : {};
+        if (file) {url = url + '/file';}
+        const {data, status} = await axios.patch(url, {...body, file}, config);
+        console.log(JSON.stringify(data, null, 4));
+        console.log('response status is: ', status);
+        return data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.log('error message: ', error.message);
+            //return error.message;
+            return null as T;
+        } else {
+            console.log('unexpected error: ', error);
+            //return 'An unexpected error occurred';
+            return null as T;
+        }
+    }
+}
+
 export async function remove(url: string, id: string) {
     try {
         const config = {};
@@ -81,6 +106,7 @@ export async function remove(url: string, id: string) {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function uploadFile(url: string, formData: FormData, onUploadProgress: any) {
     try {
         const {data, status} = await axios.post(url, formData, onUploadProgress);

@@ -1,9 +1,9 @@
-import {QuestionsFilter} from "../components/questions-filter";
-import {AnswerQuestion} from "../components/questions/answer-question.tsx";
-import {useState} from "react";
-import {get} from "../_helpers/api.ts";
-import {useQuery} from "@tanstack/react-query";
-import {QuestionResponseDto} from "../types_custom.ts";
+import { QuestionsFilter } from "../components/questions-filter";
+import { AnswerQuestion } from "../components/questions/answer-question.tsx";
+import { useState } from "react";
+import { get } from "../_helpers/api.ts";
+import { useQuery } from "@tanstack/react-query";
+import { QuestionResponseDto } from "../types_custom.ts";
 
 export const UserQuestions = () => {
     const [board, setBoard] = useState("");
@@ -20,25 +20,27 @@ export const UserQuestions = () => {
 
     const hasFilter = board || institutionId || discipline || year || questionId;
 
-    const {isLoading, data } = useQuery({
+    const { isLoading, data } = useQuery({
         queryKey: ['qryFilterQuestions'],
         queryFn: () => fetchData(),
         enabled: !!hasFilter
     });
 
-    const filterChanged = () => {}
+    const filterChanged = () => { }
 
     return (
         <div className="my-5 max-w-[99rem] mx-auto w-full flex flex-col gap-10">
-            <QuestionsFilter board={board} setBoard={setBoard}
-                             year={year} setYear={setYear}
-                             discipline={discipline} setDiscipline={setDiscipline}
-                             institutionId={institutionId} setInstitutionId={setInstitutionId}
-                             questionId={questionId} setQuestionId={setQuestionId}
-                             FilterChanged={filterChanged}
+            <QuestionsFilter
+                board={board}
+                setBoard={setBoard}
+                year={year} setYear={setYear}
+                discipline={discipline} setDiscipline={setDiscipline}
+                institutionId={institutionId} setInstitutionId={setInstitutionId}
+                questionId={questionId} setQuestionId={setQuestionId}
+                FilterChanged={filterChanged}
             />
-            {isLoading   && <div>Loading...</div>}
-            {!isLoading && data!=undefined && (<AnswerQuestion question={data.queryable[0]}/>)}
+            {isLoading && <div>Loading...</div>}
+            {!isLoading && data != undefined && (<AnswerQuestion question={data.queryable[0]} />)}
         </div>
     );
 }

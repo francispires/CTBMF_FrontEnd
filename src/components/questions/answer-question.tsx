@@ -1,6 +1,5 @@
 import {QuestionResponseDto} from "../../types_custom.ts";
-import {Card, CardBody, CardFooter, CardHeader, Checkbox, Divider, Link, Textarea,Image} from "@nextui-org/react";
-
+import {Card, CardBody, CardFooter, CardHeader, Checkbox, Divider, Textarea,Image} from "@nextui-org/react";
 
 const abcdef = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
