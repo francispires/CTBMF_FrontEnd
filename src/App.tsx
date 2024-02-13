@@ -1,5 +1,5 @@
 import {useAuth0} from "@auth0/auth0-react";
-import {PageLoader} from "./components/page-loader.jsx";
+import {PageLoader} from "./components/page-loader.js";
 import {Route, Routes} from "react-router-dom";
 import {HomePage} from "./pages/home-page.jsx";
 import {Login} from "./login";
@@ -17,6 +17,7 @@ import {Questions} from "./components/questions";
 import {Institutions} from "./components/institutions";
 import {QuestionBank} from "./components/question-bank";
 import {UserQuestions} from "./pages/UserQuestions.tsx";
+import { EditQuestion } from "./components/questions/edit-question.tsx";
 const App = () => {
     const { isLoading } = useAuth0();
     if (isLoading) {
@@ -45,6 +46,7 @@ const App = () => {
                 <Route path="/users" element={<AuthenticationGuard component={Accounts} />} />
                 <Route path="/disciplines" element={<AuthenticationGuard component={Disciplines} />} />
                 <Route path="/questions" element={<AuthenticationGuard component={Questions} />} />
+                <Route path="/edit-question/:id" element={<AuthenticationGuard component={EditQuestion} />} />
                 <Route path="/institutions" element={<AuthenticationGuard component={Institutions} />} />
                 <Route path="/question-banks" element={<QuestionBank />} />
                 {/*Admin*/}
