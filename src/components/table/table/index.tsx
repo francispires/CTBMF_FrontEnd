@@ -25,11 +25,11 @@ type Props<T> = {
     addNew?: JSX.Element,
     viewItem?: (id: string) => void,
     editItem?: (id: string) => void,
-    confirmRemoval?: (id: string) => ReactNode
+    confirmRemoval?: (id: string) => void
     RenderCell: (
         t: T,
         columnKey: string,
-        confirmRemoval?: (id: string) => ReactNode,
+        confirmRemoval?: (id: string) => void,
         editItem?: (id: string) => void,
         viewItem?: (id: string) => void,
     ) => ReactNode
@@ -98,7 +98,7 @@ export default function TTable<T>(props: Props<T>) {
             onSelectionChange={setSelectedKeys}
             selectedKeys={selectedKeys}
             sortDescriptor={sortDescriptor}
-            aria-label=""
+            aria-label="Table"
             isHeaderSticky
             selectionMode="multiple"
             topContentPlacement="outside"

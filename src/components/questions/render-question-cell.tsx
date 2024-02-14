@@ -11,12 +11,11 @@ import { CopyDocumentIcon } from "../icons/CopyDocumentIcon.tsx";
 import { EditDocumentIcon } from "../icons/EditDocumentIcon.tsx";
 import { DeleteDocumentIcon } from "../icons/DeleteDocumentIcon.tsx";
 import { QuestionResponseDto } from "../../types_custom.ts";
-import { ReactNode } from "react";
 
 export const RenderQuestionCell = (
     question: QuestionResponseDto,
     columnKey: string,
-    confirmRemoval?: (id: string) => ReactNode,
+    confirmRemoval?: (id: string) => void,
     editItem?: (id: string) => void,
     viewItem?: (id: string) => void
 ) => {
@@ -33,6 +32,12 @@ export const RenderQuestionCell = (
     function handleEditItem() {
         if (editItem) {
             editItem(question.id)
+        }
+    }
+
+    function handleDeleteItem() {
+        if (confirmRemoval) {
+            confirmRemoval(question.id)
         }
     }
 
@@ -82,7 +87,10 @@ export const RenderQuestionCell = (
                                     shortcut="⌘⇧R"
                                     description="Remove a questão"
                                     startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
-                                >Remover</DropdownItem>
+                                    onClick={handleDeleteItem}
+                                >
+                                    Remover
+                                </DropdownItem>
                             </DropdownSection>
                         </DropdownMenu>
                     </Dropdown>

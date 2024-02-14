@@ -83,9 +83,9 @@ export default function ViewQuestion() {
             <strong className="block">Descrição</strong>
             <p>{question.text}</p>
 
-            {!!question.alternatives.length && (
+            <strong className="block mt-3">Alternativas</strong>
+            {question.alternatives.length ? (
               <>
-                <strong className="block">Alternativas</strong>
                 {question.alternatives.map((alternative) => (
                   <div key={alternative.id}>
                     {alternative.correct ? (
@@ -102,6 +102,8 @@ export default function ViewQuestion() {
                   </div>
                 ))}
               </>
+            ) : (
+              <span>Sem alternativas</span>
             )}
           </MyCard>
         </div>

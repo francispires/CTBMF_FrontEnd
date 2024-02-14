@@ -89,12 +89,12 @@ export async function patch<T>(url: string, body: T, file?: File) {
     }
 }
 
-export async function remove(url: string, id: string) {
+export async function remove<T>(url: string, id: string) {
     try {
         const config = {};
         const {data, status} = await axios.delete(`${url}/${id}`, config);
         console.log('delete status is: ', status);
-        return data;
+        return data as T;
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.log('error message: ', error.message);
