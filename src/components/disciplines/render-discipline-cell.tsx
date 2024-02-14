@@ -1,20 +1,45 @@
+import {VerticalDotsIcon} from "../icons/VerticalDotsIcon.tsx";
+import {CopyDocumentIcon} from "../icons/CopyDocumentIcon.tsx";
+import {EditDocumentIcon} from "../icons/EditDocumentIcon.tsx";
+import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
+
 import {
     Dropdown,
     DropdownTrigger,
     Button,
     DropdownMenu,
     DropdownItem,
-    DropdownSection, cn, Image, Popover, PopoverTrigger, PopoverContent
+    DropdownSection, cn, Image
 } from "@nextui-org/react";
-import {VerticalDotsIcon} from "../icons/VerticalDotsIcon.tsx";
-import {CopyDocumentIcon} from "../icons/CopyDocumentIcon.tsx";
-import {EditDocumentIcon} from "../icons/EditDocumentIcon.tsx";
-import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
 
-export const RenderDisciplineCell = (discipline: Discipline, columnKey: string) => {
+export const RenderDisciplineCell = (
+    discipline: Discipline,
+    columnKey: string,
+    confirmRemoval?: (id: string) => void,
+    editItem?: (id: string) => void,
+    viewItem?: (id: string) => void
+) => {
     const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
     //const cellValue = discipline[columnKey as keyof Discipline];
+
+    function handleViewItem() {
+        if (viewItem) {
+            viewItem(discipline.id)
+        }
+    }
+
+    function handleEditItem() {
+        if (editItem) {
+            editItem(discipline.id)
+        }
+    }
+
+    function handleDeleteItem() {
+        if (confirmRemoval) {
+            confirmRemoval(discipline.id)
+        }
+    }
 
     switch (columnKey) {
         case "name":
@@ -55,33 +80,32 @@ export const RenderDisciplineCell = (discipline: Discipline, columnKey: string) 
             return (
                 <div className="relative flex justify-end items-center gap-2">
                     <Dropdown>
-                        <DropdownTrigger>
+                    <DropdownTrigger>
                             <Button isIconOnly size="sm" variant="light">
                                 <VerticalDotsIcon className="text-default-300" />
                             </Button>
                         </DropdownTrigger>
-                        <DropdownMenu disabledKeys={"hide"}  variant="faded" aria-label="Dropdown menu with description">
+                        <DropdownMenu disabledKeys={"hide"} variant="faded" aria-label="Dropdown menu with description">
                             <DropdownSection title="Ações" showDivider>
-                                <Popover showArrow placement="bottom">
-                                    <PopoverTrigger>
-                                        <DropdownItem
-                                            key="details"
-                                            shortcut="⌘D"
-                                            description="Exibe os detalhes da disciplina"
-                                            startContent={<CopyDocumentIcon className={iconClasses} />}
-                                        >Detalhes</DropdownItem>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="p-1">
-                                        <Button>Aasd</Button>
-                                    </PopoverContent>
-                                </Popover>
-
+                                <DropdownItem
+                                    key="details"
+                                    shortcut="⌘D"
+                                    description="Exibe os detalhes da disciplina"
+                                    startContent={<CopyDocumentIcon className={iconClasses} />}
+                                    onClick={handleViewItem}
+                                >
+                                    Detalhes
+                                </DropdownItem>
                                 <DropdownItem
                                     key="edit"
                                     shortcut="⌘⇧E"
                                     description="Editar a disciplina"
                                     startContent={<EditDocumentIcon className={iconClasses} />}
-                                >Editar</DropdownItem>
+                                    className="relative border"
+                                    onClick={handleEditItem}
+                                >
+                                    Editar
+                                </DropdownItem>
                             </DropdownSection>
                             <DropdownSection title="Zona Perigosa">
                                 <DropdownItem
@@ -89,9 +113,12 @@ export const RenderDisciplineCell = (discipline: Discipline, columnKey: string) 
                                     className="text-danger"
                                     color="danger"
                                     shortcut="⌘⇧R"
-                                    description="Remove a disciplina"
+                                    description="Remover a disciplina"
                                     startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
-                                >Remover</DropdownItem>
+                                    onClick={handleDeleteItem}
+                                >
+                                    Remover
+                                </DropdownItem>
                             </DropdownSection>
                         </DropdownMenu>
                     </Dropdown>

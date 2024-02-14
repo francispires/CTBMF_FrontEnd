@@ -85,7 +85,7 @@ export const RenderQuestionCell = (
                                     className="text-danger"
                                     color="danger"
                                     shortcut="⌘⇧R"
-                                    description="Remove a questão"
+                                    description="Remover a questão"
                                     startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
                                     onClick={handleDeleteItem}
                                 >

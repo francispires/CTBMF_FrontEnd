@@ -28,6 +28,7 @@ import {PlusIcon} from "../icons/PlusIcon.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faCircleXmark} from "@fortawesome/free-solid-svg-icons";
 import {useState} from "react";
+import { toast } from "react-toastify";
 
 const createSchema = object().shape({
   //  board: string().required('Banca é obrigatória'),
@@ -140,7 +141,7 @@ export const AddQuestion = () => {
 
     const onSubmit = async (data: QuestionRequestDto) => {
         data.alternatives = alternatives.map((a) => {
-            a.id = typeof (parseInt(a.id)) === "number" ? "" : a.id;
+            a.id = typeof (parseInt(String(a.id))) === "number" ? "" : a.id;
             return a;
         });
         data.file = file;
@@ -150,6 +151,7 @@ export const AddQuestion = () => {
         await post<QuestionRequestDto>(`${apiUrl}/questions/create`, data as QuestionRequestDto, file);
         setFile(undefined);
         await queryClient.invalidateQueries({ queryKey: ['qryKey'] });
+        toast.success("Questão adicionada com sucesso")
         onClose();
     };
 

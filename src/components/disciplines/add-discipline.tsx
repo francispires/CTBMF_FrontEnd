@@ -14,6 +14,7 @@ import {Controller, useForm} from "react-hook-form";
 import Select2 from "../select2";
 import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
 import {string,object} from "yup";
+import { toast } from "react-toastify";
 
 const createSchema = object({
   name: string().required("Nome é obrigatório"),
@@ -34,10 +35,10 @@ export const AddDiscipline = () => {
   });
 
   const onSubmit = async (data: Discipline) => {
-    alert(JSON.stringify(data));
     const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
     await post<Discipline>(`${apiUrl}/disciplines`, data as Discipline);
     await queryClient.invalidateQueries({queryKey: ['qryKey']});
+    toast.success("Disciplina adicionada com sucesso")
     onClose();
   };
 

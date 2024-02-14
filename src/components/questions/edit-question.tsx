@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Checkbox, Input, Spinner, Textarea } from "@nextui-org/react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { get, patch } from "../../_helpers/api";
 import ImageUpload from "../image-upload";
 import { PageLoader } from "../page-loader";
@@ -14,6 +14,7 @@ import { PlusIcon } from "../icons/PlusIcon";
 import { faCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from 'uuid';
 import { FaArrowLeft } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import {
   AlternativeRequestDto,
@@ -64,6 +65,7 @@ type SchemaQuestion = yup.InferType<typeof updateSchema>
 export function EditQuestion() {
   const { id } = useParams();
   const navigation = useNavigate()
+  const queryClient = useQueryClient() 
 
   const [file, setFile] = useState<File>();
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -87,6 +89,13 @@ export function EditQuestion() {
       const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
       const url = `${apiUrl}/questions/${id}`
       return await patch(url, updatedQuestion, file)
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({queryKey: ['qryKey']});
+      toast.success("Questão editada com sucesso.")
+    },
+    onError: () => {
+      toast.error("Erro ao editar a questão.")
     }
   })
 

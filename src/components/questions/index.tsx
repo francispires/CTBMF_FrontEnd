@@ -6,11 +6,13 @@ import t from "../../_helpers/Translations.ts";
 import { useNavigate } from "react-router-dom";
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { remove } from "../../_helpers/api.ts";
+import { toast } from "react-toastify";
 
 export const Questions = () => {
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const [questionIdToDelete, setQuestionIdToDelete] = useState<string | null>(null)
 
@@ -28,14 +30,21 @@ export const Questions = () => {
 
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
         const url = `${apiUrl}/questions`
-        
+
         const res = await remove<boolean>(url, questionId)
 
         return res
     }
 
     const mutation = useMutation({
-        mutationFn: fetchData
+        mutationFn: fetchData,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ['qryKey']});
+            toast.success("Questão removida com sucesso.")
+        },
+        onError: () => {
+            toast.error("Erro ao remover a questão.")
+        }
     })
 
     function goToQuestionDetailsPage(id: string) {

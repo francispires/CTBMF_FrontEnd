@@ -19,6 +19,8 @@ import { QuestionBank } from "./components/question-bank";
 import { UserQuestions } from "./pages/UserQuestions.tsx";
 import { EditQuestion } from "./components/questions/edit-question.tsx";
 import ViewQuestion from "./components/questions/view-question.tsx";
+import ViewDiscipline from "./components/disciplines/view-discipline.tsx";
+import EditDiscipline from "./components/disciplines/edit-discipline.tsx";
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -50,7 +52,10 @@ const App = () => {
 
             {/*Teacher*/}
             <Route path="/users" element={<AuthenticationGuard component={Accounts} />} />
+
             <Route path="/disciplines" element={<AuthenticationGuard component={Disciplines} />} />
+            <Route path="/view-discipline/:id" element={<AuthenticationGuard component={ViewDiscipline} />} />
+            <Route path="/edit-discipline/:id" element={<AuthenticationGuard component={EditDiscipline} />} />
 
             <Route path="/questions" element={<AuthenticationGuard component={Questions} />} />
             <Route path="/view-question/:id" element={<AuthenticationGuard component={ViewQuestion} />} />
