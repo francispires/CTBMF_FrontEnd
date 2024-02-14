@@ -196,11 +196,12 @@ export function EditQuestion() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 overflow-auto min-h-[calc(100vh-65px)]">
       <Button variant="ghost" className="mb-6" onClick={handleBackToQuestions}><FaArrowLeft /> Voltar</Button>
+
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full max-w-3xl mx-auto"
+        className="flex flex-col gap-4 w-full max-w-3xl mx-auto mb-16"
       >
         <ImageUpload setFile={setFile} />
         <Controller
