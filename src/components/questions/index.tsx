@@ -17,6 +17,10 @@ export const Questions = () => {
 
     const initialVisibleColumns = allColumns.map((c) => c.uid);
 
+    function goToQuestionDetailsPage(id: string) {
+        navigate(`/view-question/${id}`)
+    }
+
     function goToEditQuestionPage(id: string) {
         navigate(`/edit-question/${id}`)
     }
@@ -31,6 +35,7 @@ export const Questions = () => {
                 url={"questions"}
                 initialVisibleColumns={initialVisibleColumns}
                 addNew={<AddQuestion />}
+                viewItem={goToQuestionDetailsPage}
                 editItem={goToEditQuestionPage}
             >
             </TTable>

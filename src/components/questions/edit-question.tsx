@@ -8,7 +8,7 @@ import { PageLoader } from "../page-loader";
 import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from 'yup'
-import Select2 from "../select";
+import Select2 from "../select2";
 import { useState } from "react";
 import { PlusIcon } from "../icons/PlusIcon";
 import { faCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
@@ -210,6 +210,7 @@ export function EditQuestion() {
             return (
               <Select2
                 {...field}
+                name="board"
                 value={question.board}
                 setValue={setBoard}
                 defaultInputValue={question.board}

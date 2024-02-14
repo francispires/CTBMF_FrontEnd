@@ -17,11 +17,18 @@ export const RenderQuestionCell = (
     question: QuestionResponseDto,
     columnKey: string,
     confirmRemoval?: (id: string) => ReactNode,
-    editItem?: (id: string) => void
+    editItem?: (id: string) => void,
+    viewItem?: (id: string) => void
 ) => {
     const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
     const cellValue = question[columnKey as keyof QuestionResponseDto];
+
+    function handleViewItem() {
+        if (viewItem) {
+            viewItem(question.id)
+        }
+    }
 
     function handleEditItem() {
         if (editItem) {
@@ -52,7 +59,10 @@ export const RenderQuestionCell = (
                                     shortcut="⌘D"
                                     description="Exibe os detalhes da questão"
                                     startContent={<CopyDocumentIcon className={iconClasses} />}
-                                >Detalhes</DropdownItem>
+                                    onClick={handleViewItem}
+                                >
+                                    Detalhes
+                                </DropdownItem>
                                 <DropdownItem
                                     key="edit"
                                     shortcut="⌘⇧E"
