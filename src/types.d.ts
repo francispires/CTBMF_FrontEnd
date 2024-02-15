@@ -24,7 +24,8 @@ type Discipline = {
     parent:Discipline | null,
     childs: Discipline[]| null,
     childsCount: number| null,
-    questions: Question[] | null
+    questions: Question[] | null,
+    createdAt: string
 }
 
 interface Institution {

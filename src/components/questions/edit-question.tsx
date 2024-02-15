@@ -65,7 +65,7 @@ type SchemaQuestion = yup.InferType<typeof updateSchema>
 export function EditQuestion() {
   const { id } = useParams();
   const navigation = useNavigate()
-  const queryClient = useQueryClient() 
+  const queryClient = useQueryClient()
 
   const [file, setFile] = useState<File>();
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -88,10 +88,16 @@ export function EditQuestion() {
     mutationFn: async (updatedQuestion: Question) => {
       const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
       const url = `${apiUrl}/questions/${id}`
-      return await patch(url, updatedQuestion, file)
+      const res = await patch(url, updatedQuestion, file)
+
+      if (!res) {
+        throw new Error('Erro ao atualizar a questão.')
+      }
+
+      return res
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({queryKey: ['qryKey']});
+      await queryClient.invalidateQueries({ queryKey: ['qryKey'] });
       toast.success("Questão editada com sucesso.")
     },
     onError: () => {
@@ -190,14 +196,12 @@ export function EditQuestion() {
       alternatives: alternatives,
     }
 
-    mutation.mutate(updatedQuestion)
-
-    if (mutation.isError) {
-      alert('Error')
-      return
+    try {
+      await mutation.mutateAsync(updatedQuestion)
+      handleBackToQuestions()
+    } catch (error) {
+      console.error("Erro ao editar a questão:", error)
     }
-
-    handleBackToQuestions()
   };
 
   const handleBackToQuestions = () => {

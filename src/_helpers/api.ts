@@ -75,6 +75,7 @@ export async function patch<T>(url: string, body: T, file?: File) {
         const {data, status} = await axios.patch(url, {...body, file}, config);
         console.log(JSON.stringify(data, null, 4));
         console.log('response status is: ', status);
+
         return data;
     } catch (error) {
         if (axios.isAxiosError(error)) {

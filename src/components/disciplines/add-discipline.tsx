@@ -76,7 +76,7 @@ export const AddDiscipline = () => {
                                 url={"disciplines"}
                                 selectionMode="single"
                                 className="max-w-xs"
-                                label="Disciplina Mâe"
+                                label="Disciplina Mãe"
                                 placeholder="Selecione uma disciplina">
                             </Select2>
                         );
