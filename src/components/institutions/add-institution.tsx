@@ -14,6 +14,7 @@ import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
 import {boolean, object, string} from "yup";
 import {InstitutionRequestDto} from "../../types_custom.ts";
 import {useState} from "react";
+import { toast } from "react-toastify";
 
 const createSchema = object({
     name: string().required("Nome é obrigatório"),
@@ -51,6 +52,7 @@ export const AddInstitution = () => {
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
         await post<InstitutionRequestDto>(`${apiUrl}/institutions`, data as InstitutionRequestDto);
         await queryClient.invalidateQueries({queryKey: ['qryKey']});
+        toast.success('Instituição criada com sucesso.')
         reset();
         onClose();
     };

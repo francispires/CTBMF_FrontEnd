@@ -6,33 +6,43 @@ import {
     DropdownItem,
     DropdownSection, cn
 } from "@nextui-org/react";
-import {VerticalDotsIcon} from "../icons/VerticalDotsIcon.tsx";
-import {CopyDocumentIcon} from "../icons/CopyDocumentIcon.tsx";
-import {EditDocumentIcon} from "../icons/EditDocumentIcon.tsx";
-import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
+import { VerticalDotsIcon } from "../icons/VerticalDotsIcon.tsx";
+import { CopyDocumentIcon } from "../icons/CopyDocumentIcon.tsx";
+import { EditDocumentIcon } from "../icons/EditDocumentIcon.tsx";
+import { DeleteDocumentIcon } from "../icons/DeleteDocumentIcon.tsx";
 
-import {InstitutionResponseDto} from "../../types_custom.ts";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faXmark} from "@fortawesome/free-solid-svg-icons";
-import {remove} from "../../_helpers/api.ts";
+import { InstitutionResponseDto } from "../../types_custom.ts";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
-export const RenderInstitutionCell = (institution: InstitutionResponseDto, columnKey: string) => {
+export const RenderInstitutionCell = (
+    institution: InstitutionResponseDto,
+    columnKey: string,
+    confirmRemoval?: (id: string) => void,
+    editItem?: (id: string) => void,
+    viewItem?: (id: string) => void
+) => {
     const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
     //const queryClient = useQueryClient();
     const cellValue =
         institution[columnKey as keyof InstitutionResponseDto];
 
-
-    const removeItem =async (id:string)=>{
-        const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
-        await remove(`${apiUrl}/institutions`,id);
-        // TODO: Invalidate query or use mutations
-        //await queryClient.invalidateQueries({queryKey: ['qryKey']});
+    function handleViewItem() {
+        if (viewItem) {
+            viewItem(institution.id)
+        }
     }
 
-    const openDeleteModal = async (id:string)=>{
-        //TODO: Confirm before
-        await removeItem(id);
+    function handleEditItem() {
+        if (editItem) {
+            editItem(institution.id)
+        }
+    }
+
+    function handleDeleteItem() {
+        if (confirmRemoval) {
+            confirmRemoval(institution.id)
+        }
     }
 
     switch (columnKey) {
@@ -46,7 +56,7 @@ export const RenderInstitutionCell = (institution: InstitutionResponseDto, colum
             return (
                 <div className="flex flex-col center">
                     {cellValue ?
-                        <FontAwesomeIcon className={"text-success"} icon={faCheck}/> :
+                        <FontAwesomeIcon className={"text-success"} icon={faCheck} /> :
                         <FontAwesomeIcon className={"text-danger"} icon={faXmark} />}
                 </div>
             );
@@ -54,8 +64,8 @@ export const RenderInstitutionCell = (institution: InstitutionResponseDto, colum
             return (
                 <div className="flex flex-col center">
                     {cellValue ?
-                        <FontAwesomeIcon className={"text-success"} icon={faCheck}/> :
-                        <FontAwesomeIcon className={"text-danger"} icon={faXmark}/>}
+                        <FontAwesomeIcon className={"text-success"} icon={faCheck} /> :
+                        <FontAwesomeIcon className={"text-danger"} icon={faXmark} />}
                 </div>
             );
         case "actions":
@@ -66,31 +76,40 @@ export const RenderInstitutionCell = (institution: InstitutionResponseDto, colum
                             <VerticalDotsIcon className="text-default-300" />
                         </Button>
                     </DropdownTrigger>
-                    <DropdownMenu disabledKeys={"hide"}  variant="faded" aria-label="Dropdown menu with description">
+                    <DropdownMenu disabledKeys={"hide"} variant="faded" aria-label="Dropdown menu with description">
                         <DropdownSection title="Ações" showDivider>
-                                    <DropdownItem
-                                        key="details"
-                                        shortcut="⌘D"
-                                        description="Exibe os detalhes da instituição"
-                                        startContent={<CopyDocumentIcon className={iconClasses} />}
-                                    >Detalhes</DropdownItem>
+                            <DropdownItem
+                                key="details"
+                                shortcut="⌘D"
+                                description="Exibe os detalhes da instituição"
+                                startContent={<CopyDocumentIcon className={iconClasses} />}
+                                onClick={handleViewItem}
+                            >
+                                Detalhes
+                            </DropdownItem>
                             <DropdownItem
                                 key="edit"
                                 shortcut="⌘⇧E"
                                 description="Editar a instituição"
                                 startContent={<EditDocumentIcon className={iconClasses} />}
-                            >Editar</DropdownItem>
+                                className="relative border"
+                                onClick={handleEditItem}
+                            >
+                                Editar
+                            </DropdownItem>
                         </DropdownSection>
                         <DropdownSection title="Zona Perigosa">
                             <DropdownItem
-                                onClick={()=>{openDeleteModal(institution.id)}}
                                 key="delete"
                                 className="text-danger"
                                 color="danger"
                                 shortcut="⌘⇧R"
-                                description="Remove a instituição"
+                                description="Remover a instituição"
                                 startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
-                            >Remover</DropdownItem>
+                                onClick={handleDeleteItem}
+                            >
+                                Remover
+                            </DropdownItem>
                         </DropdownSection>
                     </DropdownMenu>
                 </Dropdown>

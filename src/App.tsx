@@ -21,6 +21,8 @@ import { EditQuestion } from "./components/questions/edit-question.tsx";
 import ViewQuestion from "./components/questions/view-question.tsx";
 import ViewDiscipline from "./components/disciplines/view-discipline.tsx";
 import EditDiscipline from "./components/disciplines/edit-discipline.tsx";
+import ViewInstitution from "./components/institutions/view-institution.tsx";
+import EditInstitution from "./components/institutions/edit-institution.tsx";
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -62,6 +64,9 @@ const App = () => {
             <Route path="/edit-question/:id" element={<AuthenticationGuard component={EditQuestion} />} />
 
             <Route path="/institutions" element={<AuthenticationGuard component={Institutions} />} />
+            <Route path="/view-institution/:id" element={<AuthenticationGuard component={ViewInstitution} />} />
+            <Route path="/edit-institution/:id" element={<AuthenticationGuard component={EditInstitution} />} />
+
             <Route path="/question-banks" element={<QuestionBank />} />
 
             {/*Admin*/}
@@ -70,4 +75,5 @@ const App = () => {
         </Routes>
     );
 };
+
 export default App;
