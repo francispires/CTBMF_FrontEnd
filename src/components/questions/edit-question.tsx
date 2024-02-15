@@ -98,6 +98,7 @@ export function EditQuestion() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['qryKey'] });
+      await queryClient.invalidateQueries({ queryKey: ['question'] });
       toast.success("Questão editada com sucesso.")
     },
     onError: () => {

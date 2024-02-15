@@ -1,3 +1,13 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { post } from "../../_helpers/api.ts";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup/src/index.ts";
+import { InstitutionRequestDto } from "../../types_custom.ts";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import * as yup from 'yup';
+import { STATES } from "../../utils/placeholders.ts";
+
 import {
     Button, Checkbox,
     Input,
@@ -5,26 +15,18 @@ import {
     ModalBody,
     ModalContent,
     ModalFooter,
-    ModalHeader, Select, SelectItem,useDisclosure,
+    ModalHeader, Select, SelectItem, useDisclosure,
 } from "@nextui-org/react";
-import {useQueryClient} from "@tanstack/react-query";
-import {post} from "../../_helpers/api.ts";
-import {Controller, useForm} from "react-hook-form";
-import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
-import {boolean, object, string} from "yup";
-import {InstitutionRequestDto} from "../../types_custom.ts";
-import {useState} from "react";
-import { toast } from "react-toastify";
 
-const createSchema = object({
-    name: string().required("Nome é obrigatório"),
-    state: string().required("Estado é obrigatório"),
-    privateInstitution: boolean().required("Tipo de Instituição é obrigatório"),
-    stadual: boolean().required("Tipo de Instituição é obrigatório"),
+const createSchema = yup.object({
+    name: yup.string().required("Nome é obrigatório"),
+    state: yup.string().required("Estado é obrigatório"),
+    privateInstitution: yup.boolean().required("Tipo de Instituição é obrigatório"),
+    stadual: yup.boolean().required("Tipo de Instituição é obrigatório"),
 });
 
 export const AddInstitution = () => {
-    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const queryClient = useQueryClient();
     const [isPrivate, setIsPrivate] = useState(true);
     const [isStadual, setIsStadual] = useState(false);
@@ -43,7 +45,7 @@ export const AddInstitution = () => {
         handleSubmit,
         control,
         reset,
-        formState: {errors}
+        formState: { errors }
     } = useForm<InstitutionRequestDto>({
         resolver: yupResolver(createSchema)
     });
@@ -51,13 +53,11 @@ export const AddInstitution = () => {
     const onSubmit = async (data: InstitutionRequestDto) => {
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
         await post<InstitutionRequestDto>(`${apiUrl}/institutions`, data as InstitutionRequestDto);
-        await queryClient.invalidateQueries({queryKey: ['qryKey']});
+        await queryClient.invalidateQueries({ queryKey: ['qryKey'] });
         toast.success('Instituição criada com sucesso.')
         reset();
         onClose();
     };
-
-    const states = ["","AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RR","RO","RJ","RN","RS","SC","SP","SE","TO"];
 
     return (
         <div>
@@ -79,13 +79,13 @@ export const AddInstitution = () => {
                                         Nova Instituição
                                     </ModalHeader>
                                     <ModalBody>
-                                        <Input {...register("name")} label="Nome" variant="bordered"/>
+                                        <Input {...register("name")} label="Nome" variant="bordered" />
                                         {errors.name &&
                                             <cite className={"accent-danger"}>{errors.name.message}</cite>}
                                         <Controller
                                             name="state"
                                             control={control}
-                                            render={({field}) => {
+                                            render={({ field }) => {
                                                 return (
                                                     <Select
                                                         {...field}
@@ -93,7 +93,7 @@ export const AddInstitution = () => {
                                                         className="w-1/3"
                                                         label="Estado"
                                                         placeholder="Selecione um Estado">
-                                                        {states.map((state) => (
+                                                        {STATES.map((state) => (
                                                             <SelectItem key={state} value={state}>
                                                                 {state}
                                                             </SelectItem>
@@ -108,14 +108,14 @@ export const AddInstitution = () => {
                                         <Checkbox isSelected={isPrivate} onValueChange={handleSetPrivate}>
                                             Privada
                                         </Checkbox>
-                                        <input {...register("privateInstitution")} type={"hidden"} value={isPrivate.toString()}/>
+                                        <input {...register("privateInstitution")} type={"hidden"} value={isPrivate.toString()} />
 
                                         {errors.privateInstitution &&
                                             <cite className={"accent-danger"}>{errors.privateInstitution.message}</cite>}
                                         <Checkbox isSelected={isStadual} onValueChange={handleSetStadual}>
                                             Estadual
                                         </Checkbox>
-                                        <input {...register("stadual")} type={"hidden"} value={isStadual.toString()}/>
+                                        <input {...register("stadual")} type={"hidden"} value={isStadual.toString()} />
                                         {errors.stadual &&
                                             <cite className={"accent-danger"}>{errors.stadual.message}</cite>}
 

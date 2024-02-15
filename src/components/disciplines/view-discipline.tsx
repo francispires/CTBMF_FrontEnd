@@ -58,7 +58,7 @@ export default function ViewDiscipline() {
           <div
             className={`
               bg-[url(${IMAGE_PLACEHOLDER})]
-              bg-cover bg-no-repeat bg-center p-32
+              bg-cover bg-no-repeat bg-center p-32 border
             `}
           />
 

@@ -47,6 +47,7 @@ export default function EditDiscipline() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['qryKey'] });
+      await queryClient.invalidateQueries({ queryKey: ['discipline'] });
       toast.success("Disciplina editada com sucesso.")
     },
     onError: () => {
