@@ -6,7 +6,7 @@ interface Props {
     className?: string;
 }
 
-export const MyCard = ({ children,className }: Props) => {
+export const MyCard = ({ children, className }: Props) => {
     return (
         <Card className={"bg-default-50 rounded-xl shadow-md px-3 "+className}>
             <CardBody className="py-5 gap-4">

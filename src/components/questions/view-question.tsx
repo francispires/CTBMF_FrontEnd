@@ -9,11 +9,11 @@ import { MyCard } from "../layout/MyCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { formatDate } from "../../utils/date";
-import { IMAGE_PLACEHOLDER } from "../../utils/placeholders";
 
 export default function ViewQuestion() {
   const { id } = useParams();
   const navigation = useNavigate()
+  const IMAGE_PLACEHOLDER = 'https://placehold.co/600x400.jpg?text=Sem+imagem'
 
   const fetchData = async () => {
     const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL

@@ -23,6 +23,8 @@ import ViewDiscipline from "./components/disciplines/view-discipline.tsx";
 import EditDiscipline from "./components/disciplines/edit-discipline.tsx";
 import ViewInstitution from "./components/institutions/view-institution.tsx";
 import EditInstitution from "./components/institutions/edit-institution.tsx";
+import UserQuestionBank from "./pages/user-question-bank.tsx";
+import QuizzesAttempt from "./pages/quizzes-attempt.tsx";
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -41,7 +43,8 @@ const App = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/public" element={<PublicPage />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/banco-de-questoes" element={<Login />} />
+            <Route path="/banco-de-questoes" element={<UserQuestionBank />} />
+            <Route path="/quizzes/:attemptConfigId" element={<QuizzesAttempt />} />
             <Route path="/questoes" element={<UserQuestions />} />
 
             {/*System*/}

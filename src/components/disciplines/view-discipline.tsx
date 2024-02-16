@@ -6,7 +6,6 @@ import { Button } from "@nextui-org/react";
 import { FaArrowLeft } from "react-icons/fa";
 import { MyCard } from "../layout/MyCard";
 import { formatDate } from "../../utils/date";
-import { IMAGE_PLACEHOLDER } from "../../utils/placeholders";
 
 export default function ViewDiscipline() {
   const { id } = useParams();
@@ -57,8 +56,8 @@ export default function ViewDiscipline() {
         >
           <div
             className={`
-              bg-[url(${IMAGE_PLACEHOLDER})]
-              bg-cover bg-no-repeat bg-center p-32 border
+              bg-[url(https://placehold.co/600x400.jpg?text=Sem+imagem)]
+              bg-cover bg-no-repeat bg-center p-32
             `}
           />
 
