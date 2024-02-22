@@ -52,12 +52,13 @@ export const AddQuestionBank = () => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const queryClient = useQueryClient();
     const [file, setFile] = useState<File>();
+    const [imageUrl, setImageUrl] = useState("");
     const [board, setBoard] = useState("");
     const [institutionId, setInstitutionId] = useState("");
     const [isActive, setIsActive] = useState(true);
     const [alternatives, setAlternatives] = useState<AlternativeRequestDto[]>([])
     const [question, setQuestion] = useState<QuestionRequestDto>(new QuestionRequestDto({
-        id: "", year: 0, score: 0, board: "", active: true, alternatives: []
+        id: "", year: 0, score: 0, board: "", active: true, alternatives: [],isValid:true
     }));
 
     setTimeout(()=>{
@@ -66,14 +67,14 @@ export const AddQuestionBank = () => {
             },
             toJSON() {
             },
-            institutionId:"0",
+            institutionId:institutionId,
             text:"etrasdfasd",
             score:123,
-            board:"",
+            board:board,
             id:"",
             alternatives:[],
             active:false,
-            year:2000
+            year:2000,isValid:true
         });
     },3000)
 
@@ -96,6 +97,7 @@ export const AddQuestionBank = () => {
     });
 
     const onSubmit = async (data: QuestionBankRequestDto) => {
+        data.image = imageUrl;
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
         await post<QuestionBankRequestDto>(`${apiUrl}/question_banks/create`, data as QuestionBankRequestDto, file);
         setFile(undefined);
@@ -124,7 +126,10 @@ export const AddQuestionBank = () => {
                                         Banco de Questões
                                     </ModalHeader>
                                     <ModalBody>
-                                        <ImageUpload setFile={setFile} />
+                                        <ImageUpload setFile={setFile}
+                                        setImageUrl={setImageUrl}
+                                        folderName={"question-banks"}
+                                        />
                                         <Controller
                                             name="board"
                                             control={control}

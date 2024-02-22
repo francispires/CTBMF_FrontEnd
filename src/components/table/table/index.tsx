@@ -10,11 +10,12 @@ import {
     TableRow,
     TableCell,
     Selection,
-    SortDescriptor, Spinner
+    SortDescriptor, Spinner, PopoverContent
 } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
 
 import { get } from "../../../_helpers/api.ts";
+import {apiUrl, parseSortDescriptor} from "../../../_helpers/utils.ts";
 
 type Props<T> = {
     url: string,
@@ -25,7 +26,9 @@ type Props<T> = {
     addNew?: JSX.Element,
     viewItem?: (id: string) => void,
     editItem?: (id: string) => void,
-    confirmRemoval?: (id: string) => void
+    confirmRemoval?: (id: string) => void,
+    luceneFilter?:boolean,
+    setSelecteds?: (selected: Selection) => void,
     RenderCell: (
         t: T,
         columnKey: string,
@@ -44,7 +47,7 @@ export default function TTable<T>(props: Props<T>) {
     const [paging, setPaging] = useState({ currentPage: 1, pageSize: 10, sort: "", filter: "" } as PagedRequest);
     const [rowCount, setRowCount] = useState(0);
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-        column: props.Columns[0].uid,
+        column: props.Columns.filter(c=>c.sortable)[0].uid,
         direction: "ascending"
     });
 
@@ -55,20 +58,15 @@ export default function TTable<T>(props: Props<T>) {
 
     const renderCell = useCallback(props.RenderCell, []);
     const fetchData = async (pagination: PagedRequest, sort: string, filter: string) => {
-        const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
         const url = `${apiUrl}/${props.url}?currentPage=${pagination.currentPage}&pageSize=${pagination.pageSize}&sort=${sort}&filter=${filter}`;
         const response = await get<PagedResponse<T>>(url);
         setRowCount((response as PagedResponse<T>).rowCount);
         return response;
     }
 
-    const parseSortDescriptor = () => {
-        return sortDescriptor.column + " " + (sortDescriptor.direction === "ascending" ? "Asc" : "Desc");
-    };
-
     const { isLoading, data } = useQuery({
         queryKey: ['qryKey', { ...paging, sortDescriptor, filterValue }, props.what],
-        queryFn: () => fetchData(paging, parseSortDescriptor(), appliedFilter)
+        queryFn: () => fetchData(paging, parseSortDescriptor(props.luceneFilter,sortDescriptor), appliedFilter)
     });
 
     const changePage = (pageNumber: number) => {
@@ -90,12 +88,18 @@ export default function TTable<T>(props: Props<T>) {
 
     const loadingState = isLoading ? "loading" : "idle";
 
+    const setSelected = (selected: Selection) => {
+        setSelectedKeys(selected);
+        props.setSelecteds?.(selected);
+    }
+
     return (
+        <>
         <Table
             className={""}
             key={"ttt"}
             onSortChange={setSortDescriptor}
-            onSelectionChange={setSelectedKeys}
+            onSelectionChange={setSelected}
             selectedKeys={selectedKeys}
             sortDescriptor={sortDescriptor}
             aria-label="Table"
@@ -159,5 +163,7 @@ export default function TTable<T>(props: Props<T>) {
                 )}
             </TableBody>
         </Table>
+
+        </>
     );
 }

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Checkbox, Input, Spinner, Textarea } from "@nextui-org/react";
+import { Button, Checkbox, Input, Spinner } from "@nextui-org/react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { get, patch } from "../../_helpers/api";
@@ -9,7 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup/src/yup.js";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from 'yup'
 import Select2 from "../select2";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { PlusIcon } from "../icons/PlusIcon";
 import { faCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from 'uuid';
@@ -18,14 +18,11 @@ import { toast } from "react-toastify";
 
 import {
   AlternativeRequestDto,
-  AnswerResponseDto,
-  Discipline,
-  Institution,
-  ObservationRequest,
-  ObservationResponseDto,
-  QuestionBank,
-  QuizAttempt
+  AnswerResponseDto, DisciplineRequestDto, ObservationRequestDto,
+  ObservationResponseDto, QuestionBankRequestDto, QuizAttemptRequestDto,
 } from "../../types_custom";
+import {abc, toggleCorrectAlternativeReq} from "../../_helpers/utils.ts";
+import ReactQuill from "react-quill";
 
 interface Question {
   id: string,
@@ -36,28 +33,32 @@ interface Question {
   board: string,
   createdAt: string,
   deleted: boolean,
-  disciplines: Discipline[],
   institution: Institution | null,
   institutionId: string | null,
-  observationRequests: ObservationRequest[],
+  observationRequests: ObservationRequestDto[],
   observations: ObservationResponseDto[],
-  questionBank: QuestionBank | null,
+  questionBank: QuestionBankRequestDto | null,
   questionBankId: string | null,
   questionNumber: number,
-  quizAttempts: QuizAttempt[],
+  quizAttempts: QuizAttemptRequestDto[],
   removedAt: string | null,
   score: number,
   text: string,
   updatedAt: string | null,
   year: number,
+  discipline: DisciplineRequestDto,
+  disciplineId: string,
 }
 
 const updateSchema = yup.object().shape({
   board: yup.string(),
   institutionId: yup.string(),
-  score: yup.number().typeError("Digite um número válido.").required("Pontos obrigatório."),
-  text: yup.string().required("Descrição obrigatória."),
-  year: yup.number().typeError("Digite um número válido.").required("Ano obrigatório."),
+  score: yup.number(),
+  text: yup.string(),
+  year: yup.number(),
+  discipline: yup.object(),
+  disciplineId: yup.string(),
+  image: yup.string()
 });
 
 type SchemaQuestion = yup.InferType<typeof updateSchema>
@@ -68,22 +69,18 @@ export function EditQuestion() {
   const queryClient = useQueryClient()
 
   const [file, setFile] = useState<File>();
+  const [imageUrl, setImageUrl] = useState("");
   const [isActive, setIsActive] = useState<boolean>(false);
   const [board, setBoard] = useState<string | undefined>();
+  const [institutionId, setInstitutionId] = useState<string | undefined>();
   const [alternatives, setAlternatives] = useState<AlternativeRequestDto[]>([])
+  const [discipline, setDiscipline] = useState("");
 
   const [activeCustomError, setActiveCustomError] = useState(false)
   const hasCorrectAlternative = alternatives.find((alternative) => alternative.correct === true)
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors }
-  } = useForm<SchemaQuestion>({
+  const {register,handleSubmit,control,formState: { errors }} = useForm<SchemaQuestion>({
     resolver: yupResolver(updateSchema)
   });
-
   const mutation = useMutation({
     mutationFn: async (updatedQuestion: Question) => {
       const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
@@ -106,6 +103,8 @@ export function EditQuestion() {
     }
   })
 
+  const [text, setText] = useState("");
+
   const fetchData = async () => {
     const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
     const url = `${apiUrl}/questions/${id}`
@@ -113,14 +112,18 @@ export function EditQuestion() {
     setAlternatives(res.alternatives)
     setIsActive(res.active)
     setBoard(res?.board)
-
+    setText(res.text)
     return res
   }
-
   const { isLoading, isError, data: question } = useQuery({
     queryKey: ['question'],
     queryFn: fetchData,
   })
+  useEffect(() => {
+    if (question) {
+      setText(question.text)
+    }
+  },[question]);
 
   if (isLoading) {
     return (
@@ -148,34 +151,26 @@ export function EditQuestion() {
     setAlternatives([...alternatives, al]);
   }
 
-  const changeAlternative = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const id = event.currentTarget.getAttribute("data-id");
+  const handleAlternativeChange = (id: string, value: string) => {
     const index = alternatives.findIndex(x => x.id === id);
     if (index !== -1) {
       const tempArray = alternatives.slice();
-      tempArray[index]["text"] = event.currentTarget.value;
+      tempArray[index]["text"] = value;
       setAlternatives(tempArray);
-    } else {
-      console.log('no match');
+    }
+  }
+
+  const getAlternativeText = (id: string) => {
+    const index = alternatives.findIndex(x => x.id === id);
+    if (index !== -1) {
+      return alternatives[index]["text"];
     }
   }
 
   const toggleCorrect = (event: React.MouseEvent<HTMLButtonElement>) => {
     const id = event.currentTarget.getAttribute("data-id");
-    const index = alternatives.findIndex(x => x.id === id);
-    if (index !== -1) {
-      const tempArray = alternatives.slice();
-      const isCorrect = tempArray[index]["correct"];
-      if (!isCorrect) {
-        tempArray.map((a) => {
-          a.correct = false;
-        });
-      }
-      tempArray[index]["correct"] = !isCorrect;
-      setAlternatives(tempArray);
-    } else {
-      console.log('no match');
-    }
+    if (!id) return;
+    setAlternatives(toggleCorrectAlternativeReq(alternatives, id));
   }
 
   const onSubmit = async (data: SchemaQuestion) => {
@@ -186,10 +181,16 @@ export function EditQuestion() {
       return
     }
 
+    data.image = imageUrl;
+    data.text = text;
+    data.institutionId = institutionId;
+    data.discipline= {description: discipline,name: discipline};
+
     const updatedQuestion: Question = {
       ...question,
       active: isActive,
       board: board ? board : question.board,
+      discipline: data.discipline ? data.discipline : question.discipline,
       year: data.year ? data.year : question.year,
       score: data.score ? data.score : question.score,
       text: data.text ? data.text : question.text,
@@ -214,135 +215,213 @@ export function EditQuestion() {
       <Button variant="ghost" className="mb-6" onClick={handleBackToQuestions}><FaArrowLeft /> Voltar</Button>
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full max-w-3xl mx-auto mb-16"
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-4 w-full max-w-3xl mx-auto mb-16"
       >
-        <ImageUpload setFile={setFile} />
-        <Controller
-          name="board"
-          control={control}
-          render={({ field }) => {
-            return (
-              <Select2
-                {...field}
-                name="board"
-                value={question.board}
-                setValue={setBoard}
-                defaultInputValue={question.board}
-                valueProp={"value"}
-                textProp={"text"}
-                allowsCustomValue={true}
-                url={"questions/boards"}
-                selectionMode="single"
-                className="max-w"
-                label="Banca"
-                placeholder="Selecione uma Banca">
-              </Select2>
-            );
-          }}
-        />
-        {!board || !board.length && <cite className={"text-danger"}>Banca obrigatória.</cite>}
-        <Input
-          {...register("year")}
-          type={"number"}
-          max={2050}
-          min={1900}
-          defaultValue={String(question.year)}
-          label="Ano"
-          variant="bordered"
-        />
-        {errors.year && <cite className={"text-danger"}>{errors.year.message}</cite>}
+        <div className={"grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3"}>
 
-        <Checkbox
-          checked={isActive}
-          isSelected={isActive}
-          onValueChange={() => {
-            setIsActive(value => !value)
-          }}
-        >
-          Ativo
-        </Checkbox>
-
-        <Input {...register("score")} label="Pontos" variant="bordered" defaultValue={String(question.score)} />
-        {errors.score && <cite className={"text-danger"}>{errors.score.message}</cite>}
-
-        <Textarea
-          height={20} minRows={10} {...register("text")}
-          label="Enunciado"
-          variant="bordered"
-          defaultValue={question.text}
-        />
-        {errors.text && <cite className={"text-danger"}>{errors.text.message}</cite>}
-
-        <Controller
-          name="institutionId"
-          control={control}
-          render={({ field }) => {
-            return (
-              <Select2
-                {...field}
-                useKey={true}
-                defaultInputValue={question.institutionId}
-                valueProp={"id"}
-                textProp={"name"}
-                url={"institutions"}
-                selectionMode="single"
-                className="max-w"
-                label="Instituição"
-                placeholder="Selecione uma Instituição"
-              >
-              </Select2>
-            );
-          }}
-        />
-        {errors.institutionId && <cite className={"text-danger"}>{errors.institutionId?.message}</cite>}
-
-        <div className="flex items-center gap-2 text-start mt-4 mb-2">
-          <span className="block">Adicionar alternativas</span>
-          <button className="focus:outline-none" type="button" onClick={addAlternative}>
-            <PlusIcon className="text-2xl text-default-400 pointer-events-none" />
-          </button>
+        <div className={"col-span-2"}>
+          <ImageUpload setFile={setFile} setImageUrl={setImageUrl} folderName={"questions"}/>
+        </div>
+        <div>
+          <Controller
+              name="discipline"
+              control={control}
+              render={() => {
+                return (
+                    <Select2
+                        name="discipline"
+                        value={discipline}
+                        setValue={setDiscipline}
+                        defaultInputValue={question.discipline.name}
+                        valueProp={"id"}
+                        textProp={"name"}
+                        allowsCustomValue={true}
+                        url={"disciplines"}
+                        selectionMode="single"
+                        className="max-w"
+                        label="Disciplina"
+                        placeholder="Selecione uma Banca">
+                    </Select2>
+                );
+              }}
+          />
+          {!discipline || !discipline.length && <cite className={"text-danger"}>Disciplina obrigatória.</cite>}
+        </div>
+        <div>
+          <Controller
+              name="board"
+              control={control}
+              render={() => {
+                return (
+                    <Select2
+                        name="board"
+                        value={question.board}
+                        setValue={setBoard}
+                        defaultInputValue={question.board}
+                        valueProp={"value"}
+                        textProp={"text"}
+                        allowsCustomValue={true}
+                        url={"questions/boards"}
+                        selectionMode="single"
+                        className="max-w"
+                        label="Banca"
+                        placeholder="Selecione uma Banca">
+                    </Select2>
+                );
+              }}
+          />
+          {!board || !board.length && <cite className={"text-danger"}>Banca obrigatória.</cite>}
+        </div>
+        <div>
+          <Input
+              {...register("year")}
+              type={"number"}
+              max={2050}
+              min={1900}
+              defaultValue={String(question.year)}
+              label="Ano"
+              variant="bordered"
+          />
+          {errors.year && <cite className={"text-danger"}>{errors.year.message}</cite>}
+        </div>
+        <div>
+          <Checkbox
+              checked={isActive}
+              isSelected={isActive}
+              onValueChange={() => {
+                setIsActive(value => !value)
+              }}
+          >
+            Ativo
+          </Checkbox>
+        </div>
+        <div>
+          <Input {...register("score")} label="Pontos" variant="bordered" defaultValue={String(question.score)}/>
+          {errors.score && <cite className={"text-danger"}>{errors.score.message}</cite>}
+        </div>
+        <div>
+          <Controller
+              name="institutionId"
+              control={control}
+              render={() => {
+                return (
+                    <Select2
+                        useKey={true}
+                        value={institutionId}
+                        setValue={setInstitutionId}
+                        defaultInputValue={question.institution?.name}
+                        valueProp={"id"}
+                        textProp={"name"}
+                        url={"institutions"}
+                        selectionMode="single"
+                        className="max-w"
+                        label="Instituição"
+                        placeholder="Selecione uma Instituição"
+                    >
+                    </Select2>
+                );
+              }}
+          />
+          {errors.institutionId && <cite className={"text-danger"}>{errors.institutionId?.message}</cite>}
+        </div>
+        <div className={"col-span-2"}>
+          <Controller
+              name="text"
+              control={control}
+              rules={{
+                required: "Defina um Enunciado",
+              }}
+              render={({ field }) => (
+                  <ReactQuill
+                      theme="snow"
+                      {...field}
+                      value={text}
+                      placeholder={"Enunciado"}
+                      onChange={(text) => {
+                        field.onChange(text);
+                        setText(text)
+                      }}
+                      style={{minHeight: '100px'}}
+                  />
+              )}
+          />
+          {errors.text && <cite className={"text-danger"}>{errors.text.message}</cite>}
         </div>
 
-        {alternatives.map((a, i) => (
-          <Input
-            type="text"
-            key={a.id || i}
-            data-id={a.id || i}
-            color={a.correct ? "success" : "danger"}
-            label={`Alternativa ${i + 1}`}
-            placeholder="Texto da alternativa"
-            defaultValue=""
-            className="mb-3"
-            onChange={changeAlternative}
-            endContent={
-              a.correct ?
-                <button onClick={toggleCorrect} data-id={a.id || i} className="" type="button">
-                  <FontAwesomeIcon className={"text-success"}
-                    icon={faCheck} />
-                </button> :
-                <button onClick={toggleCorrect} data-id={a.id || i} className="" type="button">
-                  <FontAwesomeIcon className={"text-danger"}
-                    icon={faCircleXmark} />
-                </button>
-            }
-          />
-        ))}
-        {activeCustomError && <cite className={"text-danger"}>Adicione uma alternativa correta e ao menos uma incorreta.</cite>}
+        <div className={"col-span-2"}>
+          <div className="flex items-center gap-2 text-start mt-4 mb-2">
 
+            <Button color={"success"} variant={"ghost"} className="" type="button" onClick={addAlternative}>
+              <PlusIcon className="text-2xl text-default-400 pointer-events-none"/><span className="block">Adicionar alternativas</span>
+            </Button>
+          </div>
+
+          {alternatives.map((a, i) => (
+              <div
+                  key={"alter" + a.id || i}
+                  className={"grid md:grid-cols-12 grid-cols-12 2xl:grid-cols-12 mb-1"}>
+                <div className={"col-span-1 flex items-center"}>
+                    <span className={"text-2xl"}>{abc[i]}</span>
+                </div>
+                <div className={"col-span-10"}>
+                  <ReactQuill
+                      theme='snow'
+                      placeholder={"Alternativa"}
+                      value={getAlternativeText(a.id || i.toString())}
+                      onChange={(v: string) => {
+                        handleAlternativeChange(a.id || i.toString(), v)
+                      }}
+                      style={{minHeight: '100px'}}
+                      key={a.id || i}
+                      data-id={a.id || i}
+                  ></ReactQuill>
+                </div>
+                <div className={"col-span-1 flex items-center"}>
+                  {
+                    a.correct ?
+                        // <Switch
+                        //     endContent={
+                        //       <FontAwesomeIcon
+                        //           icon={faCheck}/>
+                        //     } color="success"></Switch> :
+                        // <Switch
+                        //     endContent={
+                        //       <FontAwesomeIcon
+                        //           icon={faCircleXmark}/>
+                        //     } color="danger"></Switch>
+                        <button onClick={toggleCorrect} data-id={a.id || i}
+                                className="button align-middle" type="button">
+                          <FontAwesomeIcon className={"text-success text-2xl"}
+                                           icon={faCheck}/>
+                        </button> :
+                        <button onClick={toggleCorrect} data-id={a.id || i}
+                                className="" type="button">
+                          <FontAwesomeIcon className={"text-danger"}
+                                           icon={faCircleXmark}/>
+                        </button>
+
+                  }
+                </div>
+              </div>
+          ))}
+          {activeCustomError &&
+              <cite className={"text-danger"}>Adicione uma alternativa correta e ao menos uma incorreta.</cite>}
+        </div>
+        </div>
         <Button
-          type={"submit"}
-          color="primary"
-          className="mx-auto max-w-[150px] w-full"
-          disabled={mutation.isPending}
-        >
-          {mutation.isPending ? (
-            <Spinner size="sm" color="white" />
-          ) : (
-            <span>Salvar</span>
-          )}
-        </Button>
+              type={"submit"}
+              color="primary"
+              className="mx-auto max-w-[150px] w-full"
+              disabled={mutation.isPending}
+          >
+            {mutation.isPending ? (
+                <Spinner size="sm" color="white"/>
+            ) : (
+                <span>Salvar</span>
+            )}
+          </Button>
       </form>
     </div>
-  )
+)
 }

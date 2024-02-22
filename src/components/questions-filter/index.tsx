@@ -53,8 +53,8 @@ export const QuestionsFilter = (props: Props) => {
                     setValues={props.setDisciplines}
                     value={props.disciplines}
                     defaultInputValue={props.disciplines}
-                    valueProp={"value"}
-                    textProp={"text"}
+                    valueProp={"id"}
+                    textProp={"name"}
                     allowsCustomValue={false}
                     url={"disciplines"}
                     selectionMode="multiple"
@@ -77,7 +77,7 @@ export const QuestionsFilter = (props: Props) => {
                     value={props.questionNumber}
                     defaultInputValue={props.questionNumber}
                     valueProp={"value"}
-                    textProp={"text"}
+                    textProp={"value"}
                     allowsCustomValue={false}
                     url={"questions/numbers"}
                     selectionMode="multiple"
@@ -85,8 +85,8 @@ export const QuestionsFilter = (props: Props) => {
                     placeholder="Id da Questão">
                 </SelectStatic>
                 <Switch isSelected={props.onlyAnswereds} onValueChange={props.setOnlyAnswereds}>Somente Respondidas</Switch>
-                <Switch isSelected={props.onlyCorrects} onValueChange={props.setOnlyCorrects}>Somente Respondidas</Switch>
-                <Switch isSelected={props.random} onValueChange={props.setRandom}>Somente Respondidas</Switch>
+                <Switch isSelected={props.onlyCorrects} onValueChange={props.setOnlyCorrects}>Somente Corretas</Switch>
+                <Switch isSelected={props.random} onValueChange={props.setRandom}>Ordem Aleatória</Switch>
                 <Button onClick={props.FilterChanged}>Filtrar</Button>
             </div>
         </>

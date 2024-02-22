@@ -25,6 +25,8 @@ import ViewInstitution from "./components/institutions/view-institution.tsx";
 import EditInstitution from "./components/institutions/edit-institution.tsx";
 import UserQuestionBank from "./pages/user-question-bank.tsx";
 import QuizzesAttempt from "./pages/quizzes-attempt.tsx";
+import {QuizAttemptConfiguration} from "./components/provas/quiz-attempt-configuration.tsx";
+import Provas from "./pages/provas.tsx";
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -44,6 +46,7 @@ const App = () => {
             <Route path="/public" element={<PublicPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/banco-de-questoes" element={<UserQuestionBank />} />
+            <Route path="/provas" element={<Provas />} />
             <Route path="/quizzes/:attemptConfigId" element={<QuizzesAttempt />} />
             <Route path="/questoes" element={<UserQuestions />} />
 
@@ -56,6 +59,7 @@ const App = () => {
             <Route path="/profile" element={<AuthenticationGuard component={ProfilePage} />} />
 
             {/*Teacher*/}
+            <Route path="/config_provas" element={<AuthenticationGuard component={QuizAttemptConfiguration} />} />
             <Route path="/users" element={<AuthenticationGuard component={Accounts} />} />
 
             <Route path="/disciplines" element={<AuthenticationGuard component={Disciplines} />} />

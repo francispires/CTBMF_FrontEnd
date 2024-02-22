@@ -19,7 +19,7 @@ import {CopyDocumentIcon} from "../icons/CopyDocumentIcon.tsx";
 import {EditDocumentIcon} from "../icons/EditDocumentIcon.tsx";
 import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
 
-export const RenderUserCell2 = ( user:AuthUser, columnKey:string ):ReactNode => {
+export const RenderQuizConfigCell = ( user:AuthUser, columnKey:string ):ReactNode => {
   const cellValue = user[columnKey as keyof AuthUser];
   switch (columnKey) {
     case "name":
@@ -63,37 +63,36 @@ export const RenderUserCell2 = ( user:AuthUser, columnKey:string ):ReactNode => 
 
     case "actions":
       return (
-          <div className="relative flex justify-end items-center gap-2">
-
-              <div>
-                  <Tooltip content="Detalhe">
-                      <button onClick={() => console.log("Detalhe", user.userId)}>
-                          <EyeIcon size={20} fill="#979797"/>
-                      </button>
-                  </Tooltip>
-              </div>
-              <div>
-                  <Tooltip content="Editar" color="secondary">
-                      <button onClick={() => console.log("Editar", user.userId)}>
-                          <EditIcon size={20} fill="#979797"/>
-                      </button>
-                  </Tooltip>
-              </div>
-              <div>
-                  <Tooltip
-                      content="Remover"
-                      color="danger"
-                      onClick={() => console.log("Remover", user.userId)}
-                  >
-                      <button>
-                          <DeleteIcon size={20} fill="#FF0080"/>
-                      </button>
-                  </Tooltip>
-              </div>
+        <div className="flex items-center gap-4 ">
+          <div>
+            <Tooltip content="Detalhe">
+              <button onClick={() => console.log("Detalhe", user.userId)}>
+                <EyeIcon size={20} fill="#979797" />
+              </button>
+            </Tooltip>
           </div>
+          <div>
+            <Tooltip content="Editar" color="secondary">
+              <button onClick={() => console.log("Editar", user.userId)}>
+                <EditIcon size={20} fill="#979797" />
+              </button>
+            </Tooltip>
+          </div>
+          <div>
+            <Tooltip
+              content="Remover"
+              color="danger"
+              onClick={() => console.log("Remover", user.userId)}
+            >
+              <button>
+                <DeleteIcon size={20} fill="#FF0080" />
+              </button>
+            </Tooltip>
+          </div>
+        </div>
       );
-      default:
-          return cellValue;
+    default:
+      return cellValue;
   }
 };
 

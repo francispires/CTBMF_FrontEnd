@@ -7,6 +7,7 @@ import { useState } from "react";
 import { remove } from "../../_helpers/api.ts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import {apiUrl} from "../../_helpers/utils.ts";
 
 export const Disciplines = () => {
     const navigate = useNavigate()
@@ -29,7 +30,6 @@ export const Disciplines = () => {
     const fetchData = async (disciplineId: string | null) => {
         if (!disciplineId) return
 
-        const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
         const url = `${apiUrl}/disciplines`
 
         const res = await remove<boolean>(url, disciplineId)

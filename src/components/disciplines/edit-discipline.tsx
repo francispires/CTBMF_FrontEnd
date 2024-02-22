@@ -10,6 +10,7 @@ import { get, patch } from "../../_helpers/api";
 import { toast } from "react-toastify";
 import { PageLoader } from "../page-loader";
 import { useState } from "react";
+import {apiUrl} from "../../_helpers/utils.ts";
 
 const editDisciplineSchema = yup.object().shape({
   name: yup.string().required("Nome obrigatório."),
@@ -56,7 +57,6 @@ export default function EditDiscipline() {
   })
 
   const fetchData = async () => {
-    const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
     const url = `${apiUrl}/disciplines/${id}`
     const res = await get<Discipline>(url)
 

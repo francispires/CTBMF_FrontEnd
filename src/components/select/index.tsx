@@ -24,7 +24,7 @@ export type Props = {
 export default function SelectStatic<T>({ className="",...props }) {
     const [isOpen, setIsOpen] = useState(false);
     const {items, hasMore, isLoading, onLoadMore} = useSelect2List<T>(props.url,props.valueProp,props.textProp);
-    const [values, setValues] = useState(new Set<string>([]));
+    const [values, setValues] = useState(new Set([""]));
     const [, scrollerRef] = useInfiniteScroll({
         hasMore,
         isEnabled: isOpen,
@@ -34,19 +34,23 @@ export default function SelectStatic<T>({ className="",...props }) {
 
     const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const set = new Set(e.target.value.split(","));
-        setValues(set);
+        if (set.size) setValues(set);
 
         props.setValues(Array.from(set).filter((s)=>s));
     };
 
     const clearItems = () => {
         setValues(new Set([""]));
-        props.setValues([]);
+        props.setValues([""]);
     }
 
     return (
-        <div className="flex w-full flex-col">
+        <div className="flex w-full flex-col w-1/4">
             <Select
+                classNames={{
+                    innerWrapper: "h-auto w-full",
+                    value: "whitespace-break-spaces",
+                }}
                 endContent={!clean(Array.from(values)).length || <DeleteDocumentIcon onClick={clearItems} />}
                 className={cn(className)}
                 isMultiline={true}
@@ -54,7 +58,6 @@ export default function SelectStatic<T>({ className="",...props }) {
                 label={props.label}
                 selectionMode={props.selectionMode || "multiple"}
                 placeholder={props.placeholder}
-                selectedKeys={values}
                 items={items}
                 scrollRef={scrollerRef}
                 isLoading={isLoading}
@@ -64,14 +67,15 @@ export default function SelectStatic<T>({ className="",...props }) {
                     return (
                         <div className="flex flex-wrap gap-2">
                             {items.map((item) => (
-                                <Chip key={item.key}>{item.textValue}</Chip>
+                                <Chip className={"whitespace-break-spaces p-5"} key={item.key}>{item.textValue}</Chip>
                             ))}
                         </div>
                     );
                 }}
             >
+
                 {items.map((item) => (
-                    <SelectItem key={item.value || JSON.stringify(item)} value={item.value}>
+                    <SelectItem textValue={item.text || JSON.stringify(item)} key={item.value || JSON.stringify(item)} value={item.value}>
                         {item.text}
                     </SelectItem>
                 ))}

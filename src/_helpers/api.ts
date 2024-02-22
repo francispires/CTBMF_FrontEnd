@@ -1,5 +1,6 @@
 import {store} from "../app/store.ts";
 import axios from 'axios';
+import {apiUrl} from "./utils.ts";
 
 
 axios.interceptors.request.use(function (config) {
@@ -23,7 +24,7 @@ export async function get<T>(url: string, abortSignal?: AbortSignal) {
         //console.log(JSON.stringify(data, null, 4));
 
         // 👇️ "response status is: 200"
-        console.log('response status is: ', status);
+//        console.log('response status is: ', status);
 
         return data;
     } catch (error) {
@@ -41,15 +42,16 @@ export async function get<T>(url: string, abortSignal?: AbortSignal) {
 
 export async function post<T>(url: string, body: T, file?: File) {
     try {
+        debugger
         const config = file ? {
             headers: {
                 "content-type": "multipart/form-data"
             },
         } : {};
-        if (file) {url = url + '/file';}
+        //if (file) {url = url + '/file';}
         const {data, status} = await axios.post(url, {...body, file}, config);
         //console.log(JSON.stringify(data, null, 4));
-        console.log('response status is: ', status);
+        //console.log('response status is: ', status);
         return data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -73,8 +75,8 @@ export async function patch<T>(url: string, body: T, file?: File) {
         } : {};
         if (file) {url = url + '/file';}
         const {data, status} = await axios.patch(url, {...body, file}, config);
-        console.log(JSON.stringify(data, null, 4));
-        console.log('response status is: ', status);
+        //console.log(JSON.stringify(data, null, 4));
+        //console.log('response status is: ', status);
 
         return data;
     } catch (error) {
@@ -108,10 +110,15 @@ export async function remove<T>(url: string, id: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function uploadFile(url: string, formData: FormData, onUploadProgress: any) {
+export async function uploadFile(folderName: string,fileName:string, formData: FormData) {
     try {
-        const {data, status} = await axios.post(url, formData, onUploadProgress);
-        //console.log(JSON.stringify(data, null, 4));
+        const url = `${apiUrl}/questions/upload64/?folderName=${folderName}&fileName=${fileName}`;
+        const {data, status} = await axios.post(url, formData,{
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        console.log(JSON.stringify(data, null, 4));
         console.log('response status is: ', status);
         return data;
     } catch (error) {

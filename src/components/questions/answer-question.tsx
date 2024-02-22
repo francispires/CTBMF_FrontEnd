@@ -1,6 +1,6 @@
 import {
-    AlternativeResponseDto,
-    AnswerRequestDto, AnswerResponseDto, IAlternativeResponseDto,
+    AlternativeRequestDto,
+    AnswerRequestDto,
     QuestionResponseDto
 } from "../../types_custom.ts";
 import {
@@ -13,59 +13,57 @@ import {
     Image,
     Button
 } from "@nextui-org/react";
-import {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {post} from "../../_helpers/api.ts";
 import {useAuth0} from "@auth0/auth0-react";
-import {AlternativeResponseWithCorrect} from "../../types";
+import {v4 as uuidv4} from "uuid";
+import {toast} from "react-toastify";
+import {abc, htmlText, toggleCorrectAlternative} from "../../_helpers/utils.ts";
+import {AddObservation} from "./add-observation.tsx";
 
 
-const abcdef = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 type Props = {
-    question: QuestionResponseDto
+    question: QuestionResponseDto,
+    quizAttemptId: string|undefined
 };
 
 
 export const AnswerQuestion = (props:Props) => {
-    const [alternatives, setAlternatives] = useState<AlternativeResponseDto[]>(props.question.alternatives);
+    const [alternatives, setAlternatives] = useState<AlternativeRequestDto[]>([]);
     const { user } = useAuth0();
-    const toggleCorrect = (event: React.MouseEvent<HTMLButtonElement> | boolean) => {
+    const toggleCorrect = (event: React.MouseEvent<HTMLDivElement> | boolean) => {
         if (typeof event==="boolean") return;
-
         const id = event.currentTarget.getAttribute("data-id");
-        const index = alternatives.findIndex(x => x.id === id);
-        if (index !== -1) {
-            const tempArray = alternatives.slice()
-                .map((a) => ({...a} ));
-            const isCorrect = tempArray[index]["correct"];
-            if (!isCorrect) {
-                tempArray.map((a) => {
-                    a.correct = false;
-                });
-            }
-            tempArray[index]["correct"] = !isCorrect;
-            setAlternatives(tempArray);
-        }
+        if (!id) return;
+        setAlternatives(toggleCorrectAlternative(alternatives,id));
     }
+    
+    useEffect(() => {
+        const alternatives = props.question.alternatives.map(x => new AlternativeRequestDto({...x,correct:false}));
+        setAlternatives(alternatives);
+    }, [props.question]);
 
     const answerQuestion = async ()=> {
         const correct = alternatives.filter(x => x.correct);
         if (correct.length === 0) {
             alert("Selecione pelo menos uma alternativa correta");
         } else {
-            const answer = new AlternativeResponseDto({
+            const answer = new AnswerRequestDto({
                 questionId: props.question.id,
-                user: user?.email,
-
-
+                correct: true,
+                user:user?.email,
+                alternativeId: correct[0].id,
+                quizAttemptId: props.quizAttemptId,
+                id: uuidv4()
             });
             const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
             const url = `${apiUrl}/${"questions/answer"}`;
-            const result = await post<AlternativeResponseWithCorrect>(url,answer);
+            const result = await post<AnswerRequestDto>(url,answer);
             if (result) {
-                alert("Questão respondida com sucesso");
+                toast.success("Questão respondida.");
             } else {
-                alert("Erro ao responder a questão");
+                toast.error("Erro ao responder a questão.")
             }
         }
     }
@@ -74,17 +72,34 @@ export const AnswerQuestion = (props:Props) => {
         window.history.back();
     }
 
+
+
+    const helps = props.question.observationRequests.filter(x => x.type === 0);
+    const reports = props.question.observationRequests.filter(x => x.type === 1);
+
+
+
     return (
         <>
             <Card className="">
-                <CardHeader className="flex gap-3">
-                    <div className="flex flex-col ">
-                        <p className="text-small text-default-500">
+                <CardHeader className="">
+                    <div className="grid grid-cols-12 md:grid-cols-12 gap-3 lg:grid-cols-12 w-full">
+                        <div className="text-small text-default-500 col-span-10">
                             <span className={"text-primary"}>Q{props.question.questionNumber}</span> |
-                            Matéria: <span className={"text-primary"}>{props.question.disciplines.join(",")}</span> |
-                            Subtema: <span className={"text-primary"}>{props.question.disciplines.join(",")}</span> |
-                            Instituição: <span className={"text-primary"}>{props.question.in}</span> |
-                            Ano: <span className={"text-primary"}>2023</span></p>
+                            Matéria: <span className={"text-primary"}>{props.question.discipline?.name}</span> |
+                            Instituição: <span className={"text-primary"}>{props.question.institutionName}</span> |
+                            Ano: <span className={"text-primary"}>2023</span>
+                        </div>
+                        <div className={"col-span-2"}>
+                            <AddObservation observationRequests={helps}
+                                            type={0}
+                                            question={props.question}>
+                            </AddObservation>
+                            <AddObservation observationRequests={reports}
+                                            type={1}
+                                            question={props.question}>
+                            </AddObservation>
+                        </div>
                     </div>
                 </CardHeader>
                 <Divider className={""}/>
@@ -92,7 +107,7 @@ export const AnswerQuestion = (props:Props) => {
                     {props.question.image &&
                         <Image src={props.question.image} alt="Question Image" width={200} height={200}/>}
                     <p className={"col-span-1"}></p>
-                    <p className={"col-span-10"}>{props.question.text}</p>
+                    <p dangerouslySetInnerHTML={htmlText(props.question.text!)} className={"col-span-10"}></p>
                 </CardBody>
                 <Divider/>
                 <CardBody className={"pl-10"}>
@@ -100,11 +115,15 @@ export const AnswerQuestion = (props:Props) => {
                         (alternative,i) =>
                             <div key={alternative.id} onClick={toggleCorrect} data-id={alternative.id}
                                  className="grid md:grid-cols-12 grid-cols-12 2xl:grid-cols-12 p-1 items-center">
-                                <span className="justify-self-end">{abcdef[i]})</span>
-                                <span className={"col-span-11 rounded-small p-2 ml-2 " + (alternative.correct?"bg-green-100":"bg-gray-100")}>
-                                    <Checkbox onClick={toggleCorrect} color={"success"}  className={""} isSelected={alternative.correct} data-id={alternative.id}/>
-                                    {alternative.text}
+                                <span className="justify-self-end">{abc[i]})</span>
+                                <span
+                                    className={"flex col-span-11 rounded-small p-2 ml-2 " + (alternative.correct ? "bg-green-100" : "")}>
+                                    <Checkbox onClick={toggleCorrect} color={"success"} className={""}
+                                              isSelected={alternative.correct} data-id={alternative.id}>
+                                    <span dangerouslySetInnerHTML={htmlText(alternative.text)}></span>
+                                        </Checkbox>
                                 </span>
+
                             </div>
                     )}
                 </CardBody>

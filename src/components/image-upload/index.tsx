@@ -9,6 +9,8 @@ import Cropper, { Area } from 'react-easy-crop'
 import { Button } from '@nextui-org/react';
 import getCroppedImg from './crop-functions';
 import { DeleteDocumentIcon } from '../icons/DeleteDocumentIcon';
+import {uploadFile} from "../../_helpers/api.ts";
+import axios from "axios";
 
 const profileFormSchema = yup.object({
   image: yup
@@ -30,10 +32,12 @@ const profileFormSchema = yup.object({
 type ImageFormData = yup.InferType<typeof profileFormSchema>;
 
 interface ImageUploadProps {
-  setFile: (file: File | undefined) => void
+  setFile: (file: File | undefined) => void,
+  folderName: string,
+  setImageUrl?: (url: string) => void
 }
 
-export default function ImageUpload({ setFile }: ImageUploadProps) {
+export default function ImageUpload({ setFile,folderName,setImageUrl }: ImageUploadProps) {
   const {
     register,
     reset,
@@ -50,6 +54,8 @@ export default function ImageUpload({ setFile }: ImageUploadProps) {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
+  const [type, setType] = useState("")
+
 
   const onCropComplete = (_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels)
@@ -64,9 +70,25 @@ export default function ImageUpload({ setFile }: ImageUploadProps) {
         croppedAreaPixels
       )
 
-      setImagePreview(String(croppedImage))
-      setFile(new File([croppedImage as Blob], `${new Date().getTime()}-image`, { type: 'jpg' }));
+      setImagePreview(String(croppedImage.url));
+      //const extension = type.split('/')[1];
+      const fileName = `${new Date().getTime()}`;
       setIsCroppingImage(false);
+
+      // const config = { responseType: 'file' };
+      // const req = await axios.get(croppedImage.url, config);
+
+      const reader = new FileReader();
+      reader.readAsDataURL(croppedImage.file);
+      reader.onloadend =async () => {
+        const fd = new FormData();
+        fd.append('file', reader.result);
+        const result = await uploadFile(folderName,fileName, fd);
+        if (result.statusCode===201) {
+          setImageUrl(result.imageUrl?result.imageUrl:"");
+        }
+      }
+
     } catch (e) {
       console.error(e)
     }
@@ -82,7 +104,7 @@ export default function ImageUpload({ setFile }: ImageUploadProps) {
     if (!files) return;
 
     const file = files.item(0);
-
+    setType(file?.type);
     if (file) {
       reset(
         {
@@ -127,7 +149,7 @@ export default function ImageUpload({ setFile }: ImageUploadProps) {
             />
 
             {!errors.image && imagePreview && (
-              <img src={imagePreview} alt="Imagem da questão" className="w-full h-full object-cover" />
+              <img src={imagePreview} alt="Imagem" className="w-full h-full object-cover" />
             )}
 
           </div>
@@ -164,7 +186,7 @@ export default function ImageUpload({ setFile }: ImageUploadProps) {
                 <DeleteDocumentIcon />
               </button>
             ) : (
-              <span className="mt-4 text-sm text-center">Escolha a imagem da questão (opcional)</span>
+              <span className="mt-4 text-sm text-center">Escolha a imagem (opcional)</span>
             )}
           </>
         )}

@@ -23,16 +23,16 @@ export const NavbarWrapper = ({ children }: Props) => {
           <BurguerButton />
         </NavbarContent>
         <NavbarContent className="w-full max-md:hidden">
-          <Input
-            startContent={null}
-            isClearable
-            className="w-full"
-            classNames={{
-              input: "w-full",
-              mainWrapper: "w-full",
-            }}
-            placeholder="Pesquisar..."
-          />
+          {/*<Input*/}
+          {/*  startContent={null}*/}
+          {/*  isClearable*/}
+          {/*  className="w-full"*/}
+          {/*  classNames={{*/}
+          {/*    input: "w-full",*/}
+          {/*    mainWrapper: "w-full",*/}
+          {/*  }}*/}
+          {/*  placeholder="Pesquisar..."*/}
+          {/*/>*/}
         </NavbarContent>
         <NavbarContent
           justify="end"

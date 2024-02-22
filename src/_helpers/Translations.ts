@@ -25,5 +25,7 @@ abstract class t {
     public static description="Descrição";
     public static parentName="Mãe";
     public static childsCount="Filhos";
+    public static isValid="Válida";
+
 }
 export default t;

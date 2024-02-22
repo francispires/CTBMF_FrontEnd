@@ -4,13 +4,17 @@ import {
     Button,
     DropdownMenu,
     DropdownItem,
-    DropdownSection, cn
+    DropdownSection, cn, PopoverTrigger, PopoverContent, Popover, Tooltip
 } from "@nextui-org/react";
 import { VerticalDotsIcon } from "../icons/VerticalDotsIcon.tsx";
 import { CopyDocumentIcon } from "../icons/CopyDocumentIcon.tsx";
 import { EditDocumentIcon } from "../icons/EditDocumentIcon.tsx";
 import { DeleteDocumentIcon } from "../icons/DeleteDocumentIcon.tsx";
 import { QuestionResponseDto } from "../../types_custom.ts";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCheck, faXmark} from "@fortawesome/free-solid-svg-icons";
+import {htmlText} from "../../_helpers/utils.ts";
+
 
 export const RenderQuestionCell = (
     question: QuestionResponseDto,
@@ -41,66 +45,100 @@ export const RenderQuestionCell = (
         }
     }
 
-    switch (columnKey) {
-        case "text":
-            return (
-                <div className="flex flex-col">
-                    <p title={cellValue} className="text-bold text-small capitalize">{`${cellValue?.toString().slice(0, 20)} ...`}</p>
-                </div>
-            );
-        case "actions":
-            return (
-                <div className="relative flex justify-end items-center gap-2">
-                    <Dropdown>
-                        <DropdownTrigger>
-                            <Button isIconOnly size="sm" variant="light">
-                                <VerticalDotsIcon className="text-default-300" />
-                            </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu disabledKeys={"hide"} variant="faded" aria-label="Dropdown menu with description">
-                            <DropdownSection title="Ações" showDivider>
-                                <DropdownItem
-                                    key="details"
-                                    shortcut="⌘D"
-                                    description="Exibe os detalhes da questão"
-                                    startContent={<CopyDocumentIcon className={iconClasses} />}
-                                    onClick={handleViewItem}
-                                >
-                                    Detalhes
-                                </DropdownItem>
-                                <DropdownItem
-                                    key="edit"
-                                    shortcut="⌘⇧E"
-                                    description="Editar a questão"
-                                    startContent={<EditDocumentIcon className={iconClasses} />}
-                                    className="relative border"
-                                    onClick={handleEditItem}
-                                >
-                                    Editar
-                                </DropdownItem>
-                            </DropdownSection>
-                            <DropdownSection title="Zona Perigosa">
-                                <DropdownItem
-                                    key="delete"
-                                    className="text-danger"
-                                    color="danger"
-                                    shortcut="⌘⇧R"
-                                    description="Remover a questão"
-                                    startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
-                                    onClick={handleDeleteItem}
-                                >
-                                    Remover
-                                </DropdownItem>
-                            </DropdownSection>
-                        </DropdownMenu>
-                    </Dropdown>
-                </div>
-            );
-        default:
-            return (
-                <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{cellValue}</p>
-                </div>
-            );
-    }
+    const getHtml = () => {
+        switch (columnKey) {
+            case "text":
+                return (
+                    <div className="flex flex-col">
+                        <p title={cellValue} className="text-bold text-small capitalize">{`${cellValue?.toString().slice(0, 20)} ...`}</p>
+                    </div>
+                );
+            case "isValid":
+                return (
+                    <div className="flex flex-col center">
+                        {cellValue ?
+                            <FontAwesomeIcon className={"text-success"} icon={faCheck} /> :
+                            <FontAwesomeIcon className={"text-danger"} icon={faXmark} />}
+                    </div>
+                );
+            case "pop:details":
+                return (
+                    <Tooltip
+                        placement={"right-end"}
+                        content={
+                            <div className="px-1 py-2">
+                                <div className="text-small font-bold">Questão # {question.questionNumber}</div>
+                                <div className="text-tiny" dangerouslySetInnerHTML={htmlText(question.text)}></div>
+                            </div>
+                        }
+                        classNames={{
+                            content: [
+                                "w-1/2",
+                            ],
+                        }}
+                    >
+                        <Button variant="bordered">
+                            Detalhes
+                        </Button>
+                    </Tooltip>
+                );
+            case "actions":
+                return (
+                    <div className="relative flex justify-end items-center gap-2">
+                        <Dropdown>
+                            <DropdownTrigger>
+                                <Button isIconOnly size="sm" variant="light">
+                                    <VerticalDotsIcon className="text-default-300" />
+                                </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu disabledKeys={"hide"} variant="faded" aria-label="Dropdown menu with description">
+                                <DropdownSection title="Ações" showDivider>
+                                    <DropdownItem
+                                        key="details"
+                                        shortcut="⌘D"
+                                        description="Exibe os detalhes da questão"
+                                        startContent={<CopyDocumentIcon className={iconClasses} />}
+                                        onClick={handleViewItem}
+                                    >
+                                        Detalhes
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key="edit"
+                                        shortcut="⌘⇧E"
+                                        description="Editar a questão"
+                                        startContent={<EditDocumentIcon className={iconClasses} />}
+                                        className="relative border"
+                                        onClick={handleEditItem}
+                                    >
+                                        Editar
+                                    </DropdownItem>
+                                </DropdownSection>
+                                <DropdownSection title="Zona Perigosa">
+                                    <DropdownItem
+                                        key="delete"
+                                        className="text-danger"
+                                        color="danger"
+                                        shortcut="⌘⇧R"
+                                        description="Remover a questão"
+                                        startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
+                                        onClick={handleDeleteItem}
+                                    >
+                                        Remover
+                                    </DropdownItem>
+                                </DropdownSection>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </div>
+                );
+            default:
+                return (
+                    <div className="flex flex-col">
+                        <p className="text-bold text-small capitalize">{cellValue}</p>
+                    </div>
+                );
+        }
+    };
+
+    return getHtml();
+
 }

@@ -79,6 +79,12 @@ export const SidebarWrapper = () => {
                 href="dashboard"
               />
               <SidebarItem
+                  isActive={router.pathname === "/provas"}
+                  href="provas"
+                  title="Provas"
+                  icon={<CustomersIcon />}
+              />
+              <SidebarItem
                 isActive={router.pathname === "/banco-de-questoes"}
                 href="/banco-de-questoes"
                 title="Banco de Questões"
@@ -102,6 +108,12 @@ export const SidebarWrapper = () => {
 
             {isInRole("Teacher") && (
                 <SidebarMenu title="Coordenador">
+                  <SidebarItem
+                      isActive={router.pathname === "/provas"}
+                      href="config_provas"
+                      title="Provas"
+                      icon={<CustomersIcon />}
+                  />
                   <SidebarItem
                       isActive={router.pathname === "/users"}
                       href="users"

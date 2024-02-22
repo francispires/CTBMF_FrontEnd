@@ -1,7 +1,8 @@
-import React from "react";
+import React, {forwardRef, Key, useState} from "react";
 import {Autocomplete, AutocompleteItem, cn} from "@nextui-org/react";
 import {useInfiniteScroll} from "@nextui-org/use-infinite-scroll";
 import {useSelect2List} from "../../_helpers/useSelect2List.ts";
+import {asUploadButton} from "@rpldy/upload-button";
 
 
 export type Props = {
@@ -18,12 +19,18 @@ export type Props = {
     useKey?: boolean,
 };
 
-export default function Select2<T>({ className="",...props }) {
-    const [isOpen, setIsOpen] = React.useState(false);
-    const {items, hasMore, isLoading, onLoadMore} = useSelect2List<T>(props.url,props.valueProp,props.textProp);
-    const [, setValue] = React.useState("");
-    const [useKeyAsValue] = React.useState(props.useKey || false);
-    const [, setSelectedKey] = React.useState<React.Key | null>(null);
+
+// export const Select2 = (
+//     forwardRef(({ className, ...props }, ref) => {
+//         return (Select2Inner({className,...props}));
+//     }));
+
+export default function Select2({ className="",...props }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const {items, hasMore, isLoading, onLoadMore} = useSelect2List<string>(props.url,props.valueProp,props.textProp);
+    const [, setValue] = useState("");
+    const [useKeyAsValue] = useState(props.useKey || false);
+    const [, setSelectedKey] = useState<Key | null>(null);
         
     const [, scrollerRef] = useInfiniteScroll({
         hasMore,
@@ -31,7 +38,7 @@ export default function Select2<T>({ className="",...props }) {
         shouldUseLoader: true, // We don't want to show the loader at the bottom of the list
         onLoadMore,
     });
-    const onSelectionChange = (key: React.Key) => {
+    const onSelectionChange = (key: Key) => {
         setSelectedKey(key);
         if (useKeyAsValue) {
             props.setValue(key as string);

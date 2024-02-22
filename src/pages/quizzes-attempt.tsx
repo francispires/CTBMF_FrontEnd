@@ -3,6 +3,7 @@ import { MyCard } from "../components/layout/MyCard";
 import { Button } from "@nextui-org/react";
 import { FaArrowLeft } from "react-icons/fa";
 import { mockedQuizzAttemptConfiguration } from "./user-question-bank";
+import {useQueryClient} from "@tanstack/react-query";
 
 const quizzes = [
   {
@@ -31,7 +32,7 @@ const quizzes = [
 export default function QuizzesAttempt() {
   const navigate = useNavigate()
   const { attemptConfigId } = useParams()
-
+  const queryClient = useQueryClient();
   const attemptConfig = mockedQuizzAttemptConfiguration.find((attempt) => attempt.id === attemptConfigId)
 
   function goToQuestionsBank() {
