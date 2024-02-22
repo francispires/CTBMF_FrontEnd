@@ -47,7 +47,7 @@ export default function ViewQuestion() {
   }
 
   return (
-    <div className="p-6 overflow-auto min-h-[calc(100vh-65px)]">
+    <div>
       <Button variant="ghost" className="mb-6" onClick={handleBackToQuestions}><FaArrowLeft /> Voltar</Button>
 
       <span className="block mb-6 text-sm">Questão: {question.questionNumber}</span>

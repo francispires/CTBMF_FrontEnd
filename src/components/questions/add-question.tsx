@@ -9,25 +9,26 @@ import {
     ModalHeader,
     useDisclosure,
 } from "@nextui-org/react";
-import {useQueryClient} from "@tanstack/react-query";
-import {post} from "../../_helpers/api.ts";
-import {Controller, useForm} from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { post } from "../../_helpers/api.ts";
+import { Controller, useForm } from "react-hook-form";
 
-import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
-import {boolean, number, object, setLocale} from "yup";
-import {ptForm} from 'yup-locale-pt';
-import {AlternativeRequestDto, DisciplineRequestDto, QuestionRequestDto} from "../../types_custom.ts";
+import { yupResolver } from "@hookform/resolvers/yup/src/index.ts";
+import { boolean, number, object, setLocale } from "yup";
+import { ptForm } from 'yup-locale-pt';
+import { AlternativeRequestDto, DisciplineRequestDto, QuestionRequestDto } from "../../types_custom.ts";
 
 import ImageUpload from "../image-upload/index.tsx";
-import {PlusIcon} from "../icons/PlusIcon.tsx";
+import { PlusIcon } from "../icons/PlusIcon.tsx";
 
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faCircleXmark} from "@fortawesome/free-solid-svg-icons";
-import {useState} from "react";
-import {toast} from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
+import { toast } from "react-toastify";
 import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
 import Select2 from "../select2";
+import { abc } from "../../_helpers/utils.ts";
 
 setLocale(ptForm);
 
@@ -39,19 +40,19 @@ const createSchema = object().shape({
     active: boolean().required('Status é obrigatório'),
     score: number().required('Pontuação é obrigatória'),
     //text: string().required('Enunciado é obrigatório'),
-//    institutionId: string().required('Insituição é obrigatória'),
-//     alternatives: array().of(
-//         object().shape({
-//             questionId: string().required('Questão é obrigatória'),
-//             correct: boolean()
-//                 .required('Se é correta ou não é obrigatório'),
-//             text: string().required('Texto é obrigatório'),
-//             id: string().required('ID é obrigatório'),
-//         })
-//     ).required('Pelo menos uma alternativa correta é obrigatória'),
+    //    institutionId: string().required('Insituição é obrigatória'),
+    //     alternatives: array().of(
+    //         object().shape({
+    //             questionId: string().required('Questão é obrigatória'),
+    //             correct: boolean()
+    //                 .required('Se é correta ou não é obrigatório'),
+    //             text: string().required('Texto é obrigatório'),
+    //             id: string().required('ID é obrigatório'),
+    //         })
+    //     ).required('Pelo menos uma alternativa correta é obrigatória'),
 });
 export const AddQuestion = () => {
-    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const queryClient = useQueryClient();
     const [file, setFile] = useState<File>();
     const [board, setBoard] = useState("");
@@ -62,7 +63,7 @@ export const AddQuestion = () => {
     const [image, setImage] = useState("");
     const [alternatives, setAlternatives] = useState<AlternativeRequestDto[]>([])
     const [question, setQuestion] = useState<QuestionRequestDto>(new QuestionRequestDto({
-        id: "", year: 0, score: 0, board: "", active: true, alternatives: [], institutionId: "",isValid:true
+        id: "", year: 0, score: 0, board: "", active: true, alternatives: [], institutionId: "", isValid: true
     }));
     setTimeout(() => {
         setQuestion({
@@ -141,7 +142,7 @@ export const AddQuestion = () => {
         register,
         handleSubmit,
         control,
-        formState: {errors}
+        formState: { errors }
     } = useForm<QuestionRequestDto>({
         resolver: yupResolver(createSchema)
     });
@@ -158,20 +159,20 @@ export const AddQuestion = () => {
         data.board = board;
         data.institutionId = institutionId;
         data.text = text;
-        data.discipline = {name: discipline, description: discipline} as DisciplineRequestDto;
+        data.discipline = { name: discipline, description: discipline } as DisciplineRequestDto;
         data.image = image;
-        debugger
+        // debugger
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
         await post<QuestionRequestDto>(`${apiUrl}/questions/create`, data as QuestionRequestDto, file);
         setFile(undefined);
-        await queryClient.invalidateQueries({queryKey: ['qryKey']});
+        await queryClient.invalidateQueries({ queryKey: ['qryKey'] });
         setAlternatives([]);
         setText("");
         setDiscipline("");
         setBoard("");
         setInstitutionId("");
         setQuestion(new QuestionRequestDto({
-            id: "", year: 0, score: 0, board: "", active: true, alternatives: [], institutionId: "",isValid:true
+            id: "", year: 0, score: 0, board: "", active: true, alternatives: [], institutionId: "", isValid: true
         }));
         toast.success("Questão adicionada com sucesso")
         onClose();
@@ -200,7 +201,7 @@ export const AddQuestion = () => {
                                     <ModalBody>
                                         <div className={"grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-3"}>
                                             <div className={"col-span-2"}>
-                                                <ImageUpload folderName={"questions"} setFile={setFile} setImageUrl={setImage}/>
+                                                <ImageUpload folderName={"questions"} setFile={setFile} setImageUrl={setImage} />
                                             </div>
                                             <div>
                                                 <Controller
@@ -254,27 +255,27 @@ export const AddQuestion = () => {
                                             </div>
                                             <div>
                                                 <Input {...register("year")} type={"number"} max={2050} min={1900}
-                                                       label="Ano"
-                                                       variant="bordered"
+                                                    label="Ano"
+                                                    variant="bordered"
                                                 />
                                                 {errors.year &&
                                                     <cite className={"text-danger"}>{errors.year.message}</cite>}
                                             </div>
                                             <div>
                                                 <Checkbox checked={question.active} isSelected={isActive}
-                                                          onValueChange={handleSetActive}>
+                                                    onValueChange={handleSetActive}>
                                                     Ativo
                                                 </Checkbox>
                                                 <input {...register("active")} type={"hidden"}
-                                                       value={isActive.toString()}/>
+                                                    value={isActive.toString()} />
                                                 {errors.active &&
                                                     <cite className={"text-danger"}>{errors.active.message}</cite>}
                                             </div>
                                             <div>
                                                 <Input {...register("score")} type={"number"} min={0} max={2000}
-                                                       step={500}
-                                                       label="Pontos"
-                                                       variant="bordered"
+                                                    step={500}
+                                                    label="Pontos"
+                                                    variant="bordered"
                                                 />
                                                 {errors.year &&
                                                     <cite className={"text-danger"}>{errors.year.message}</cite>}
@@ -310,24 +311,36 @@ export const AddQuestion = () => {
                                                     placeholder={"Enunciado"}
                                                     value={text}
                                                     onChange={setText}
-                                                    style={{minHeight: '100px'}}
+                                                    style={{ minHeight: '100px' }}
                                                 />
                                                 {errors.text &&
                                                     <cite className={"text-danger"}>{errors.text.message}</cite>}
                                             </div>
                                             <div className={"col-span-2"}>
-                                                <div className="flex items-center gap-2 text-start mt-4 mb-2">
-                                                    <span className="block">Adicionar alternativas</span>
-                                                    <button className="focus:outline-none" type="button"
-                                                            onClick={addAlternative}>
-                                                        <PlusIcon
-                                                            className="text-2xl text-default-400 pointer-events-none"/>
-                                                    </button>
+                                                <div className="flex items-center gap-2 text-start mt-4 mb-3">
+                                                    <Button
+                                                        color={"success"}
+                                                        variant={"ghost"}
+                                                        className="
+                                                            text-success-400 hover:text-default-400 border-success-400
+                                                            hover:border-success-400
+                                                        "
+                                                        type="button"
+                                                        onClick={addAlternative}
+                                                    >
+                                                        <PlusIcon className="text-2xl pointer-events-none" /><span className="block">Adicionar alternativas</span>
+                                                    </Button>
                                                 </div>
                                                 {alternatives.map((a, i) => (
                                                     <div
                                                         key={"asdf" + a.id || i}
-                                                        className={"grid md:grid-cols-12 grid-cols-12 2xl:grid-cols-12"}>
+                                                        className="
+                                                            grid md:grid-cols-12 grid-cols-12 2xl:grid-cols-12 mb-3
+                                                        "
+                                                    >
+                                                        <div className={"col-span-1 flex items-center"}>
+                                                            <span className={"text-2xl"}>{abc[i]}</span>
+                                                        </div>
                                                         <div className={"col-span-10"}>
                                                             <ReactQuill
                                                                 theme='snow'
@@ -336,7 +349,7 @@ export const AddQuestion = () => {
                                                                 onChange={(v: string) => {
                                                                     handleAlternativeChange(a.id || i.toString(), v)
                                                                 }}
-                                                                style={{minHeight: '100px'}}
+                                                                style={{ minHeight: '80px' }}
                                                                 key={a.id || i}
                                                                 data-id={a.id || i}
                                                             ></ReactQuill>
@@ -344,16 +357,28 @@ export const AddQuestion = () => {
                                                         <div>
                                                             {
                                                                 a.correct ?
-
-                                                                    <button onClick={toggleCorrect} data-id={a.id || i}
-                                                                            className="button" type="button">
-                                                                        <FontAwesomeIcon className={"text-success"}
-                                                                                         icon={faCheck}/>
-                                                                    </button> :
-                                                                    <button onClick={toggleCorrect} data-id={a.id || i}
-                                                                            className="" type="button">
-                                                                        <FontAwesomeIcon className={"text-danger"}
-                                                                                         icon={faCircleXmark}/>
+                                                                    <button
+                                                                        onClick={toggleCorrect}
+                                                                        data-id={a.id || i}
+                                                                        className="
+                                                                            rounded-l-none h-full rounded-r-lg p-2 
+                                                                            bg-success/20 border-none
+                                                                        "
+                                                                        type="button"
+                                                                    >
+                                                                        <FontAwesomeIcon className={"text-success"} icon={faCheck} />
+                                                                    </button>
+                                                                    :
+                                                                    <button
+                                                                        onClick={toggleCorrect}
+                                                                        data-id={a.id || i}
+                                                                        className="
+                                                                            rounded-l-none h-full rounded-r-lg p-2 
+                                                                            bg-danger/20 border-none
+                                                                        "
+                                                                        type="button"
+                                                                    >
+                                                                        <FontAwesomeIcon className={"text-danger"} icon={faCircleXmark} />
                                                                     </button>
 
                                                             }
@@ -370,7 +395,7 @@ export const AddQuestion = () => {
                                             Fechar
                                         </Button>
                                         <Button type={"submit"} onSubmit={handleSubmit(onSubmit)}
-                                                color="primary">
+                                            color="primary">
                                             Salvar
                                         </Button>
                                     </ModalFooter>

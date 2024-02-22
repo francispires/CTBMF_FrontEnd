@@ -1,9 +1,9 @@
-import { Input, Navbar, NavbarContent } from "@nextui-org/react";
+import { Navbar, NavbarContent } from "@nextui-org/react";
 import React from "react";
 import { BurguerButton } from "./burguer-button";
 import { NotificationsDropdown } from "./notifications-dropdown";
 import { UserDropdown } from "./user-dropdown";
-import {DarkModeSwitch} from "./darkmodeswitch.tsx";
+import { DarkModeSwitch } from "./darkmodeswitch.tsx";
 
 interface Props {
   children: React.ReactNode;
@@ -11,7 +11,7 @@ interface Props {
 
 export const NavbarWrapper = ({ children }: Props) => {
   return (
-    <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+    <div className="relative flex flex-col flex-1 overflow-x-hidden overflow-hidden">
       <Navbar
         isBordered
         className="w-full"
@@ -48,7 +48,9 @@ export const NavbarWrapper = ({ children }: Props) => {
           </NavbarContent>
         </NavbarContent>
       </Navbar>
-      {children}
+      <div className="overflow-y-auto max-h-[calc(100vh-65px)] p-6">
+        {children}
+      </div>
     </div>
   );
 };

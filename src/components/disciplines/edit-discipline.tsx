@@ -103,7 +103,7 @@ export default function EditDiscipline() {
   };
 
   return (
-    <div className="p-6 overflow-auto min-h-[calc(100vh-65px)]">
+    <div>
       <Button variant="ghost" className="mb-6" onClick={handleBackToDisciplines}><FaArrowLeft /> Voltar</Button>
 
       <form

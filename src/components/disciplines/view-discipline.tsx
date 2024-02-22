@@ -43,7 +43,7 @@ export default function ViewDiscipline() {
   }
 
   return (
-    <div className="p-6 overflow-auto min-h-[calc(100vh-65px)]">
+    <div>
       <Button variant="ghost" className="mb-6" onClick={handleBackToDisciplines}><FaArrowLeft /> Voltar</Button>
 
       <div className="flex flex-col items-center w-full">
