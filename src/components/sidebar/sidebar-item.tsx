@@ -2,6 +2,7 @@ import React from "react";
 import { useSidebarContext } from "../layout/layout-context";
 import clsx from "clsx";
 import {Link} from "react-router-dom";
+import useWindowSize from "../hooks/useWindowSize";
 
 
 interface Props {
@@ -12,13 +13,15 @@ interface Props {
 }
 
 export const SidebarItem = ({ icon, title, isActive, href = "" }: Props) => {
+  const { width } = useWindowSize()
   const { setCollapsed } = useSidebarContext();
 
   const handleClick = () => {
-    //if (window.innerWidth < 456456) {
+    if (width < 768) {
       setCollapsed();
-    //}
+    }
   };
+  
   return (
     <Link
       to={href}

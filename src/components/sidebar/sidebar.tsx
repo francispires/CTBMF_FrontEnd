@@ -1,5 +1,5 @@
 import { Sidebar } from "./sidebar.styles";
-import {Avatar, Tooltip} from "@nextui-org/react";
+import { Avatar, Tooltip, cn } from "@nextui-org/react";
 import { HomeIcon } from "../icons/sidebar/home-icon";
 import { PaymentsIcon } from "../icons/sidebar/payments-icon";
 import { BalanceIcon } from "../icons/sidebar/balance-icon";
@@ -13,8 +13,10 @@ import { SidebarMenu } from "./sidebar-menu";
 import { FilterIcon } from "../icons/sidebar/filter-icon";
 import { useSidebarContext } from "../layout/layout-context";
 import React from "react";
-import {useAuth0} from "@auth0/auth0-react";
-import {AcmeIcon} from "../icons/acme-icon.tsx";
+import { useAuth0 } from "@auth0/auth0-react";
+import { AcmeIcon } from "../icons/acme-icon.tsx";
+import useWindowSize from "../hooks/useWindowSize.ts";
+import { useLocation } from "react-router-dom";
 
 class MenuItem {
   constructor(icon: React.JSX.Element, title: string) {
@@ -27,14 +29,11 @@ class MenuItem {
 }
 
 export const SidebarWrapper = () => {
-  function useRouter() {
-    return {
-      pathname: window.location.pathname,
-    };
-  }
-  const router = useRouter();
+  const { width } = useWindowSize()
+  const { pathname } = useLocation()
+
   const { collapsed, setCollapsed } = useSidebarContext();
-  const { user} = useAuth0();
+  const { user } = useAuth0();
 
   const isInRole = (role: string) => {
     return user && user.role && user.role.indexOf(role) > -1;
@@ -46,9 +45,20 @@ export const SidebarWrapper = () => {
         <div className={Sidebar.Overlay()} onClick={setCollapsed} />
       ) : null}
       <div
-        className={Sidebar({
-          collapsed: collapsed,
-        })}
+        className={width > 768 ?
+          cn(
+            !collapsed ? Sidebar({
+              collapsed: collapsed,
+            }) + " flex-col fixed" : Sidebar({
+              collapsed: collapsed,
+            }) + " flex static h-screen translate-x-0",
+          ) :
+          cn(
+            Sidebar({
+              collapsed: collapsed
+            }) + " flex-col fixed md:flex md:static md:h-screen md:translate-x-0",
+          )
+        }
       >
         <div className={Sidebar.Header()}>
           <div className="flex items-center gap-2">
@@ -58,8 +68,8 @@ export const SidebarWrapper = () => {
                 CTBMF
               </h3>
               <span className="text-xs font-medium text-default-500">
-              Preparatório
-            </span>
+                Preparatório
+              </span>
             </div>
           </div>
         </div>
@@ -68,98 +78,98 @@ export const SidebarWrapper = () => {
             <SidebarItem
               title="Minha Área"
               icon={<HomeIcon />}
-              isActive={router.pathname === "/"}
+              isActive={pathname === "/"}
               href="/"
             />
             <SidebarMenu title="Aluno">
               <SidebarItem
-                isActive={router.pathname === "/dashboard"}
+                isActive={pathname === "/dashboard"}
                 title="Dashboard"
                 icon={<AccountsIcon />}
                 href="dashboard"
               />
               <SidebarItem
-                  isActive={router.pathname === "/provas"}
-                  href="provas"
-                  title="Provas"
-                  icon={<CustomersIcon />}
+                isActive={pathname === "/provas"}
+                href="provas"
+                title="Provas"
+                icon={<CustomersIcon />}
               />
               <SidebarItem
-                isActive={router.pathname === "/banco-de-questoes"}
+                isActive={pathname === "/banco-de-questoes"}
                 href="/banco-de-questoes"
                 title="Banco de Questões"
                 icon={<PaymentsIcon />}
               />
               <SidebarItem
-                  isActive={router.pathname === "/questoes"}
-                  href="/questoes"
-                  title="Questões"
-                  icon={<PaymentsIcon />}
+                isActive={pathname === "/questoes"}
+                href="/questoes"
+                title="Questões"
+                icon={<PaymentsIcon />}
               />
               <CollapseItems
                 icon={<ReportsIcon />}
                 items={[
-                    new MenuItem(<BalanceIcon />,"Progresso"),
-                    new MenuItem(<BalanceIcon />,"Estudos")
+                  new MenuItem(<BalanceIcon />, "Progresso"),
+                  new MenuItem(<BalanceIcon />, "Estudos")
                 ]}
                 title="Relatórios"
               />
             </SidebarMenu>
 
             {isInRole("Teacher") && (
-                <SidebarMenu title="Coordenador">
-                  <SidebarItem
-                      isActive={router.pathname === "/provas"}
-                      href="config_provas"
-                      title="Provas"
-                      icon={<CustomersIcon />}
-                  />
-                  <SidebarItem
-                      isActive={router.pathname === "/users"}
-                      href="users"
-                      title="Usuários"
-                      icon={<CustomersIcon />}
-                  />
-                  <SidebarItem
-                      isActive={router.pathname === "/disciplines"}
-                      href="disciplines"
-                      title="Disciplinas"
-                      icon={<ReportsIcon />}
-                  />
-                  <SidebarItem
-                      isActive={router.pathname === "/questions"}
-                      href="questions"
-                      title="Questões"
-                      icon={<ReportsIcon />}
-                  />
-                  <SidebarItem
-                      isActive={router.pathname === "/institutions"}
-                      href="institutions"
-                      title="Instiuições"
-                      icon={<ReportsIcon />}
-                  />
-                  <SidebarItem
-                      isActive={router.pathname === "/question-banks"}
-                      href="question-banks"
-                      title="Banco de Questões"
-                      icon={<ReportsIcon />}
-                  />
-                  <SidebarItem
-                      isActive={router.pathname === "/settings"}
-                      title="Configrações"
-                      icon={<SettingsIcon />}
-                  />
-                </SidebarMenu>
+              <SidebarMenu title="Coordenador">
+                <SidebarItem
+                  isActive={pathname === "/provas"}
+                  href="config_provas"
+                  title="Provas"
+                  icon={<CustomersIcon />}
+                />
+                <SidebarItem
+                  isActive={pathname === "/users"}
+                  href="users"
+                  title="Usuários"
+                  icon={<CustomersIcon />}
+                />
+                <SidebarItem
+                  isActive={pathname === "/disciplines"}
+                  href="disciplines"
+                  title="Disciplinas"
+                  icon={<ReportsIcon />}
+                />
+                <SidebarItem
+                  isActive={pathname === "/questions"}
+                  href="questions"
+                  title="Questões"
+                  icon={<ReportsIcon />}
+                />
+                <SidebarItem
+                  isActive={pathname === "/institutions"}
+                  href="institutions"
+                  title="Instiuições"
+                  icon={<ReportsIcon />}
+                />
+                <SidebarItem
+                  isActive={pathname === "/question-banks"}
+                  href="question-banks"
+                  title="Banco de Questões"
+                  icon={<ReportsIcon />}
+                />
+                <SidebarItem
+                  isActive={pathname === "/settings"}
+                  title="Configrações"
+                  icon={<SettingsIcon />}
+                />
+              </SidebarMenu>
             )}
 
             {isInRole("Admin") && (
               <SidebarMenu title="Administrador">
-              <SidebarItem
-                isActive={router.pathname === "/admin_settings"}
-                title="Ajustes"
-                icon={<FilterIcon />}
-              />
-            </SidebarMenu>
+                <SidebarItem
+                  isActive={pathname === "/admin_settings"}
+                  title="Ajustes"
+                  icon={<FilterIcon />}
+                />
+              </SidebarMenu>
             )}
           </div>
           <div className={Sidebar.Footer()}>

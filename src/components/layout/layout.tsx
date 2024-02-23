@@ -5,6 +5,7 @@ import { SidebarWrapper } from "../sidebar/sidebar";
 import { SidebarContext } from "./layout-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import useWindowSize from "../hooks/useWindowSize";
 
 interface Props {
   children: React.ReactNode;
@@ -13,7 +14,9 @@ interface Props {
 const queryClient = new QueryClient();
 
 export const Layout = ({ children }: Props) => {
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const { width } = useWindowSize()
+
+  const [sidebarOpen, setSidebarOpen] = React.useState(width > 768 ? true : false);
   const [_, setLocked] = useLockedBody(false);
 
   const handleToggleSidebar = () => {
