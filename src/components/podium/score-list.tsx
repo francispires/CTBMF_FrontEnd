@@ -1,29 +1,32 @@
+import { Student } from "./three-best";
+
 import {
   Table,
   TableBody,
   TableCell,
   TableColumn,
   TableHeader,
-  TableRow
+  TableRow,
+  cn
 } from "@nextui-org/react";
-import { Student } from "./three-best";
 
 interface StudentsScoreListProps {
+  isLarge?: boolean
   firstIndexValue?: number
   students: Student[]
 }
 
 export const StudentsScoreList = ({
   students,
-  firstIndexValue = 0
+  firstIndexValue = 0,
+  isLarge = false
 }: StudentsScoreListProps) => {
-
   return (
     <Table
       aria-label="Ranque dos estudantes"
       hideHeader
       classNames={{
-        base: "max-h-[210px] overflow-auto",
+        base: `${isLarge ? 'max-h-[310px]' : 'max-h-[210px]'} overflow-auto`,
         table: "min-h-[210px]",
       }}
     >
@@ -36,7 +39,12 @@ export const StudentsScoreList = ({
           const currentIndex = index + firstIndexValue + 1
 
           return (
-            <TableRow key={index + 1}>
+            <TableRow
+              key={index + 1}
+              className={cn(
+                student.id === '3' ? 'bg-gray-700 bg-opacity-20' : ''
+              )}
+            >
               <TableCell>
                 <div className="flex gap-3 items-center pl-6">
                   <div className="flex relative">
