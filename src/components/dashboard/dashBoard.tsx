@@ -1,9 +1,10 @@
 import { CardBalance2 } from "./card-balance2";
-import {Steam} from "../charts/steam.tsx";
-import {UserCard} from "../home/user-card.tsx";
-import {MyCard} from "../layout/MyCard.tsx";
-import {QuestionByDiscipline} from "../charts/question-by-discipline.tsx";
-import {QuestionRight} from "../charts/question-right.tsx";
+import { Steam } from "../charts/steam.tsx";
+import { UserCard } from "../home/user-card.tsx";
+import { MyCard } from "../layout/MyCard.tsx";
+import { QuestionByDiscipline } from "../charts/question-by-discipline.tsx";
+import { QuestionRight } from "../charts/question-right.tsx";
+import { GeneralRank } from "../home/general-rank.tsx";
 
 export const DashBoard = () => (
   <div className="h-full">
@@ -13,10 +14,13 @@ export const DashBoard = () => (
           <h3 className="text-xl font-semibold">Você</h3>
           <div className="grid md:grid-cols-2 grid-cols-1 2xl:grid-cols-2 gap-5  justify-center w-full">
             <MyCard>
-            <UserCard />
+              <UserCard />
             </MyCard>
             <MyCard className={"bg-danger-100"}>
-            <CardBalance2 />
+              <CardBalance2 />
+            </MyCard>
+            <MyCard className="col-span-2">
+              <GeneralRank />
             </MyCard>
           </div>
         </div>
