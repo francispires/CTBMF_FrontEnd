@@ -1,17 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-
-// https://vitejs.dev/config/
-
-
-const base = process.env.VITE_REACT_APP_BASE_URL;
-console.log(base);
+//const base = process.env.REACT_APP_API_SERVER_URL;
 
 export default defineConfig({
   define: {
     global: {},
   },
-  //base: base,
+  base: '/',
   plugins: [react()],
   preview: {
     port: 4041,
