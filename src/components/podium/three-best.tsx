@@ -20,7 +20,8 @@ export interface ThreeBestPodiumProps {
 
 
 export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
-
+  if (!first && !second && !third)
+    return <div></div>
   return <div className="flex flex-col items-center justify-center mx-auto">
     <div className="flex justify-around w-full mb-6 relative p-6">
       <div
@@ -36,7 +37,7 @@ export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
             left-0 right-0 w-full
           '
         >
-          {second.questionScore}P
+          {!second || second.questionScore}P
         </span>
         <img
           src={second.userImage}
@@ -48,7 +49,7 @@ export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
             block text-center text-xs font-semibold
           '
         >
-          {shortName(typeof second.userName === "string" ? second.userName : "")}
+          {!second || shortName(typeof second.userName === "string" ? second.userName : "")}
         </span>
       </div>
       <div
@@ -64,7 +65,7 @@ export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
             left-0 right-0 w-full
           '
         >
-           {first.questionScore}P
+           {!first || first.questionScore}P
         </span>
         <img
           src={first.userImage}
@@ -76,7 +77,7 @@ export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
             block text-center text-xs font-semibold
           '
         >
-          {shortName(typeof first.userName === "string" ? first.userName : "")}
+          {!first || shortName(typeof first.userName === "string" ? first.userName : "")}
         </span>
       </div>
       <div
@@ -92,7 +93,7 @@ export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
             left-0 right-0 w-full
           '
         >
-          {third.questionScore}P
+          {!third || third.questionScore}P
         </span>
         <img
           src={third.userImage}
@@ -104,7 +105,7 @@ export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
             block text-center text-xs font-semibold
           '
         >
-          {shortName(typeof third.userName === "string" ? third.userName : "")}
+          {!third || shortName(typeof third.userName === "string" ? third.userName : "")}
         </span>
       </div>
     </div>
