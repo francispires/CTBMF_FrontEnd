@@ -39,7 +39,7 @@ export const Layout = ({ children }: Props) => {
           </NavbarWrapper>
         </section>
       </SidebarContext.Provider>
-      <ReactQueryDevtools initialIsOpen={true} />
+      {/*<ReactQueryDevtools initialIsOpen={true} />*/}
     </QueryClientProvider>
   );
 };

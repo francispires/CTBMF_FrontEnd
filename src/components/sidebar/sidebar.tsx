@@ -35,24 +35,14 @@ export const SidebarWrapper = () => {
                 <div className={Sidebar.Overlay()} onClick={setCollapsed}/>
             ) : null}
             <div
-                className={width > 768 ?
-                    cn(
-                        !collapsed ? Sidebar({
-                            collapsed: collapsed,
-                        }) + " flex-col fixed" : Sidebar({
-                            collapsed: collapsed,
-                        }) + " flex static h-screen translate-x-0",
-                    ) :
-                    cn(
-                        Sidebar({
-                            collapsed: collapsed
-                        }) + " flex-col fixed md:flex md:static md:h-screen md:translate-x-0",
-                    )
-                }
+                className={Sidebar({
+                    collapsed: collapsed,
+                })}
             >
                 <div className={Sidebar.Header()}>
                     <div className="flex items-center gap-2">
-                        <Image src={darkMode.value ? "/img/LogoBlack.png" : "/img/LogoWhite.png"} width={40} height={40}/>
+                        <Image src={darkMode.value ? "/img/LogoBlack.png" : "/img/LogoWhite.png"} width={40}
+                               height={40}/>
                         {!collapsed || (
                             <div className="flex flex-col gap-4">
                                 <h3 className="text-xl font-medium m-0 text-default-900 -mb-4 whitespace-nowrap">
@@ -66,11 +56,12 @@ export const SidebarWrapper = () => {
                     </div>
                 </div>
                 <div className={"flex flex-col justify-between " + (!collapsed ? " items-center" : "")}>
-                    {!collapsed && <BurguerButton/>}
+                    {/*{!collapsed && <BurguerButton/>}*/}
                     <div className={Sidebar.Body()}>
                         <SidebarItem
                             title="Agenda"
-                            icon={<FontAwesomeIcon icon={faGauge} size={"1x"} title={"Agenda"} className={"max-w-1/4 text-gray-500"}/>}
+                            icon={<FontAwesomeIcon icon={faGauge} size={"1x"} title={"Agenda"}
+                                                   className={"max-w-1/4 text-gray-500"}/>}
                             isActive={pathname === "/"}
                             href="/"
                         />
@@ -78,14 +69,16 @@ export const SidebarWrapper = () => {
                             <SidebarItem
                                 isActive={pathname === "/dashboard"}
                                 title="Minha Área"
-                                icon={<FontAwesomeIcon icon={faUser} size={iconSize} title={"Minha Área"} className={"max-w-1/4 text-gray-500"}/>}
+                                icon={<FontAwesomeIcon icon={faUser} size={iconSize} title={"Minha Área"}
+                                                       className={"max-w-1/4 text-gray-500"}/>}
                                 href="dashboard"
                             />
                             <SidebarItem
                                 isActive={pathname === "/provas"}
                                 href="provas"
                                 title="Simulados"
-                                icon={<FontAwesomeIcon icon={faClipboardCheck} size={iconSize} title={"Simulados"} className={"max-w-1/4 text-gray-500"}/>}
+                                icon={<FontAwesomeIcon icon={faClipboardCheck} size={iconSize} title={"Simulados"}
+                                                       className={"max-w-1/4 text-gray-500"}/>}
                             />
                             {/*<SidebarItem*/}
                             {/*  isActive={pathname === "/banco-de-questoes"}*/}
@@ -97,7 +90,8 @@ export const SidebarWrapper = () => {
                                 isActive={pathname === "/questoes"}
                                 href="/questoes"
                                 title="Questões"
-                                icon={<FontAwesomeIcon icon={faCircleQuestion} size={iconSize} title={"Questões"} className={iconClass}/>}
+                                icon={<FontAwesomeIcon icon={faCircleQuestion} size={iconSize} title={"Questões"}
+                                                       className={iconClass}/>}
                             />
                             {/*<SidebarItem*/}
                             {/*  isActive={pathname === "/flash-cards"}*/}
@@ -121,43 +115,50 @@ export const SidebarWrapper = () => {
                                     isActive={pathname === "/provas"}
                                     href="config_provas"
                                     title="Simulados"
-                                    icon={<FontAwesomeIcon icon={faClipboardCheck} size={iconSize} title={"Simulados"} className={iconClass}/>}
+                                    icon={<FontAwesomeIcon icon={faClipboardCheck} size={iconSize} title={"Simulados"}
+                                                           className={iconClass}/>}
                                 />
                                 <SidebarItem
                                     isActive={pathname === "/users"}
                                     href="users"
                                     title="Usuários"
-                                    icon={<FontAwesomeIcon icon={faUser} size={iconSize} title={"Simulados"} className={iconClass}/>}
+                                    icon={<FontAwesomeIcon icon={faUser} size={iconSize} title={"Simulados"}
+                                                           className={iconClass}/>}
                                 />
                                 <SidebarItem
                                     isActive={pathname === "/disciplines"}
                                     href="disciplines"
                                     title="Disciplinas"
-                                    icon={<FontAwesomeIcon icon={faGraduationCap} size={iconSize} title={"Disciplinas"} className={iconClass}/>}
+                                    icon={<FontAwesomeIcon icon={faGraduationCap} size={iconSize} title={"Disciplinas"}
+                                                           className={iconClass}/>}
                                 />
                                 <SidebarItem
                                     isActive={pathname === "/questions"}
                                     href="questions"
                                     title="Questões"
-                                    icon={<FontAwesomeIcon icon={faCircleQuestion} size={iconSize} title={"Questões"} className={iconClass}/>}
+                                    icon={<FontAwesomeIcon icon={faCircleQuestion} size={iconSize} title={"Questões"}
+                                                           className={iconClass}/>}
                                 />
                                 <SidebarItem
                                     isActive={pathname === "/institutions"}
                                     href="institutions"
                                     title="Instituições"
-                                    icon={<FontAwesomeIcon icon={faBuilding} size={iconSize} title={"Instituições"} className={iconClass}/>}
+                                    icon={<FontAwesomeIcon icon={faBuilding} size={iconSize} title={"Instituições"}
+                                                           className={iconClass}/>}
                                 />
                                 <SidebarItem
                                     isActive={pathname === "/crews"}
                                     href="crews"
                                     title="Turmas"
-                                    icon={<FontAwesomeIcon icon={faUsers} size={iconSize} title={"Turmas"} className={iconClass}/>}
+                                    icon={<FontAwesomeIcon icon={faUsers} size={iconSize} title={"Turmas"}
+                                                           className={iconClass}/>}
                                 />
                                 <SidebarItem
                                     isActive={pathname === "/enrollments"}
                                     href="enrollments"
                                     title="Matrículas"
-                                    icon={<FontAwesomeIcon icon={faDoorOpen} size={iconSize} title={"Matrículas"} className={iconClass}/>}
+                                    icon={<FontAwesomeIcon icon={faDoorOpen} size={iconSize} title={"Matrículas"}
+                                                           className={iconClass}/>}
                                 />
                                 {/*<SidebarItem*/}
                                 {/*  isActive={pathname === "/question-banks"}*/}
@@ -169,7 +170,8 @@ export const SidebarWrapper = () => {
                                     isActive={pathname === "/settings"}
                                     href="settings"
                                     title="Configurações"
-                                    icon={<FontAwesomeIcon icon={faGear} size={iconSize} title={"Configurações"} className={iconClass}/>}
+                                    icon={<FontAwesomeIcon icon={faGear} size={iconSize} title={"Configurações"}
+                                                           className={iconClass}/>}
                                 />
                             </SidebarMenu>
                         )}
