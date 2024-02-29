@@ -1,6 +1,8 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {logout} from './api.ts';
 import {history} from "../../../_helpers";
+import {get} from "../../../_helpers/api.ts";
+import {apiUrl} from "../../../_helpers/utils.ts";
 
 const initialState = createInitialState();
 function createInitialState() {
@@ -63,6 +65,8 @@ export const authSlice = createSlice({
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('user', JSON.stringify(user));
             state.user = user;
+            setTimeout(() => {get(apiUrl+"/users/me");}, 1);
+
 
             // get return url from location state or default to home page
             // const { from } = history.location.state || { from: { pathname: '/' } };
