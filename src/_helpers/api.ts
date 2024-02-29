@@ -2,30 +2,23 @@ import {store} from "../app/store.ts";
 import axios from 'axios';
 import {apiUrl} from "./utils.ts";
 
-
 axios.interceptors.request.use(function (config) {
-    config.headers.Authorization = `Bearer ${authToken()}`;
+    if (authToken())
+        config.headers.Authorization = `Bearer ${authToken()}`;
     return config;
 });
 
 export async function get<T>(url: string, abortSignal?: AbortSignal) {
     try {
-        const {data, status} = await axios.get<T>(
-            url,
-            {
-                signal: abortSignal,
-                headers: {
-                    Authorization: `Bearer ${authToken()}`,
-                    Accept: '*/*'
-                }
+        const config = {
+            signal: abortSignal,
+            headers: {
+                Accept: '*/*'
             }
-        );
-
-        //console.log(JSON.stringify(data, null, 4));
-
-        // 👇️ "response status is: 200"
-//        console.log('response status is: ', status);
-
+        };
+        if (authToken())
+            config.headers.Authorization = `Bearer ${authToken()}`;
+        const {data, status} = await axios.get<T>(url, config);
         return data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -72,7 +65,9 @@ export async function patch<T>(url: string, body: T, file?: File) {
                 "content-type": "multipart/form-data"
             },
         } : {};
-        if (file) {url = url + '/file';}
+        if (file) {
+            url = url + '/file';
+        }
         const {data, status} = await axios.patch(url, {...body, file}, config);
         //console.log(JSON.stringify(data, null, 4));
         //console.log('response status is: ', status);
@@ -108,11 +103,10 @@ export async function remove<T>(url: string, id: string) {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function uploadFile(folderName: string,fileName:string, formData: FormData) {
+export async function uploadFile(folderName: string, fileName: string, formData: FormData) {
     try {
         const url = `${apiUrl}/questions/upload64/?folderName=${folderName}&fileName=${fileName}`;
-        const {data, status} = await axios.post(url, formData,{
+        const {data, status} = await axios.post(url, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -123,11 +117,9 @@ export async function uploadFile(folderName: string,fileName:string, formData: F
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.log('error message: ', error.message);
-            //return error.message;
             return null;
         } else {
             console.log('unexpected error: ', error);
-            //return 'An unexpected error occurred';
             return null;
         }
     }
