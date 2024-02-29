@@ -24,6 +24,7 @@ export type Props = {
 export default function SelectStatic<T>({ className="",...props }) {
     const [isOpen, setIsOpen] = useState(false);
     const {items, hasMore, isLoading, onLoadMore} = useSelect2List<T>(props.url,props.valueProp,props.textProp);
+    const [innerItems, setInnerItems] = useState(items);
     const [values, setValues] = useState(new Set([""]));
     const [, scrollerRef] = useInfiniteScroll({
         hasMore,
@@ -35,18 +36,19 @@ export default function SelectStatic<T>({ className="",...props }) {
     const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const set = new Set(e.target.value.split(","));
         if (set.size) setValues(set);
-
         props.setValues(Array.from(set).filter((s)=>s));
     };
 
     const clearItems = () => {
-        setValues(new Set([""]));
-        props.setValues([""]);
+        setValues(new Set([]));
+        props.setValues([]);
+        setInnerItems([])
     }
 
     return (
         <div className="flex w-full flex-col w-1/4">
             <Select
+                items={innerItems}
                 classNames={{
                     innerWrapper: "h-auto w-full",
                     value: "whitespace-break-spaces",
@@ -58,7 +60,6 @@ export default function SelectStatic<T>({ className="",...props }) {
                 label={props.label}
                 selectionMode={props.selectionMode || "multiple"}
                 placeholder={props.placeholder}
-                items={items}
                 scrollRef={scrollerRef}
                 isLoading={isLoading}
                 onOpenChange={setIsOpen}
@@ -67,7 +68,7 @@ export default function SelectStatic<T>({ className="",...props }) {
                     return (
                         <div className="flex flex-wrap gap-2">
                             {items.map((item) => (
-                                <Chip className={"whitespace-break-spaces p-5"} key={item.key}>{item.textValue}</Chip>
+                                <Chip className={"whitespace-break-spaces p-3"} key={item.key}>{item.textValue}</Chip>
                             ))}
                         </div>
                     );

@@ -1,7 +1,6 @@
 import { Navbar, NavbarContent } from "@nextui-org/react";
 import React from "react";
 import { BurguerButton } from "./burguer-button";
-import { NotificationsDropdown } from "./notifications-dropdown";
 import { UserDropdown } from "./user-dropdown";
 import { DarkModeSwitch } from "./darkmodeswitch.tsx";
 
@@ -42,7 +41,7 @@ export const NavbarWrapper = ({ children }: Props) => {
             <DarkModeSwitch />
           </div>
 
-          <NotificationsDropdown />
+          {/*<NotificationsDropdown />*/}
           <NavbarContent>
             <UserDropdown />
           </NavbarContent>

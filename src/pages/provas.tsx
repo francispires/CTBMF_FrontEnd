@@ -1,54 +1,11 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { MyCard } from "../components/layout/MyCard";
-import {Button, SortDescriptor} from "@nextui-org/react";
-import { FaArrowLeft } from "react-icons/fa";
-import { mockedQuizzAttemptConfiguration } from "./user-question-bank";
+import {SortDescriptor} from "@nextui-org/react";
 import {QuizConfigCard} from "../components/layout/quiz-config-card.tsx";
-import {get, remove} from "../_helpers/api.ts";
-import {apiUrl, parseSortDescriptor} from "../_helpers/utils.ts";
+import {get} from "../_helpers/api.ts";
+import {apiUrl} from "../_helpers/utils.ts";
 import {QuizAttemptConfigurationResponseDto} from "../types_custom.ts";
 import {useQuery} from "@tanstack/react-query";
 import {PageLoader} from "../components/page-loader.tsx";
 import {useState} from "react";
-
-const quizzes = [
-  {
-    id: '1',
-    quizzAttemptType: 'Simulation',
-    score: 999,
-    total: 10000,
-    image: 'https://nextui.org/images/card-example-2.jpeg',
-    questionsCount: 44,
-    avgDifficulty: 200,
-    questions: ['q1'],
-    name: 'Quiz 1',
-    description: 'Quiz 1 description'
-  },
-  {
-    id: '2',
-    quizzAttemptType: 'Exam',
-    score: 100,
-    total: 13000,
-    image: 'https://nextui.org/images/card-example-6.jpeg',
-    questionsCount: 23,
-    avgDifficulty: 200,
-    name: 'Quiz 2',
-    description: 'Quiz 2 description',
-    questions: ['q1', 'q2']
-  },
-  {
-    id: '3',
-    quizzAttemptType: 'Practice',
-    image: 'https://nextui.org/images/card-example-5.jpeg',
-    score: 400,
-    questionsCount: 32,
-    avgDifficulty: 200,
-    total: 9000,
-    name: 'Quiz 3',
-    description: 'Quiz 3 description',
-    questions: ['q1', 'q2', 'q3']
-  },
-]
 
 export default function Provas() {
   const [paging, setPaging] = useState({ currentPage: 1, pageSize: 10, sort: "", filter: "" } as PagedRequest);

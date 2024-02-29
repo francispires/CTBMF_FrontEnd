@@ -16,7 +16,9 @@ export type Props = {
     value?: string,
     selectionMode?: "single" | "multiple",
     setValue: (value: string) => void,
+    setIsNew?: (value: boolean) => void,
     useKey?: boolean,
+    groupBy?: string,
 };
 
 
@@ -29,7 +31,7 @@ export default function Select2({ className="",...props }) {
     const [isOpen, setIsOpen] = useState(false);
     const {items, hasMore, isLoading, onLoadMore} = useSelect2List<string>(props.url,props.valueProp,props.textProp);
     const [, setValue] = useState("");
-    const [useKeyAsValue] = useState(props.useKey || false);
+    const [textValue, setTextValue] = useState("");
     const [, setSelectedKey] = useState<Key | null>(null);
         
     const [, scrollerRef] = useInfiniteScroll({
@@ -39,16 +41,24 @@ export default function Select2({ className="",...props }) {
         onLoadMore,
     });
     const onSelectionChange = (key: Key) => {
+        props.setIsNew && props.setIsNew(false);
         setSelectedKey(key);
-        if (useKeyAsValue) {
+        if (props.useKey) {
             props.setValue(key as string);
         }
     };
 
     const onInputChange = (value: string) => {
+        const test = items.find((x) => x.text === value);
+        props.setIsNew && props.setIsNew(!test);
+        if (test) {
+            setSelectedKey(test.value!);
+        }
         setValue(value);
-        if (!useKeyAsValue){
+        if (!props.useKey){
             props.setValue(value);
+        }else{
+            props.setValue(test?.value || value);
         }
     };
 
@@ -69,11 +79,13 @@ export default function Select2({ className="",...props }) {
                 onSelectionChange={onSelectionChange}
                 onInputChange={onInputChange}
             >
-                {(item) => (
+                {
+                    (item) => (
                     <AutocompleteItem key={item.value || JSON.stringify(item)} className="capitalize">
                         {item.text}
                     </AutocompleteItem>
-                )}
+                    )
+                }
             </Autocomplete>
         </div>
 );

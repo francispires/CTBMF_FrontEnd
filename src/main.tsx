@@ -23,14 +23,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 <Auth0ProviderWithNavigate>
                     <NextUIProvider>
                         <Layout>
-                            <ErrorBoundary>
+                            {/*<ErrorBoundary>*/}
                                 <App />
                                 <ToastContainer
                                     pauseOnHover
                                     closeOnClick
                                     theme='colored'
                                 />
-                            </ErrorBoundary>
+                            {/*</ErrorBoundary>*/}
                         </Layout>
                     </NextUIProvider>
                 </Auth0ProviderWithNavigate>

@@ -57,27 +57,27 @@ export function TableTopContent(props: TableTopContentProps) {
                     onValueChange={onFilterChange}
                 />
                 <div className="flex gap-3">
-                    <Dropdown>
-                        <DropdownTrigger className="hidden sm:flex">
-                            <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
-                                Status
-                            </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu
-                            disallowEmptySelection
-                            aria-label="Colunas"
-                            closeOnSelect={false}
-                            selectedKeys={props.customFieldFilter}
-                            selectionMode="multiple"
-                            onSelectionChange={props.setCustomFieldFilter}
-                        >
-                            {statusOptions.map((status) => (
-                                <DropdownItem key={status.uid} className="capitalize">
-                                    {capitalize(status.name)}
-                                </DropdownItem>
-                            ))}
-                        </DropdownMenu>
-                    </Dropdown>
+                    {/*<Dropdown>*/}
+                    {/*    <DropdownTrigger className="hidden sm:flex">*/}
+                    {/*        <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">*/}
+                    {/*            Status*/}
+                    {/*        </Button>*/}
+                    {/*    </DropdownTrigger>*/}
+                    {/*    <DropdownMenu*/}
+                    {/*        disallowEmptySelection*/}
+                    {/*        aria-label="Colunas"*/}
+                    {/*        closeOnSelect={false}*/}
+                    {/*        selectedKeys={props.customFieldFilter}*/}
+                    {/*        selectionMode="multiple"*/}
+                    {/*        onSelectionChange={props.setCustomFieldFilter}*/}
+                    {/*    >*/}
+                    {/*        {statusOptions.map((status) => (*/}
+                    {/*            <DropdownItem key={status.uid} className="capitalize">*/}
+                    {/*                {capitalize(status.name)}*/}
+                    {/*            </DropdownItem>*/}
+                    {/*        ))}*/}
+                    {/*    </DropdownMenu>*/}
+                    {/*</Dropdown>*/}
                     <Dropdown>
                         <DropdownTrigger className="hidden sm:flex">
                             <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">

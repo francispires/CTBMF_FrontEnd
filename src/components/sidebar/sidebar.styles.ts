@@ -1,11 +1,11 @@
 import { tv } from "@nextui-org/react";
 
 export const SidebarWrapper = tv({
-  base: "bg-background transition-transform h-full -translate-x-full w-64 shrink-0 z-[202] overflow-y-auto border-r border-divider py-6 px-3 md:ml-0",
+  base: "bg-background transition-transform h-full w-auto overflow-y-auto border-r border-divider py-6 px-3 md:ml-0  align-items:center",
 
   variants: {
     collapsed: {
-      true: "translate-x-0 ml-0 [display:inherit]",
+      true: "translate-x-0 ml-0 [display:inherit] w-auto",
     },
   },
   // ""

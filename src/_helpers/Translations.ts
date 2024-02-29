@@ -1,7 +1,7 @@
 abstract class t {
-    public static year="ano";
-    public static board="banca";
-    public static image="imagem";
+    public static year="Ano";
+    public static board="Banca";
+    public static image="Imagem";
     public static text="Enunciado";
     public static score="Pontos";
     public static institutionId="Instiuição";
@@ -26,6 +26,19 @@ abstract class t {
     public static parentName="Mãe";
     public static childsCount="Filhos";
     public static isValid="Válida";
-
+    public static parentId="MãeId";
+    public static institutionName="Instituição";
+    public static active="Ativa";
+    public static disciplineName="Disciplina";
+    public static disciplineId="DisciplinaId";
+    public static id="Id";
+    public static value="Valor";
+    public static daysToAnswer="Dias para Responder";
+    public static m2mToken  = "Token";
+    public static m2mToken_date = "Data Token";
+    public static student = "Aluno";
+    public static crew = "Turma";
+    public static startDate = "Início";
+    public static endDate = "Fim";
 }
 export default t;

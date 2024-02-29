@@ -1,6 +1,7 @@
 import t from "./Translations.ts";
-import {AlternativeRequestDto} from "../types_custom.ts";
+import {AlternativeRequestDto, IRankingAnswersResponseDto} from "../types_custom.ts";
 import {SortDescriptor} from "@nextui-org/react";
+import {eachWeekOfInterval, interval, NormalizedInterval} from "date-fns";
 
 export class Utils{
     static GetInitialVisibleColumns<T>(obj:T) {
@@ -59,18 +60,23 @@ export const parseSortDescriptor = (lucene:boolean|undefined,sortDescriptor:Sort
     return `${sortDescriptor.column} ${sortDescriptor.direction === "ascending" ? "Asc" : "Desc"}`;
 };
 
-export const htmlText = (t:string|undefined)=>{
+export const htmlText = (t:string)=>{
     return {__html: t} as string|TrustedHTML
 };
 
 export const clean = (arr: string[]) => {
+    if(!arr) return [];
     return arr.filter((x) => x);
 }
+
 
 export const addParams = (url: URL, name:string,params: string[]) => {
     clean(params).map((p) => {
         url.searchParams.append(name, p);
     });
+}
+export const addParam = (url: URL, name:string,p: string) => {
+    url.searchParams.append(name, p);
 }
 
 export const toggleCorrectAlternative = (alternatives: AlternativeRequestDto[], id:string) => {
@@ -103,4 +109,31 @@ export const toggleCorrectAlternativeReq = (alternatives: AlternativeRequestDto[
     }
     tempArray[index]["correct"] = !isCorrect;
     return tempArray;
+}
+
+/**
+ * @description
+ * Takes an Array<V>, and a grouping function,
+ * and returns a Map of the array grouped by the grouping function.
+ *
+ * @param list An array of type V.
+ * @param keyGetter A Function that takes the the Array type V as an input, and returns a value of type K.
+ *                  K is generally intended to be a property key of V.
+ *
+ * @returns Map of the array grouped by the grouping function.
+ */
+//export function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
+//    const map = new Map<K, Array<V>>();
+export const groupBy = (list, keyGetter)=> {
+    const map = new Map();
+    list.forEach((item) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
+    });
+    return map;
 }

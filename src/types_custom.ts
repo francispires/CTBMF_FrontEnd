@@ -18,7 +18,49 @@ export class AnswerClient {
         this.baseUrl = baseUrl ?? "http://localhost";
     }
 
-    getMyAnswers(signal?: AbortSignal): Promise<FileResponse | null> {
+    ranking(signal?: AbortSignal): Promise<RankingAnswersResponseDto[]> {
+        let url_ = this.baseUrl + "/api/answers/ranking";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRanking(_response);
+        });
+    }
+
+    protected processRanking(response: Response): Promise<RankingAnswersResponseDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(RankingAnswersResponseDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RankingAnswersResponseDto[]>(null as any);
+    }
+
+    my(signal?: AbortSignal): Promise<RankingAnswersResponseDto[]> {
         let url_ = this.baseUrl + "/api/answers/my";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -26,35 +68,38 @@ export class AnswerClient {
             method: "GET",
             signal,
             headers: {
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetMyAnswers(_response);
+            return this.processMy(_response);
         });
     }
 
-    protected processGetMyAnswers(response: Response): Promise<FileResponse | null> {
+    protected processMy(response: Response): Promise<RankingAnswersResponseDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(RankingAnswersResponseDto.fromJS(item));
             }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<FileResponse | null>(null as any);
+        return Promise.resolve<RankingAnswersResponseDto[]>(null as any);
     }
 
     generateFakeAnswers(signal?: AbortSignal): Promise<FileResponse | null> {
@@ -345,7 +390,7 @@ export class AnswerClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    createWithFile(id: string | undefined, questionId: string | null | undefined, user: string | null | undefined, alternativeId: string | null | undefined, correct: boolean | undefined, quizAttemptId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    createWithFile(id: string | undefined, questionId: string | null | undefined, alternativeId: string | null | undefined, correct: boolean | undefined, quizAttemptId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/answers/file";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -356,8 +401,6 @@ export class AnswerClient {
             content_.append("Id", id.toString());
         if (questionId !== null && questionId !== undefined)
             content_.append("QuestionId", questionId.toString());
-        if (user !== null && user !== undefined)
-            content_.append("User", user.toString());
         if (alternativeId !== null && alternativeId !== undefined)
             content_.append("AlternativeId", alternativeId.toString());
         if (correct === null || correct === undefined)
@@ -403,7 +446,7 @@ export class AnswerClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    updateWithFile(idPath: string, idFormData: string | undefined, questionId: string | null | undefined, user: string | null | undefined, alternativeId: string | null | undefined, correct: boolean | undefined, quizAttemptId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    updateWithFile(idPath: string, idFormData: string | undefined, questionId: string | null | undefined, alternativeId: string | null | undefined, correct: boolean | undefined, quizAttemptId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/answers/file";
         if (idPath === undefined || idPath === null)
             throw new Error("The parameter 'idPath' must be defined.");
@@ -417,8 +460,6 @@ export class AnswerClient {
             content_.append("Id", idFormData.toString());
         if (questionId !== null && questionId !== undefined)
             content_.append("QuestionId", questionId.toString());
-        if (user !== null && user !== undefined)
-            content_.append("User", user.toString());
         if (alternativeId !== null && alternativeId !== undefined)
             content_.append("AlternativeId", alternativeId.toString());
         if (correct === null || correct === undefined)
@@ -464,12 +505,12 @@ export class AnswerClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    upload(file: FileParameter | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/answers/upload?";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
         if (folderName === null)
             throw new Error("The parameter 'folderName' cannot be null.");
         else if (folderName !== undefined)
@@ -477,10 +518,30 @@ export class AnswerClient {
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (file === null || file === undefined)
-            throw new Error("The parameter 'file' cannot be null.");
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
         else
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
 
         let options_: RequestInit = {
             body: content_,
@@ -497,6 +558,60 @@ export class AnswerClient {
     }
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/answers/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -683,6 +798,1297 @@ export class AuthClient {
             });
         }
         return Promise.resolve<Message>(null as any);
+    }
+
+    getPermissions(id: string, paginationInfo: PaginationInfo, signal?: AbortSignal): Promise<Message> {
+        let url_ = this.baseUrl + "/api/auth/permissions/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(paginationInfo);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "GET",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetPermissions(_response);
+        });
+    }
+
+    protected processGetPermissions(response: Response): Promise<Message> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Message.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Message>(null as any);
+    }
+
+    addPermission(id: string, permissionsRequest: AssignPermissionsRequest, signal?: AbortSignal): Promise<Message> {
+        let url_ = this.baseUrl + "/api/auth/permissions/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(permissionsRequest);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAddPermission(_response);
+        });
+    }
+
+    protected processAddPermission(response: Response): Promise<Message> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Message.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Message>(null as any);
+    }
+
+    getRoles(id: string, paginationInfo: PaginationInfo, signal?: AbortSignal): Promise<Message> {
+        let url_ = this.baseUrl + "/api/auth/roles/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(paginationInfo);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "GET",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetRoles(_response);
+        });
+    }
+
+    protected processGetRoles(response: Response): Promise<Message> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Message.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Message>(null as any);
+    }
+
+    addRole(id: string, rolesRequest: AssignRolesRequest, signal?: AbortSignal): Promise<Message> {
+        let url_ = this.baseUrl + "/api/auth/roles/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(rolesRequest);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAddRole(_response);
+        });
+    }
+
+    protected processAddRole(response: Response): Promise<Message> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Message.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Message>(null as any);
+    }
+
+    get(id: string, signal?: AbortSignal): Promise<Message> {
+        let url_ = this.baseUrl + "/api/auth/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: Response): Promise<Message> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Message.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<Message>(null as any);
+    }
+
+    get2(currentPage: number | undefined, pageSize: number | undefined, filter: string | null | undefined, sort: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/auth/all?";
+        if (currentPage === null)
+            throw new Error("The parameter 'currentPage' cannot be null.");
+        else if (currentPage !== undefined)
+            url_ += "currentPage=" + encodeURIComponent("" + currentPage) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "filter=" + encodeURIComponent("" + filter) + "&";
+        if (sort !== undefined && sort !== null)
+            url_ += "sort=" + encodeURIComponent("" + sort) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet2(_response);
+        });
+    }
+
+    protected processGet2(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    updateProfile(userRequest: UpdateUserProfileRequestDto, signal?: AbortSignal): Promise<string> {
+        let url_ = this.baseUrl + "/api/auth/update_profile";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(userRequest);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateProfile(_response);
+        });
+    }
+
+    protected processUpdateProfile(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+}
+
+export class ConfigClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "http://localhost";
+    }
+
+    /**
+     * Get all records of type T
+     * @param currentPage (optional) 
+     * @param pageSize (optional) 
+     * @param sort (optional) 
+     * @param filter (optional) 
+     * @return A PagedResult T with queryable holding the items
+     */
+    getAll(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfConfigResponseDto> {
+        let url_ = this.baseUrl + "/api/configs?";
+        if (currentPage === null)
+            throw new Error("The parameter 'currentPage' cannot be null.");
+        else if (currentPage !== undefined)
+            url_ += "CurrentPage=" + encodeURIComponent("" + currentPage) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (sort !== undefined && sort !== null)
+            url_ += "Sort=" + encodeURIComponent("" + sort) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<PagedResultOfConfigResponseDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfConfigResponseDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PagedResultOfConfigResponseDto>(null as any);
+    }
+
+    /**
+     * Create a record of type T
+     * @param body The RequestDto to create object
+     * @return The created item T
+     */
+    create(body: ConfigRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/configs";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Get a record of type T by id
+     * @param id The id of the item
+     * @return A item T
+     */
+    get(id: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/configs/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Delete a record of type T by id
+     * @param id The id of the item to be removed
+     * @return True on success, false otherwise
+     */
+    delete(id: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/configs/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Update a record of type T by id
+     * @param id The id of the item to be updated
+     * @param body The updated body to be saved
+     * @return True on success, false otherwise
+     */
+    update(id: string, body: ConfigRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/configs/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    createWithFile(id: string | null | undefined, key: string | undefined, value: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/configs/file";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (id !== null && id !== undefined)
+            content_.append("Id", id.toString());
+        if (key === null || key === undefined)
+            throw new Error("The parameter 'key' cannot be null.");
+        else
+            content_.append("Key", key.toString());
+        if (value === null || value === undefined)
+            throw new Error("The parameter 'value' cannot be null.");
+        else
+            content_.append("Value", value.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateWithFile(_response);
+        });
+    }
+
+    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    updateWithFile(idPath: string, idFormData: string | null | undefined, key: string | undefined, value: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/configs/file";
+        if (idPath === undefined || idPath === null)
+            throw new Error("The parameter 'idPath' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (idFormData !== null && idFormData !== undefined)
+            content_.append("Id", idFormData.toString());
+        if (key === null || key === undefined)
+            throw new Error("The parameter 'key' cannot be null.");
+        else
+            content_.append("Key", key.toString());
+        if (value === null || value === undefined)
+            throw new Error("The parameter 'value' cannot be null.");
+        else
+            content_.append("Value", value.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateWithFile(_response);
+        });
+    }
+
+    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers2[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/configs/upload?";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
+        else
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload(_response);
+        });
+    }
+
+    protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/configs/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+}
+
+export class CrewClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "http://localhost";
+    }
+
+    /**
+     * Get all records of type T
+     * @param currentPage (optional) 
+     * @param pageSize (optional) 
+     * @param sort (optional) 
+     * @param filter (optional) 
+     * @return A PagedResult T with queryable holding the items
+     */
+    getAll(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfCrewResponseDto> {
+        let url_ = this.baseUrl + "/api/crews?";
+        if (currentPage === null)
+            throw new Error("The parameter 'currentPage' cannot be null.");
+        else if (currentPage !== undefined)
+            url_ += "CurrentPage=" + encodeURIComponent("" + currentPage) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (sort !== undefined && sort !== null)
+            url_ += "Sort=" + encodeURIComponent("" + sort) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<PagedResultOfCrewResponseDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfCrewResponseDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PagedResultOfCrewResponseDto>(null as any);
+    }
+
+    /**
+     * Create a record of type T
+     * @param body The RequestDto to create object
+     * @return The created item T
+     */
+    create(body: CrewRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/crews";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Get a record of type T by id
+     * @param id The id of the item
+     * @return A item T
+     */
+    get(id: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/crews/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Delete a record of type T by id
+     * @param id The id of the item to be removed
+     * @return True on success, false otherwise
+     */
+    delete(id: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/crews/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Update a record of type T by id
+     * @param id The id of the item to be updated
+     * @param body The updated body to be saved
+     * @return True on success, false otherwise
+     */
+    update(id: string, body: CrewRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/crews/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    createWithFile(id: string | null | undefined, name: string | undefined, description: string | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/crews/file";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (id !== null && id !== undefined)
+            content_.append("Id", id.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (description === null || description === undefined)
+            throw new Error("The parameter 'description' cannot be null.");
+        else
+            content_.append("Description", description.toString());
+        if (data !== null && data !== undefined)
+            content_.append("Data", data.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateWithFile(_response);
+        });
+    }
+
+    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    updateWithFile(idPath: string, idFormData: string | null | undefined, name: string | undefined, description: string | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/crews/file";
+        if (idPath === undefined || idPath === null)
+            throw new Error("The parameter 'idPath' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (idFormData !== null && idFormData !== undefined)
+            content_.append("Id", idFormData.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (description === null || description === undefined)
+            throw new Error("The parameter 'description' cannot be null.");
+        else
+            content_.append("Description", description.toString());
+        if (data !== null && data !== undefined)
+            content_.append("Data", data.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateWithFile(_response);
+        });
+    }
+
+    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers3[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/crews/upload?";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
+        else
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload(_response);
+        });
+    }
+
+    protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/crews/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
     }
 }
 
@@ -1064,12 +2470,12 @@ export class DisciplinesClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    upload(file: FileParameter | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers4[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/disciplines/upload?";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
         if (folderName === null)
             throw new Error("The parameter 'folderName' cannot be null.");
         else if (folderName !== undefined)
@@ -1077,10 +2483,30 @@ export class DisciplinesClient {
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (file === null || file === undefined)
-            throw new Error("The parameter 'file' cannot be null.");
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
         else
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
 
         let options_: RequestInit = {
             body: content_,
@@ -1097,6 +2523,563 @@ export class DisciplinesClient {
     }
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/disciplines/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+}
+
+export class EnrollmentClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "http://localhost";
+    }
+
+    /**
+     * Get all records of type T
+     * @param currentPage (optional) 
+     * @param pageSize (optional) 
+     * @param sort (optional) 
+     * @param filter (optional) 
+     * @return A PagedResult T with queryable holding the items
+     */
+    getAll(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfEnrollmentResponseDto> {
+        let url_ = this.baseUrl + "/api/enrollments?";
+        if (currentPage === null)
+            throw new Error("The parameter 'currentPage' cannot be null.");
+        else if (currentPage !== undefined)
+            url_ += "CurrentPage=" + encodeURIComponent("" + currentPage) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (sort !== undefined && sort !== null)
+            url_ += "Sort=" + encodeURIComponent("" + sort) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<PagedResultOfEnrollmentResponseDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfEnrollmentResponseDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PagedResultOfEnrollmentResponseDto>(null as any);
+    }
+
+    /**
+     * Create a record of type T
+     * @param body The RequestDto to create object
+     * @return The created item T
+     */
+    create(body: EnrollmentRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/enrollments";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Get a record of type T by id
+     * @param id The id of the item
+     * @return A item T
+     */
+    get(id: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/enrollments/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Delete a record of type T by id
+     * @param id The id of the item to be removed
+     * @return True on success, false otherwise
+     */
+    delete(id: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/enrollments/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Update a record of type T by id
+     * @param id The id of the item to be updated
+     * @param body The updated body to be saved
+     * @return True on success, false otherwise
+     */
+    update(id: string, body: EnrollmentRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/enrollments/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    createWithFile(id: string | null | undefined, studentId: string | null | undefined, crewId: string | null | undefined, startDate: Date | null | undefined, endDate: Date | null | undefined, active: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/enrollments/file";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (id !== null && id !== undefined)
+            content_.append("Id", id.toString());
+        if (studentId !== null && studentId !== undefined)
+            content_.append("StudentId", studentId.toString());
+        if (crewId !== null && crewId !== undefined)
+            content_.append("CrewId", crewId.toString());
+        if (startDate !== null && startDate !== undefined)
+            content_.append("StartDate", startDate.toJSON());
+        if (endDate !== null && endDate !== undefined)
+            content_.append("EndDate", endDate.toJSON());
+        if (active === null || active === undefined)
+            throw new Error("The parameter 'active' cannot be null.");
+        else
+            content_.append("Active", active.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateWithFile(_response);
+        });
+    }
+
+    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    updateWithFile(idPath: string, idFormData: string | null | undefined, studentId: string | null | undefined, crewId: string | null | undefined, startDate: Date | null | undefined, endDate: Date | null | undefined, active: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/enrollments/file";
+        if (idPath === undefined || idPath === null)
+            throw new Error("The parameter 'idPath' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (idFormData !== null && idFormData !== undefined)
+            content_.append("Id", idFormData.toString());
+        if (studentId !== null && studentId !== undefined)
+            content_.append("StudentId", studentId.toString());
+        if (crewId !== null && crewId !== undefined)
+            content_.append("CrewId", crewId.toString());
+        if (startDate !== null && startDate !== undefined)
+            content_.append("StartDate", startDate.toJSON());
+        if (endDate !== null && endDate !== undefined)
+            content_.append("EndDate", endDate.toJSON());
+        if (active === null || active === undefined)
+            throw new Error("The parameter 'active' cannot be null.");
+        else
+            content_.append("Active", active.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateWithFile(_response);
+        });
+    }
+
+    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers5[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/enrollments/upload?";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
+        else
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload(_response);
+        });
+    }
+
+    protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/enrollments/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -1594,12 +3577,12 @@ export class InstitutionsClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    upload(file: FileParameter | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers6[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/institutions/upload?";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
         if (folderName === null)
             throw new Error("The parameter 'folderName' cannot be null.");
         else if (folderName !== undefined)
@@ -1607,10 +3590,30 @@ export class InstitutionsClient {
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (file === null || file === undefined)
-            throw new Error("The parameter 'file' cannot be null.");
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
         else
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
 
         let options_: RequestInit = {
             body: content_,
@@ -1627,6 +3630,60 @@ export class InstitutionsClient {
     }
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/institutions/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -2438,12 +4495,12 @@ export class ObservationsClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    upload(file: FileParameter | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers7[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/observations/upload?";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
         if (folderName === null)
             throw new Error("The parameter 'folderName' cannot be null.");
         else if (folderName !== undefined)
@@ -2451,10 +4508,30 @@ export class ObservationsClient {
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (file === null || file === undefined)
-            throw new Error("The parameter 'file' cannot be null.");
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
         else
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
 
         let options_: RequestInit = {
             body: content_,
@@ -2471,6 +4548,60 @@ export class ObservationsClient {
     }
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/observations/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -2747,7 +4878,7 @@ export class ObservationsRequestClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    createWithFile(id: string | null | undefined, questionId: string | null | undefined, user: string | null | undefined, resolved: boolean | null | undefined, type: ObservationType | undefined, text: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    createWithFile(id: string | null | undefined, questionId: string | null | undefined, resolved: boolean | null | undefined, type: ObservationType | undefined, text: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/observations_request/file";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2756,8 +4887,6 @@ export class ObservationsRequestClient {
             content_.append("Id", id.toString());
         if (questionId !== null && questionId !== undefined)
             content_.append("QuestionId", questionId.toString());
-        if (user !== null && user !== undefined)
-            content_.append("User", user.toString());
         if (resolved !== null && resolved !== undefined)
             content_.append("Resolved", resolved.toString());
         if (type === null || type === undefined)
@@ -2805,7 +4934,7 @@ export class ObservationsRequestClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    updateWithFile(idPath: string, idFormData: string | null | undefined, questionId: string | null | undefined, user: string | null | undefined, resolved: boolean | null | undefined, type: ObservationType | undefined, text: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    updateWithFile(idPath: string, idFormData: string | null | undefined, questionId: string | null | undefined, resolved: boolean | null | undefined, type: ObservationType | undefined, text: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/observations_request/file";
         if (idPath === undefined || idPath === null)
             throw new Error("The parameter 'idPath' must be defined.");
@@ -2817,8 +4946,6 @@ export class ObservationsRequestClient {
             content_.append("Id", idFormData.toString());
         if (questionId !== null && questionId !== undefined)
             content_.append("QuestionId", questionId.toString());
-        if (user !== null && user !== undefined)
-            content_.append("User", user.toString());
         if (resolved !== null && resolved !== undefined)
             content_.append("Resolved", resolved.toString());
         if (type === null || type === undefined)
@@ -2866,12 +4993,12 @@ export class ObservationsRequestClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    upload(file: FileParameter | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers8[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/observations_request/upload?";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
         if (folderName === null)
             throw new Error("The parameter 'folderName' cannot be null.");
         else if (folderName !== undefined)
@@ -2879,10 +5006,30 @@ export class ObservationsRequestClient {
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (file === null || file === undefined)
-            throw new Error("The parameter 'file' cannot be null.");
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
         else
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
 
         let options_: RequestInit = {
             body: content_,
@@ -2899,6 +5046,60 @@ export class ObservationsRequestClient {
     }
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/observations_request/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -3403,12 +5604,12 @@ export class QuestionBankClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    upload(file: FileParameter | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers9[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/question_banks/upload?";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
         if (folderName === null)
             throw new Error("The parameter 'folderName' cannot be null.");
         else if (folderName !== undefined)
@@ -3416,10 +5617,30 @@ export class QuestionBankClient {
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (file === null || file === undefined)
-            throw new Error("The parameter 'file' cannot be null.");
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
         else
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
 
         let options_: RequestInit = {
             body: content_,
@@ -3456,6 +5677,60 @@ export class QuestionBankClient {
         }
         return Promise.resolve<FileResponse | null>(null as any);
     }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/question_banks/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
 }
 
 export class QuestionClient {
@@ -3468,46 +5743,7 @@ export class QuestionClient {
         this.baseUrl = baseUrl ?? "http://localhost";
     }
 
-    getMyAnswers(signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/questions/my";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetMyAnswers(_response);
-        });
-    }
-
-    protected processGetMyAnswers(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    answer(body: AnswerRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+    answer(body: AnswerRequestDto, signal?: AbortSignal): Promise<AnswerResponseDto> {
         let url_ = this.baseUrl + "/api/questions/answer";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -3519,7 +5755,7 @@ export class QuestionClient {
             signal,
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             }
         };
 
@@ -3528,26 +5764,22 @@ export class QuestionClient {
         });
     }
 
-    protected processAnswer(response: Response): Promise<FileResponse | null> {
+    protected processAnswer(response: Response): Promise<AnswerResponseDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AnswerResponseDto.fromJS(resultData200);
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<FileResponse | null>(null as any);
+        return Promise.resolve<AnswerResponseDto>(null as any);
     }
 
     create(body: QuestionRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
@@ -3827,8 +6059,18 @@ export class QuestionClient {
         return Promise.resolve<PagedResultOfSelectListItem>(null as any);
     }
 
-    filter(institutionIds: string[] | null | undefined, boards: string[] | null | undefined, years: number[] | null | undefined, disciplines: string[] | null | undefined, onlyAnswereds: boolean | null | undefined, onlyCorrects: boolean | null | undefined, greatherThan: number | null | undefined, lessThan: number | null | undefined, quantity: number | null | undefined, questionNumber: number | null | undefined, signal?: AbortSignal): Promise<PagedResultOfQuestionRequestDto> {
+    filter(onlyWrongs: boolean | null | undefined, random: boolean | null | undefined, onlyNotAnswereds: boolean | null | undefined, onlyAnswereds: boolean | null | undefined, onlyCorrects: boolean | null | undefined, institutionIds: string[] | null | undefined, boards: string[] | null | undefined, years: number[] | null | undefined, disciplines: string[] | null | undefined, subDisciplines: string[] | null | undefined, greatherThan: number | null | undefined, lessThan: number | null | undefined, quantity: number | null | undefined, questionNumber: number | null | undefined, attemptId: string | null | undefined, attemptConfigId: string | null | undefined, getAll: boolean | undefined, signal?: AbortSignal): Promise<PagedResultOfQuestionRequestDto> {
         let url_ = this.baseUrl + "/api/questions/filter?";
+        if (onlyWrongs !== undefined && onlyWrongs !== null)
+            url_ += "OnlyWrongs=" + encodeURIComponent("" + onlyWrongs) + "&";
+        if (random !== undefined && random !== null)
+            url_ += "Random=" + encodeURIComponent("" + random) + "&";
+        if (onlyNotAnswereds !== undefined && onlyNotAnswereds !== null)
+            url_ += "OnlyNotAnswereds=" + encodeURIComponent("" + onlyNotAnswereds) + "&";
+        if (onlyAnswereds !== undefined && onlyAnswereds !== null)
+            url_ += "OnlyAnswereds=" + encodeURIComponent("" + onlyAnswereds) + "&";
+        if (onlyCorrects !== undefined && onlyCorrects !== null)
+            url_ += "OnlyCorrects=" + encodeURIComponent("" + onlyCorrects) + "&";
         if (institutionIds !== undefined && institutionIds !== null)
             institutionIds && institutionIds.forEach(item => { url_ += "InstitutionIds=" + encodeURIComponent("" + item) + "&"; });
         if (boards !== undefined && boards !== null)
@@ -3837,10 +6079,8 @@ export class QuestionClient {
             years && years.forEach(item => { url_ += "Years=" + encodeURIComponent("" + item) + "&"; });
         if (disciplines !== undefined && disciplines !== null)
             disciplines && disciplines.forEach(item => { url_ += "Disciplines=" + encodeURIComponent("" + item) + "&"; });
-        if (onlyAnswereds !== undefined && onlyAnswereds !== null)
-            url_ += "OnlyAnswereds=" + encodeURIComponent("" + onlyAnswereds) + "&";
-        if (onlyCorrects !== undefined && onlyCorrects !== null)
-            url_ += "OnlyCorrects=" + encodeURIComponent("" + onlyCorrects) + "&";
+        if (subDisciplines !== undefined && subDisciplines !== null)
+            subDisciplines && subDisciplines.forEach(item => { url_ += "SubDisciplines=" + encodeURIComponent("" + item) + "&"; });
         if (greatherThan !== undefined && greatherThan !== null)
             url_ += "GreatherThan=" + encodeURIComponent("" + greatherThan) + "&";
         if (lessThan !== undefined && lessThan !== null)
@@ -3849,6 +6089,14 @@ export class QuestionClient {
             url_ += "Quantity=" + encodeURIComponent("" + quantity) + "&";
         if (questionNumber !== undefined && questionNumber !== null)
             url_ += "QuestionNumber=" + encodeURIComponent("" + questionNumber) + "&";
+        if (attemptId !== undefined && attemptId !== null)
+            url_ += "AttemptId=" + encodeURIComponent("" + attemptId) + "&";
+        if (attemptConfigId !== undefined && attemptConfigId !== null)
+            url_ += "AttemptConfigId=" + encodeURIComponent("" + attemptConfigId) + "&";
+        if (getAll === null)
+            throw new Error("The parameter 'getAll' cannot be null.");
+        else if (getAll !== undefined)
+            url_ += "GetAll=" + encodeURIComponent("" + getAll) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -4187,12 +6435,12 @@ export class QuestionClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    upload(file: FileParameter | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers10[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/questions/upload?";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
         if (folderName === null)
             throw new Error("The parameter 'folderName' cannot be null.");
         else if (folderName !== undefined)
@@ -4200,10 +6448,30 @@ export class QuestionClient {
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (file === null || file === undefined)
-            throw new Error("The parameter 'file' cannot be null.");
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
         else
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
 
         let options_: RequestInit = {
             body: content_,
@@ -4220,6 +6488,578 @@ export class QuestionClient {
     }
 
     protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/questions/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+}
+
+export class QuizAttemptClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "http://localhost";
+    }
+
+    get(attemptConfigurationId: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempts/{attemptConfigurationId}";
+        if (attemptConfigurationId === undefined || attemptConfigurationId === null)
+            throw new Error("The parameter 'attemptConfigurationId' must be defined.");
+        url_ = url_.replace("{attemptConfigurationId}", encodeURIComponent("" + attemptConfigurationId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Get all records of type T
+     * @param currentPage (optional) 
+     * @param pageSize (optional) 
+     * @param sort (optional) 
+     * @param filter (optional) 
+     * @return A PagedResult T with queryable holding the items
+     */
+    getAll(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfQuizAttemptResponseDto> {
+        let url_ = this.baseUrl + "/api/quiz_attempts?";
+        if (currentPage === null)
+            throw new Error("The parameter 'currentPage' cannot be null.");
+        else if (currentPage !== undefined)
+            url_ += "CurrentPage=" + encodeURIComponent("" + currentPage) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (sort !== undefined && sort !== null)
+            url_ += "Sort=" + encodeURIComponent("" + sort) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<PagedResultOfQuizAttemptResponseDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfQuizAttemptResponseDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PagedResultOfQuizAttemptResponseDto>(null as any);
+    }
+
+    /**
+     * Create a record of type T
+     * @param body The RequestDto to create object
+     * @return The created item T
+     */
+    create(body: QuizAttemptRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempts";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    createWithFile(id: string | undefined, startedAt: Date | undefined, finishedAt: Date | null | undefined, dConfigureServicesuration: string | null | undefined, score: number | undefined, total: number | undefined, passed: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempts/file";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (id === null || id === undefined)
+            throw new Error("The parameter 'id' cannot be null.");
+        else
+            content_.append("Id", id.toString());
+        if (startedAt === null || startedAt === undefined)
+            throw new Error("The parameter 'startedAt' cannot be null.");
+        else
+            content_.append("StartedAt", startedAt.toJSON());
+        if (finishedAt !== null && finishedAt !== undefined)
+            content_.append("FinishedAt", finishedAt.toJSON());
+        if (dConfigureServicesuration !== null && dConfigureServicesuration !== undefined)
+            content_.append("DConfigureServicesuration", dConfigureServicesuration.toString());
+        if (score === null || score === undefined)
+            throw new Error("The parameter 'score' cannot be null.");
+        else
+            content_.append("Score", score.toString());
+        if (total === null || total === undefined)
+            throw new Error("The parameter 'total' cannot be null.");
+        else
+            content_.append("Total", total.toString());
+        if (passed === null || passed === undefined)
+            throw new Error("The parameter 'passed' cannot be null.");
+        else
+            content_.append("Passed", passed.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateWithFile(_response);
+        });
+    }
+
+    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    updateWithFile(idPath: string, idFormData: string | undefined, startedAt: Date | undefined, finishedAt: Date | null | undefined, dConfigureServicesuration: string | null | undefined, score: number | undefined, total: number | undefined, passed: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempts/file";
+        if (idPath === undefined || idPath === null)
+            throw new Error("The parameter 'idPath' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (idFormData === null || idFormData === undefined)
+            throw new Error("The parameter 'idFormData' cannot be null.");
+        else
+            content_.append("Id", idFormData.toString());
+        if (startedAt === null || startedAt === undefined)
+            throw new Error("The parameter 'startedAt' cannot be null.");
+        else
+            content_.append("StartedAt", startedAt.toJSON());
+        if (finishedAt !== null && finishedAt !== undefined)
+            content_.append("FinishedAt", finishedAt.toJSON());
+        if (dConfigureServicesuration !== null && dConfigureServicesuration !== undefined)
+            content_.append("DConfigureServicesuration", dConfigureServicesuration.toString());
+        if (score === null || score === undefined)
+            throw new Error("The parameter 'score' cannot be null.");
+        else
+            content_.append("Score", score.toString());
+        if (total === null || total === undefined)
+            throw new Error("The parameter 'total' cannot be null.");
+        else
+            content_.append("Total", total.toString());
+        if (passed === null || passed === undefined)
+            throw new Error("The parameter 'passed' cannot be null.");
+        else
+            content_.append("Passed", passed.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateWithFile(_response);
+        });
+    }
+
+    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Delete a record of type T by id
+     * @param id The id of the item to be removed
+     * @return True on success, false otherwise
+     */
+    delete(id: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempts/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Update a record of type T by id
+     * @param id The id of the item to be updated
+     * @param body The updated body to be saved
+     * @return True on success, false otherwise
+     */
+    update(id: string, body: QuizAttemptRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempts/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers11[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempts/upload?";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
+        else
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload(_response);
+        });
+    }
+
+    protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempts/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -4488,7 +7328,7 @@ export class QuizAttemptConfigurationClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    createWithFile(id: string | null | undefined, name: string | undefined, image: string | null | undefined, user: string | null | undefined, description: string | null | undefined, boards: string[] | null | undefined, years: number[] | null | undefined, institutions: string[] | null | undefined, disciplines: string[] | null | undefined, random: boolean | null | undefined, onlyNotAnswered: boolean | null | undefined, onlyWrongs: boolean | null | undefined, active: boolean | undefined, showOnFront: boolean | undefined, users: string[] | null | undefined, usersCount: number | undefined, userIds: string | null | undefined, crews: CrewRequestDto[] | null | undefined, crewsCount: number | undefined, crewsIds: string | null | undefined, questions: QuestionRequestDto[] | null | undefined, questionsCount: number | undefined, questionsIds: string | null | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    createWithFile(id: string | null | undefined, name: string | undefined, image: string | null | undefined, description: string | null | undefined, boards: string[] | null | undefined, years: number[] | null | undefined, institutions: string[] | null | undefined, disciplines: string[] | null | undefined, random: boolean | null | undefined, onlyNotAnswered: boolean | null | undefined, onlyWrongs: boolean | null | undefined, active: boolean | undefined, showOnFront: boolean | undefined, users: string[] | null | undefined, usersCount: number | undefined, userIds: string | null | undefined, crews: CrewRequestDto[] | null | undefined, crewsCount: number | undefined, crewsIds: string | null | undefined, questions: QuestionRequestDto[] | null | undefined, questionsCount: number | undefined, questionsIds: string | null | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/quiz_attempt_configs/file";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -4501,8 +7341,6 @@ export class QuizAttemptConfigurationClient {
             content_.append("Name", name.toString());
         if (image !== null && image !== undefined)
             content_.append("Image", image.toString());
-        if (user !== null && user !== undefined)
-            content_.append("User", user.toString());
         if (description !== null && description !== undefined)
             content_.append("Description", description.toString());
         if (boards !== null && boards !== undefined)
@@ -4590,7 +7428,7 @@ export class QuizAttemptConfigurationClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    updateWithFile(idPath: string, idFormData: string | null | undefined, name: string | undefined, image: string | null | undefined, user: string | null | undefined, description: string | null | undefined, boards: string[] | null | undefined, years: number[] | null | undefined, institutions: string[] | null | undefined, disciplines: string[] | null | undefined, random: boolean | null | undefined, onlyNotAnswered: boolean | null | undefined, onlyWrongs: boolean | null | undefined, active: boolean | undefined, showOnFront: boolean | undefined, users: string[] | null | undefined, usersCount: number | undefined, userIds: string | null | undefined, crews: CrewRequestDto[] | null | undefined, crewsCount: number | undefined, crewsIds: string | null | undefined, questions: QuestionRequestDto[] | null | undefined, questionsCount: number | undefined, questionsIds: string | null | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    updateWithFile(idPath: string, idFormData: string | null | undefined, name: string | undefined, image: string | null | undefined, description: string | null | undefined, boards: string[] | null | undefined, years: number[] | null | undefined, institutions: string[] | null | undefined, disciplines: string[] | null | undefined, random: boolean | null | undefined, onlyNotAnswered: boolean | null | undefined, onlyWrongs: boolean | null | undefined, active: boolean | undefined, showOnFront: boolean | undefined, users: string[] | null | undefined, usersCount: number | undefined, userIds: string | null | undefined, crews: CrewRequestDto[] | null | undefined, crewsCount: number | undefined, crewsIds: string | null | undefined, questions: QuestionRequestDto[] | null | undefined, questionsCount: number | undefined, questionsIds: string | null | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/quiz_attempt_configs/file";
         if (idPath === undefined || idPath === null)
             throw new Error("The parameter 'idPath' must be defined.");
@@ -4606,8 +7444,6 @@ export class QuizAttemptConfigurationClient {
             content_.append("Name", name.toString());
         if (image !== null && image !== undefined)
             content_.append("Image", image.toString());
-        if (user !== null && user !== undefined)
-            content_.append("User", user.toString());
         if (description !== null && description !== undefined)
             content_.append("Description", description.toString());
         if (boards !== null && boards !== undefined)
@@ -4695,12 +7531,12 @@ export class QuizAttemptConfigurationClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    upload(file: FileParameter | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers12[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/quiz_attempt_configs/upload?";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
         if (folderName === null)
             throw new Error("The parameter 'folderName' cannot be null.");
         else if (folderName !== undefined)
@@ -4708,10 +7544,30 @@ export class QuizAttemptConfigurationClient {
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (file === null || file === undefined)
-            throw new Error("The parameter 'file' cannot be null.");
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
         else
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
 
         let options_: RequestInit = {
             body: content_,
@@ -4748,242 +7604,28 @@ export class QuizAttemptConfigurationClient {
         }
         return Promise.resolve<FileResponse | null>(null as any);
     }
-}
 
-export class UserClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl ?? "http://localhost";
-    }
-
-    getPermissions(id: string, paginationInfo: PaginationInfo, signal?: AbortSignal): Promise<Message> {
-        let url_ = this.baseUrl + "/api/users/permissions/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempt_configs/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(paginationInfo);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "GET",
-            signal,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetPermissions(_response);
-        });
-    }
-
-    protected processGetPermissions(response: Response): Promise<Message> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Message.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<Message>(null as any);
-    }
-
-    addPermission(id: string, permissionsRequest: AssignPermissionsRequest, signal?: AbortSignal): Promise<Message> {
-        let url_ = this.baseUrl + "/api/users/permissions/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(permissionsRequest);
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
 
         let options_: RequestInit = {
             body: content_,
             method: "POST",
-            signal,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processAddPermission(_response);
-        });
-    }
-
-    protected processAddPermission(response: Response): Promise<Message> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Message.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<Message>(null as any);
-    }
-
-    getRoles(id: string, paginationInfo: PaginationInfo, signal?: AbortSignal): Promise<Message> {
-        let url_ = this.baseUrl + "/api/users/roles/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(paginationInfo);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "GET",
-            signal,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetRoles(_response);
-        });
-    }
-
-    protected processGetRoles(response: Response): Promise<Message> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Message.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<Message>(null as any);
-    }
-
-    addRole(id: string, rolesRequest: AssignRolesRequest, signal?: AbortSignal): Promise<Message> {
-        let url_ = this.baseUrl + "/api/users/roles/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(rolesRequest);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processAddRole(_response);
-        });
-    }
-
-    protected processAddRole(response: Response): Promise<Message> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Message.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<Message>(null as any);
-    }
-
-    get(id: string, signal?: AbortSignal): Promise<Message> {
-        let url_ = this.baseUrl + "/api/users/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGet(_response);
-        });
-    }
-
-    protected processGet(response: Response): Promise<Message> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Message.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<Message>(null as any);
-    }
-
-    get2(currentPage: number | undefined, pageSize: number | undefined, filter: string | null | undefined, sort: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/users/all?";
-        if (currentPage === null)
-            throw new Error("The parameter 'currentPage' cannot be null.");
-        else if (currentPage !== undefined)
-            url_ += "currentPage=" + encodeURIComponent("" + currentPage) + "&";
-        if (pageSize === null)
-            throw new Error("The parameter 'pageSize' cannot be null.");
-        else if (pageSize !== undefined)
-            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
-        if (filter !== undefined && filter !== null)
-            url_ += "filter=" + encodeURIComponent("" + filter) + "&";
-        if (sort !== undefined && sort !== null)
-            url_ += "sort=" + encodeURIComponent("" + sort) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
             signal,
             headers: {
                 "Accept": "application/octet-stream"
@@ -4991,11 +7633,11 @@ export class UserClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGet2(_response);
+            return this.processUpload64(_response);
         });
     }
 
-    protected processGet2(response: Response): Promise<FileResponse | null> {
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -5016,6 +7658,589 @@ export class UserClient {
         }
         return Promise.resolve<FileResponse | null>(null as any);
     }
+}
+
+export class UsersClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "http://localhost";
+    }
+
+    getAll(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfUserResponseDto> {
+        let url_ = this.baseUrl + "/api/users?";
+        if (currentPage === null)
+            throw new Error("The parameter 'currentPage' cannot be null.");
+        else if (currentPage !== undefined)
+            url_ += "CurrentPage=" + encodeURIComponent("" + currentPage) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (sort !== undefined && sort !== null)
+            url_ += "Sort=" + encodeURIComponent("" + sort) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<PagedResultOfUserResponseDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfUserResponseDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PagedResultOfUserResponseDto>(null as any);
+    }
+
+    /**
+     * Create a record of type T
+     * @param body The RequestDto to create object
+     * @return The created item T
+     */
+    create(body: UserRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/users";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Get a record of type T by id
+     * @param id The id of the item
+     * @return A item T
+     */
+    get(id: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/users/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Delete a record of type T by id
+     * @param id The id of the item to be removed
+     * @return True on success, false otherwise
+     */
+    delete(id: string, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/users/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    /**
+     * Update a record of type T by id
+     * @param id The id of the item to be updated
+     * @param body The updated body to be saved
+     * @return True on success, false otherwise
+     */
+    update(id: string, body: UserRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/users/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    createWithFile(id: string | null | undefined, name: string | undefined, address: string | null | undefined, birthDay: Date | null | undefined, image: string | null | undefined, email: string | undefined, role: string | null | undefined, sid: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/users/file";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (id !== null && id !== undefined)
+            content_.append("Id", id.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (address !== null && address !== undefined)
+            content_.append("Address", address.toString());
+        if (birthDay !== null && birthDay !== undefined)
+            content_.append("BirthDay", birthDay.toJSON());
+        if (image !== null && image !== undefined)
+            content_.append("Image", image.toString());
+        if (email === null || email === undefined)
+            throw new Error("The parameter 'email' cannot be null.");
+        else
+            content_.append("Email", email.toString());
+        if (role !== null && role !== undefined)
+            content_.append("Role", role.toString());
+        if (sid !== null && sid !== undefined)
+            content_.append("Sid", sid.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateWithFile(_response);
+        });
+    }
+
+    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    updateWithFile(idPath: string, idFormData: string | null | undefined, name: string | undefined, address: string | null | undefined, birthDay: Date | null | undefined, image: string | null | undefined, email: string | undefined, role: string | null | undefined, sid: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/users/file";
+        if (idPath === undefined || idPath === null)
+            throw new Error("The parameter 'idPath' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (idFormData !== null && idFormData !== undefined)
+            content_.append("Id", idFormData.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (address !== null && address !== undefined)
+            content_.append("Address", address.toString());
+        if (birthDay !== null && birthDay !== undefined)
+            content_.append("BirthDay", birthDay.toJSON());
+        if (image !== null && image !== undefined)
+            content_.append("Image", image.toString());
+        if (email === null || email === undefined)
+            throw new Error("The parameter 'email' cannot be null.");
+        else
+            content_.append("Email", email.toString());
+        if (role !== null && role !== undefined)
+            content_.append("Role", role.toString());
+        if (sid !== null && sid !== undefined)
+            content_.append("Sid", sid.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateWithFile(_response);
+        });
+    }
+
+    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers13[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/users/upload?";
+        if (fileNameQuery === null)
+            throw new Error("The parameter 'fileNameQuery' cannot be null.");
+        else if (fileNameQuery !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileNameQuery) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (contentType === null || contentType === undefined)
+            throw new Error("The parameter 'contentType' cannot be null.");
+        else
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition === null || contentDisposition === undefined)
+            throw new Error("The parameter 'contentDisposition' cannot be null.");
+        else
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers === null || headers === undefined)
+            throw new Error("The parameter 'headers' cannot be null.");
+        else
+            headers.forEach(item_ => content_.append("Headers", item_.toString()));
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name === null || name === undefined)
+            throw new Error("The parameter 'name' cannot be null.");
+        else
+            content_.append("Name", name.toString());
+        if (fileNameFormData === null || fileNameFormData === undefined)
+            throw new Error("The parameter 'fileNameFormData' cannot be null.");
+        else
+            content_.append("FileName", fileNameFormData.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload(_response);
+        });
+    }
+
+    protected processUpload(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
+    upload64(file: string | undefined, fileName: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/users/upload64?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (folderName === null)
+            throw new Error("The parameter 'folderName' cannot be null.");
+        else if (folderName !== undefined)
+            url_ += "folderName=" + encodeURIComponent("" + folderName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.toString());
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpload64(_response);
+        });
+    }
+
+    protected processUpload64(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+}
+
+export class RankingAnswersResponseDto implements IRankingAnswersResponseDto {
+    createdAt?: Date | undefined;
+    quizAttemptId?: string | undefined;
+    userName?: string | undefined;
+    userImage?: string | undefined;
+    userSid?: string | undefined;
+    questionDisciplineName?: string | undefined;
+    questionDisciplineId?: string | undefined;
+    questionDisciplineParentId?: string | undefined;
+    questionDisciplineParentName?: string | undefined;
+    correct!: boolean;
+    questionScore!: number;
+
+    constructor(data?: IRankingAnswersResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.quizAttemptId = _data["quizAttemptId"];
+            this.userName = _data["userName"];
+            this.userImage = _data["userImage"];
+            this.userSid = _data["userSid"];
+            this.questionDisciplineName = _data["questionDisciplineName"];
+            this.questionDisciplineId = _data["questionDisciplineId"];
+            this.questionDisciplineParentId = _data["questionDisciplineParentId"];
+            this.questionDisciplineParentName = _data["questionDisciplineParentName"];
+            this.correct = _data["correct"];
+            this.questionScore = _data["questionScore"];
+        }
+    }
+
+    static fromJS(data: any): RankingAnswersResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RankingAnswersResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["quizAttemptId"] = this.quizAttemptId;
+        data["userName"] = this.userName;
+        data["userImage"] = this.userImage;
+        data["userSid"] = this.userSid;
+        data["questionDisciplineName"] = this.questionDisciplineName;
+        data["questionDisciplineId"] = this.questionDisciplineId;
+        data["questionDisciplineParentId"] = this.questionDisciplineParentId;
+        data["questionDisciplineParentName"] = this.questionDisciplineParentName;
+        data["correct"] = this.correct;
+        data["questionScore"] = this.questionScore;
+        return data;
+    }
+}
+
+export interface IRankingAnswersResponseDto {
+    createdAt?: Date | undefined;
+    quizAttemptId?: string | undefined;
+    userName?: string | undefined;
+    userImage?: string | undefined;
+    userSid?: string | undefined;
+    questionDisciplineName?: string | undefined;
+    questionDisciplineId?: string | undefined;
+    questionDisciplineParentId?: string | undefined;
+    questionDisciplineParentName?: string | undefined;
+    correct: boolean;
+    questionScore: number;
 }
 
 /** PagedResult */
@@ -5142,7 +8367,6 @@ export interface IPagedResultOfAnswerResponseDto extends IPagedResult {
 export class AnswerRequestDto implements IAnswerRequestDto {
     id!: string;
     questionId?: string | undefined;
-    user?: string | undefined;
     alternativeId?: string | undefined;
     correct!: boolean;
     quizAttemptId?: string | undefined;
@@ -5160,7 +8384,6 @@ export class AnswerRequestDto implements IAnswerRequestDto {
         if (_data) {
             this.id = _data["id"];
             this.questionId = _data["questionId"];
-            this.user = _data["user"];
             this.alternativeId = _data["alternativeId"];
             this.correct = _data["correct"];
             this.quizAttemptId = _data["quizAttemptId"];
@@ -5178,7 +8401,6 @@ export class AnswerRequestDto implements IAnswerRequestDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["questionId"] = this.questionId;
-        data["user"] = this.user;
         data["alternativeId"] = this.alternativeId;
         data["correct"] = this.correct;
         data["quizAttemptId"] = this.quizAttemptId;
@@ -5189,7 +8411,6 @@ export class AnswerRequestDto implements IAnswerRequestDto {
 export interface IAnswerRequestDto {
     id: string;
     questionId?: string | undefined;
-    user?: string | undefined;
     alternativeId?: string | undefined;
     correct: boolean;
     quizAttemptId?: string | undefined;
@@ -5199,9 +8420,20 @@ export class AnswerResponseDto extends AnswerRequestDto implements IAnswerRespon
     question?: QuestionResponseDto | undefined;
     alternative?: AlternativeResponseDto | undefined;
     quizAttempt?: QuizAttemptResponseDto | undefined;
+    userId?: string | undefined;
+    user!: UserResponseDto;
+    userName?: string | undefined;
+    correctId?: string | undefined;
+    complete!: boolean;
+    questionDisciplineName?: string | undefined;
+    questionDisciplineId?: string | undefined;
+    isCorrect!: boolean;
 
     constructor(data?: IAnswerResponseDto) {
         super(data);
+        if (!data) {
+            this.user = new UserResponseDto();
+        }
     }
 
     override init(_data?: any) {
@@ -5210,6 +8442,14 @@ export class AnswerResponseDto extends AnswerRequestDto implements IAnswerRespon
             this.question = _data["question"] ? QuestionResponseDto.fromJS(_data["question"]) : <any>undefined;
             this.alternative = _data["alternative"] ? AlternativeResponseDto.fromJS(_data["alternative"]) : <any>undefined;
             this.quizAttempt = _data["quizAttempt"] ? QuizAttemptResponseDto.fromJS(_data["quizAttempt"]) : <any>undefined;
+            this.userId = _data["userId"];
+            this.user = _data["user"] ? UserResponseDto.fromJS(_data["user"]) : new UserResponseDto();
+            this.userName = _data["userName"];
+            this.correctId = _data["correctId"];
+            this.complete = _data["complete"];
+            this.questionDisciplineName = _data["questionDisciplineName"];
+            this.questionDisciplineId = _data["questionDisciplineId"];
+            this.isCorrect = _data["isCorrect"];
         }
     }
 
@@ -5225,6 +8465,14 @@ export class AnswerResponseDto extends AnswerRequestDto implements IAnswerRespon
         data["question"] = this.question ? this.question.toJSON() : <any>undefined;
         data["alternative"] = this.alternative ? this.alternative.toJSON() : <any>undefined;
         data["quizAttempt"] = this.quizAttempt ? this.quizAttempt.toJSON() : <any>undefined;
+        data["userId"] = this.userId;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        data["userName"] = this.userName;
+        data["correctId"] = this.correctId;
+        data["complete"] = this.complete;
+        data["questionDisciplineName"] = this.questionDisciplineName;
+        data["questionDisciplineId"] = this.questionDisciplineId;
+        data["isCorrect"] = this.isCorrect;
         super.toJSON(data);
         return data;
     }
@@ -5234,6 +8482,14 @@ export interface IAnswerResponseDto extends IAnswerRequestDto {
     question?: QuestionResponseDto | undefined;
     alternative?: AlternativeResponseDto | undefined;
     quizAttempt?: QuizAttemptResponseDto | undefined;
+    userId?: string | undefined;
+    user: UserResponseDto;
+    userName?: string | undefined;
+    correctId?: string | undefined;
+    complete: boolean;
+    questionDisciplineName?: string | undefined;
+    questionDisciplineId?: string | undefined;
+    isCorrect: boolean;
 }
 
 export class HasFile implements IHasFile {
@@ -5381,7 +8637,9 @@ export class QuestionResponseDto extends QuestionRequestDto implements IQuestion
     alternativesCount!: number;
     observationsCount!: number;
     answersCount!: number;
+    answersCorrectCount!: number;
     observationRequestsCount!: number;
+    correctId?: string | undefined;
 
     constructor(data?: IQuestionResponseDto) {
         super(data);
@@ -5424,7 +8682,9 @@ export class QuestionResponseDto extends QuestionRequestDto implements IQuestion
             this.alternativesCount = _data["alternativesCount"];
             this.observationsCount = _data["observationsCount"];
             this.answersCount = _data["answersCount"];
+            this.answersCorrectCount = _data["answersCorrectCount"];
             this.observationRequestsCount = _data["observationRequestsCount"];
+            this.correctId = _data["correctId"];
         }
     }
 
@@ -5464,7 +8724,9 @@ export class QuestionResponseDto extends QuestionRequestDto implements IQuestion
         data["alternativesCount"] = this.alternativesCount;
         data["observationsCount"] = this.observationsCount;
         data["answersCount"] = this.answersCount;
+        data["answersCorrectCount"] = this.answersCorrectCount;
         data["observationRequestsCount"] = this.observationRequestsCount;
+        data["correctId"] = this.correctId;
         super.toJSON(data);
         return data;
     }
@@ -5482,7 +8744,9 @@ export interface IQuestionResponseDto extends IQuestionRequestDto {
     alternativesCount: number;
     observationsCount: number;
     answersCount: number;
+    answersCorrectCount: number;
     observationRequestsCount: number;
+    correctId?: string | undefined;
 }
 
 export class AlternativeResponseDto implements IAlternativeResponseDto {
@@ -5622,6 +8886,7 @@ export interface IObservationRequestDto {
 
 export class ObservationResponseDto extends ObservationRequestDto implements IObservationResponseDto {
     question?: QuestionResponseDto | undefined;
+    userId?: string | undefined;
 
     constructor(data?: IObservationResponseDto) {
         super(data);
@@ -5631,6 +8896,7 @@ export class ObservationResponseDto extends ObservationRequestDto implements IOb
         super.init(_data);
         if (_data) {
             this.question = _data["question"] ? QuestionResponseDto.fromJS(_data["question"]) : <any>undefined;
+            this.userId = _data["userId"];
         }
     }
 
@@ -5644,6 +8910,7 @@ export class ObservationResponseDto extends ObservationRequestDto implements IOb
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["question"] = this.question ? this.question.toJSON() : <any>undefined;
+        data["userId"] = this.userId;
         super.toJSON(data);
         return data;
     }
@@ -5651,6 +8918,7 @@ export class ObservationResponseDto extends ObservationRequestDto implements IOb
 
 export interface IObservationResponseDto extends IObservationRequestDto {
     question?: QuestionResponseDto | undefined;
+    userId?: string | undefined;
 }
 
 export class AlternativeRequestDto implements IAlternativeRequestDto {
@@ -5760,7 +9028,6 @@ export interface IDisciplineRequestDto {
 export class ObservationRequestRequestDto implements IObservationRequestRequestDto {
     id?: string | undefined;
     questionId?: string | undefined;
-    user?: string | undefined;
     resolved?: boolean | undefined;
     type!: ObservationType;
     text!: string;
@@ -5778,7 +9045,6 @@ export class ObservationRequestRequestDto implements IObservationRequestRequestD
         if (_data) {
             this.id = _data["id"];
             this.questionId = _data["questionId"];
-            this.user = _data["user"];
             this.resolved = _data["resolved"];
             this.type = _data["type"];
             this.text = _data["text"];
@@ -5796,7 +9062,6 @@ export class ObservationRequestRequestDto implements IObservationRequestRequestD
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["questionId"] = this.questionId;
-        data["user"] = this.user;
         data["resolved"] = this.resolved;
         data["type"] = this.type;
         data["text"] = this.text;
@@ -5807,7 +9072,6 @@ export class ObservationRequestRequestDto implements IObservationRequestRequestD
 export interface IObservationRequestRequestDto {
     id?: string | undefined;
     questionId?: string | undefined;
-    user?: string | undefined;
     resolved?: boolean | undefined;
     type: ObservationType;
     text: string;
@@ -5815,6 +9079,7 @@ export interface IObservationRequestRequestDto {
 
 export class ObservationRequestResponseDto extends ObservationRequestRequestDto implements IObservationRequestResponseDto {
     question?: QuestionRequestDto | undefined;
+    userId?: string | undefined;
 
     constructor(data?: IObservationRequestResponseDto) {
         super(data);
@@ -5824,6 +9089,7 @@ export class ObservationRequestResponseDto extends ObservationRequestRequestDto 
         super.init(_data);
         if (_data) {
             this.question = _data["question"] ? QuestionRequestDto.fromJS(_data["question"]) : <any>undefined;
+            this.userId = _data["userId"];
         }
     }
 
@@ -5837,6 +9103,7 @@ export class ObservationRequestResponseDto extends ObservationRequestRequestDto 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["question"] = this.question ? this.question.toJSON() : <any>undefined;
+        data["userId"] = this.userId;
         super.toJSON(data);
         return data;
     }
@@ -5844,6 +9111,7 @@ export class ObservationRequestResponseDto extends ObservationRequestRequestDto 
 
 export interface IObservationRequestResponseDto extends IObservationRequestRequestDto {
     question?: QuestionRequestDto | undefined;
+    userId?: string | undefined;
 }
 
 export type ObservationType = 0 | 1;
@@ -5919,7 +9187,6 @@ export interface IDisciplineResponseDto extends IDisciplineRequestDto {
 
 export class QuizAttemptRequestDto implements IQuizAttemptRequestDto {
     id!: string;
-    user!: string;
     startedAt!: Date;
     finishedAt?: Date | undefined;
     dConfigureServicesuration?: string | undefined;
@@ -5939,7 +9206,6 @@ export class QuizAttemptRequestDto implements IQuizAttemptRequestDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.user = _data["user"];
             this.startedAt = _data["startedAt"] ? new Date(_data["startedAt"].toString()) : <any>undefined;
             this.finishedAt = _data["finishedAt"] ? new Date(_data["finishedAt"].toString()) : <any>undefined;
             this.dConfigureServicesuration = _data["dConfigureServicesuration"];
@@ -5959,7 +9225,6 @@ export class QuizAttemptRequestDto implements IQuizAttemptRequestDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["user"] = this.user;
         data["startedAt"] = this.startedAt ? this.startedAt.toISOString() : <any>undefined;
         data["finishedAt"] = this.finishedAt ? this.finishedAt.toISOString() : <any>undefined;
         data["dConfigureServicesuration"] = this.dConfigureServicesuration;
@@ -5972,7 +9237,6 @@ export class QuizAttemptRequestDto implements IQuizAttemptRequestDto {
 
 export interface IQuizAttemptRequestDto {
     id: string;
-    user: string;
     startedAt: Date;
     finishedAt?: Date | undefined;
     dConfigureServicesuration?: string | undefined;
@@ -6036,6 +9300,171 @@ export class QuizAttemptResponseDto extends QuizAttemptRequestDto implements IQu
 export interface IQuizAttemptResponseDto extends IQuizAttemptRequestDto {
     questions: QuestionResponseDto[];
     answers: AnswerResponseDto[];
+}
+
+export class UserRequestDto implements IUserRequestDto {
+    id?: string | undefined;
+    name!: string;
+    address?: string | undefined;
+    birthDay?: Date | undefined;
+    image?: string | undefined;
+    email!: string;
+    role?: string | undefined;
+    sid?: string | undefined;
+
+    constructor(data?: IUserRequestDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.address = _data["address"];
+            this.birthDay = _data["birthDay"] ? new Date(_data["birthDay"].toString()) : <any>undefined;
+            this.image = _data["image"];
+            this.email = _data["email"];
+            this.role = _data["role"];
+            this.sid = _data["sid"];
+        }
+    }
+
+    static fromJS(data: any): UserRequestDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserRequestDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["address"] = this.address;
+        data["birthDay"] = this.birthDay ? this.birthDay.toISOString() : <any>undefined;
+        data["image"] = this.image;
+        data["email"] = this.email;
+        data["role"] = this.role;
+        data["sid"] = this.sid;
+        return data;
+    }
+}
+
+export interface IUserRequestDto {
+    id?: string | undefined;
+    name: string;
+    address?: string | undefined;
+    birthDay?: Date | undefined;
+    image?: string | undefined;
+    email: string;
+    role?: string | undefined;
+    sid?: string | undefined;
+}
+
+export class UserResponseDto extends UserRequestDto implements IUserResponseDto {
+    enrollments?: EnrollmentRequestDto[] | undefined;
+    enrollmentsCount!: number;
+
+    constructor(data?: IUserResponseDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["enrollments"])) {
+                this.enrollments = [] as any;
+                for (let item of _data["enrollments"])
+                    this.enrollments!.push(EnrollmentRequestDto.fromJS(item));
+            }
+            this.enrollmentsCount = _data["enrollmentsCount"];
+        }
+    }
+
+    static override fromJS(data: any): UserResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.enrollments)) {
+            data["enrollments"] = [];
+            for (let item of this.enrollments)
+                data["enrollments"].push(item.toJSON());
+        }
+        data["enrollmentsCount"] = this.enrollmentsCount;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IUserResponseDto extends IUserRequestDto {
+    enrollments?: EnrollmentRequestDto[] | undefined;
+    enrollmentsCount: number;
+}
+
+export class EnrollmentRequestDto implements IEnrollmentRequestDto {
+    id?: string | undefined;
+    studentId?: string | undefined;
+    crewId?: string | undefined;
+    startDate?: Date | undefined;
+    endDate?: Date | undefined;
+    active!: boolean;
+
+    constructor(data?: IEnrollmentRequestDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.studentId = _data["studentId"];
+            this.crewId = _data["crewId"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            this.active = _data["active"];
+        }
+    }
+
+    static fromJS(data: any): EnrollmentRequestDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new EnrollmentRequestDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["studentId"] = this.studentId;
+        data["crewId"] = this.crewId;
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        data["active"] = this.active;
+        return data;
+    }
+}
+
+export interface IEnrollmentRequestDto {
+    id?: string | undefined;
+    studentId?: string | undefined;
+    crewId?: string | undefined;
+    startDate?: Date | undefined;
+    endDate?: Date | undefined;
+    active: boolean;
 }
 
 export class Message implements IMessage {
@@ -6370,6 +9799,498 @@ export interface ISignupUserRequest extends IUserMaintenanceRequestBase {
     user_metadata?: any | undefined;
 }
 
+/** Specifies pagination info to use when requesting paged results. */
+export class PaginationInfo implements IPaginationInfo {
+    /** Return results with a total result count (true) or with no totals (false, default). */
+    includeTotals!: boolean;
+    /** Number of results per page. */
+    perPage!: number;
+    /** Page index of the results to return. First page is 0. */
+    pageNo!: number;
+
+    constructor(data?: IPaginationInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.includeTotals = _data["includeTotals"];
+            this.perPage = _data["perPage"];
+            this.pageNo = _data["pageNo"];
+        }
+    }
+
+    static fromJS(data: any): PaginationInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginationInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["includeTotals"] = this.includeTotals;
+        data["perPage"] = this.perPage;
+        data["pageNo"] = this.pageNo;
+        return data;
+    }
+}
+
+/** Specifies pagination info to use when requesting paged results. */
+export interface IPaginationInfo {
+    /** Return results with a total result count (true) or with no totals (false, default). */
+    includeTotals: boolean;
+    /** Number of results per page. */
+    perPage: number;
+    /** Page index of the results to return. First page is 0. */
+    pageNo: number;
+}
+
+/** Contains details of permissions that should be assigned to a role. */
+export class AssignPermissionsRequest implements IAssignPermissionsRequest {
+    /** User IDs to assign to the role. */
+    permissions?: PermissionIdentity[] | undefined;
+
+    constructor(data?: IAssignPermissionsRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["permissions"])) {
+                this.permissions = [] as any;
+                for (let item of _data["permissions"])
+                    this.permissions!.push(PermissionIdentity.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AssignPermissionsRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssignPermissionsRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.permissions)) {
+            data["permissions"] = [];
+            for (let item of this.permissions)
+                data["permissions"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+/** Contains details of permissions that should be assigned to a role. */
+export interface IAssignPermissionsRequest {
+    /** User IDs to assign to the role. */
+    permissions?: PermissionIdentity[] | undefined;
+}
+
+/** Represents the properties of a permission that give it its unique identity. */
+export class PermissionIdentity implements IPermissionIdentity {
+    /** The resource server that the permission is attached to. */
+    resource_server_identifier?: string | undefined;
+    /** The name of the permission. */
+    permission_name?: string | undefined;
+
+    constructor(data?: IPermissionIdentity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.resource_server_identifier = _data["resource_server_identifier"];
+            this.permission_name = _data["permission_name"];
+        }
+    }
+
+    static fromJS(data: any): PermissionIdentity {
+        data = typeof data === 'object' ? data : {};
+        let result = new PermissionIdentity();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["resource_server_identifier"] = this.resource_server_identifier;
+        data["permission_name"] = this.permission_name;
+        return data;
+    }
+}
+
+/** Represents the properties of a permission that give it its unique identity. */
+export interface IPermissionIdentity {
+    /** The resource server that the permission is attached to. */
+    resource_server_identifier?: string | undefined;
+    /** The name of the permission. */
+    permission_name?: string | undefined;
+}
+
+/** Contains details of roles that should be assigned to a user. */
+export class AssignRolesRequest implements IAssignRolesRequest {
+    /** Role IDs to assign to the user. */
+    roles?: string[] | undefined;
+
+    constructor(data?: IAssignRolesRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): AssignRolesRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssignRolesRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        return data;
+    }
+}
+
+/** Contains details of roles that should be assigned to a user. */
+export interface IAssignRolesRequest {
+    /** Role IDs to assign to the user. */
+    roles?: string[] | undefined;
+}
+
+export class UpdateUserProfileRequestDto implements IUpdateUserProfileRequestDto {
+    name!: string;
+    address!: string;
+    birthDay!: Date;
+    image?: string | undefined;
+    email!: string;
+    phoneNumber!: string;
+    crew!: string;
+
+    constructor(data?: IUpdateUserProfileRequestDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.address = _data["address"];
+            this.birthDay = _data["birthDay"] ? new Date(_data["birthDay"].toString()) : <any>undefined;
+            this.image = _data["image"];
+            this.email = _data["email"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.crew = _data["crew"];
+        }
+    }
+
+    static fromJS(data: any): UpdateUserProfileRequestDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateUserProfileRequestDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["address"] = this.address;
+        data["birthDay"] = this.birthDay ? this.birthDay.toISOString() : <any>undefined;
+        data["image"] = this.image;
+        data["email"] = this.email;
+        data["phoneNumber"] = this.phoneNumber;
+        data["crew"] = this.crew;
+        return data;
+    }
+}
+
+export interface IUpdateUserProfileRequestDto {
+    name: string;
+    address: string;
+    birthDay: Date;
+    image?: string | undefined;
+    email: string;
+    phoneNumber: string;
+    crew: string;
+}
+
+/** PagedResult{TSource} */
+export class PagedResultOfConfigResponseDto extends PagedResult implements IPagedResultOfConfigResponseDto {
+    queryable!: ConfigResponseDto[];
+
+    constructor(data?: IPagedResultOfConfigResponseDto) {
+        super(data);
+        if (!data) {
+            this.queryable = [];
+        }
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["queryable"])) {
+                this.queryable = [] as any;
+                for (let item of _data["queryable"])
+                    this.queryable!.push(ConfigResponseDto.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): PagedResultOfConfigResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfConfigResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.queryable)) {
+            data["queryable"] = [];
+            for (let item of this.queryable)
+                data["queryable"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+/** PagedResult{TSource} */
+export interface IPagedResultOfConfigResponseDto extends IPagedResult {
+    queryable: ConfigResponseDto[];
+}
+
+export class ConfigRequestDto implements IConfigRequestDto {
+    id?: string | undefined;
+    key!: string;
+    value!: string;
+
+    constructor(data?: IConfigRequestDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.key = _data["key"];
+            this.value = _data["value"];
+        }
+    }
+
+    static fromJS(data: any): ConfigRequestDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConfigRequestDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["key"] = this.key;
+        data["value"] = this.value;
+        return data;
+    }
+}
+
+export interface IConfigRequestDto {
+    id?: string | undefined;
+    key: string;
+    value: string;
+}
+
+export class ConfigResponseDto extends ConfigRequestDto implements IConfigResponseDto {
+
+    constructor(data?: IConfigResponseDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): ConfigResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConfigResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IConfigResponseDto extends IConfigRequestDto {
+}
+
+/** PagedResult{TSource} */
+export class PagedResultOfCrewResponseDto extends PagedResult implements IPagedResultOfCrewResponseDto {
+    queryable!: CrewResponseDto[];
+
+    constructor(data?: IPagedResultOfCrewResponseDto) {
+        super(data);
+        if (!data) {
+            this.queryable = [];
+        }
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["queryable"])) {
+                this.queryable = [] as any;
+                for (let item of _data["queryable"])
+                    this.queryable!.push(CrewResponseDto.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): PagedResultOfCrewResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfCrewResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.queryable)) {
+            data["queryable"] = [];
+            for (let item of this.queryable)
+                data["queryable"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+/** PagedResult{TSource} */
+export interface IPagedResultOfCrewResponseDto extends IPagedResult {
+    queryable: CrewResponseDto[];
+}
+
+export class CrewRequestDto implements ICrewRequestDto {
+    id?: string | undefined;
+    name!: string;
+    description!: string;
+    data?: string | undefined;
+
+    constructor(data?: ICrewRequestDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.data = _data["data"];
+        }
+    }
+
+    static fromJS(data: any): CrewRequestDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CrewRequestDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["data"] = this.data;
+        return data;
+    }
+}
+
+export interface ICrewRequestDto {
+    id?: string | undefined;
+    name: string;
+    description: string;
+    data?: string | undefined;
+}
+
+export class CrewResponseDto extends CrewRequestDto implements ICrewResponseDto {
+
+    constructor(data?: ICrewResponseDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): CrewResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CrewResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ICrewResponseDto extends ICrewRequestDto {
+}
+
 /** PagedResult{TSource} */
 export class PagedResultOfDisciplineResponseDto extends PagedResult implements IPagedResultOfDisciplineResponseDto {
     queryable!: DisciplineResponseDto[];
@@ -6414,6 +10335,97 @@ export class PagedResultOfDisciplineResponseDto extends PagedResult implements I
 /** PagedResult{TSource} */
 export interface IPagedResultOfDisciplineResponseDto extends IPagedResult {
     queryable: DisciplineResponseDto[];
+}
+
+/** PagedResult{TSource} */
+export class PagedResultOfEnrollmentResponseDto extends PagedResult implements IPagedResultOfEnrollmentResponseDto {
+    queryable!: EnrollmentResponseDto[];
+
+    constructor(data?: IPagedResultOfEnrollmentResponseDto) {
+        super(data);
+        if (!data) {
+            this.queryable = [];
+        }
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["queryable"])) {
+                this.queryable = [] as any;
+                for (let item of _data["queryable"])
+                    this.queryable!.push(EnrollmentResponseDto.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): PagedResultOfEnrollmentResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfEnrollmentResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.queryable)) {
+            data["queryable"] = [];
+            for (let item of this.queryable)
+                data["queryable"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+/** PagedResult{TSource} */
+export interface IPagedResultOfEnrollmentResponseDto extends IPagedResult {
+    queryable: EnrollmentResponseDto[];
+}
+
+export class EnrollmentResponseDto extends EnrollmentRequestDto implements IEnrollmentResponseDto {
+    student?: UserRequestDto | undefined;
+    crew?: CrewRequestDto | undefined;
+    studentName!: string;
+    crewName!: string;
+
+    constructor(data?: IEnrollmentResponseDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.student = _data["student"] ? UserRequestDto.fromJS(_data["student"]) : <any>undefined;
+            this.crew = _data["crew"] ? CrewRequestDto.fromJS(_data["crew"]) : <any>undefined;
+            this.studentName = _data["studentName"];
+            this.crewName = _data["crewName"];
+        }
+    }
+
+    static override fromJS(data: any): EnrollmentResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new EnrollmentResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["student"] = this.student ? this.student.toJSON() : <any>undefined;
+        data["crew"] = this.crew ? this.crew.toJSON() : <any>undefined;
+        data["studentName"] = this.studentName;
+        data["crewName"] = this.crewName;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IEnrollmentResponseDto extends IEnrollmentRequestDto {
+    student?: UserRequestDto | undefined;
+    crew?: CrewRequestDto | undefined;
+    studentName: string;
+    crewName: string;
 }
 
 /** PagedResult{TSource} */
@@ -7036,6 +11048,52 @@ export interface IPagedResultOfQuestionResponseDto extends IPagedResult {
 }
 
 /** PagedResult{TSource} */
+export class PagedResultOfQuizAttemptResponseDto extends PagedResult implements IPagedResultOfQuizAttemptResponseDto {
+    queryable!: QuizAttemptResponseDto[];
+
+    constructor(data?: IPagedResultOfQuizAttemptResponseDto) {
+        super(data);
+        if (!data) {
+            this.queryable = [];
+        }
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["queryable"])) {
+                this.queryable = [] as any;
+                for (let item of _data["queryable"])
+                    this.queryable!.push(QuizAttemptResponseDto.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): PagedResultOfQuizAttemptResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfQuizAttemptResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.queryable)) {
+            data["queryable"] = [];
+            for (let item of this.queryable)
+                data["queryable"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+/** PagedResult{TSource} */
+export interface IPagedResultOfQuizAttemptResponseDto extends IPagedResult {
+    queryable: QuizAttemptResponseDto[];
+}
+
+/** PagedResult{TSource} */
 export class PagedResultOfQuizAttemptConfigurationResponseDto extends PagedResult implements IPagedResultOfQuizAttemptConfigurationResponseDto {
     queryable!: QuizAttemptConfigurationResponseDto[];
 
@@ -7085,7 +11143,6 @@ export class QuizAttemptConfigurationRequestDto implements IQuizAttemptConfigura
     id?: string | undefined;
     name!: string;
     image?: string | undefined;
-    user?: string | undefined;
     description?: string | undefined;
     boards?: string[] | undefined;
     years?: number[] | undefined;
@@ -7121,7 +11178,6 @@ export class QuizAttemptConfigurationRequestDto implements IQuizAttemptConfigura
             this.id = _data["id"];
             this.name = _data["name"];
             this.image = _data["image"];
-            this.user = _data["user"];
             this.description = _data["description"];
             if (Array.isArray(_data["boards"])) {
                 this.boards = [] as any;
@@ -7185,7 +11241,6 @@ export class QuizAttemptConfigurationRequestDto implements IQuizAttemptConfigura
         data["id"] = this.id;
         data["name"] = this.name;
         data["image"] = this.image;
-        data["user"] = this.user;
         data["description"] = this.description;
         if (Array.isArray(this.boards)) {
             data["boards"] = [];
@@ -7242,7 +11297,6 @@ export interface IQuizAttemptConfigurationRequestDto {
     id?: string | undefined;
     name: string;
     image?: string | undefined;
-    user?: string | undefined;
     description?: string | undefined;
     boards?: string[] | undefined;
     years?: number[] | undefined;
@@ -7313,83 +11367,57 @@ export interface IQuizAttemptConfigurationResponseDto extends IQuizAttemptConfig
     disciplines: DisciplineResponseDto[];
 }
 
-export class CrewRequestDto implements ICrewRequestDto {
-    id!: string;
-    name!: string;
-    user!: string;
-    users!: string[];
-    description!: string;
-    data!: string;
+/** PagedResult{TSource} */
+export class PagedResultOfUserResponseDto extends PagedResult implements IPagedResultOfUserResponseDto {
+    queryable!: UserResponseDto[];
 
-    constructor(data?: ICrewRequestDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+    constructor(data?: IPagedResultOfUserResponseDto) {
+        super(data);
         if (!data) {
-            this.users = [];
+            this.queryable = [];
         }
     }
 
-    init(_data?: any) {
+    override init(_data?: any) {
+        super.init(_data);
         if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.user = _data["user"];
-            if (Array.isArray(_data["users"])) {
-                this.users = [] as any;
-                for (let item of _data["users"])
-                    this.users!.push(item);
+            if (Array.isArray(_data["queryable"])) {
+                this.queryable = [] as any;
+                for (let item of _data["queryable"])
+                    this.queryable!.push(UserResponseDto.fromJS(item));
             }
-            this.description = _data["description"];
-            this.data = _data["data"];
         }
     }
 
-    static fromJS(data: any): CrewRequestDto {
+    static override fromJS(data: any): PagedResultOfUserResponseDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CrewRequestDto();
+        let result = new PagedResultOfUserResponseDto();
         result.init(data);
         return result;
     }
 
-    toJSON(data?: any) {
+    override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["user"] = this.user;
-        if (Array.isArray(this.users)) {
-            data["users"] = [];
-            for (let item of this.users)
-                data["users"].push(item);
+        if (Array.isArray(this.queryable)) {
+            data["queryable"] = [];
+            for (let item of this.queryable)
+                data["queryable"].push(item.toJSON());
         }
-        data["description"] = this.description;
-        data["data"] = this.data;
+        super.toJSON(data);
         return data;
     }
 }
 
-export interface ICrewRequestDto {
-    id: string;
-    name: string;
-    user: string;
-    users: string[];
-    description: string;
-    data: string;
+/** PagedResult{TSource} */
+export interface IPagedResultOfUserResponseDto extends IPagedResult {
+    queryable: UserResponseDto[];
 }
 
-/** Specifies pagination info to use when requesting paged results. */
-export class PaginationInfo implements IPaginationInfo {
-    /** Return results with a total result count (true) or with no totals (false, default). */
-    includeTotals!: boolean;
-    /** Number of results per page. */
-    perPage!: number;
-    /** Page index of the results to return. First page is 0. */
-    pageNo!: number;
+export class Headers implements IHeaders {
 
-    constructor(data?: IPaginationInfo) {
+    [key: string]: any;
+
+    constructor(data?: IHeaders) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -7400,44 +11428,40 @@ export class PaginationInfo implements IPaginationInfo {
 
     init(_data?: any) {
         if (_data) {
-            this.includeTotals = _data["includeTotals"];
-            this.perPage = _data["perPage"];
-            this.pageNo = _data["pageNo"];
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
         }
     }
 
-    static fromJS(data: any): PaginationInfo {
+    static fromJS(data: any): Headers {
         data = typeof data === 'object' ? data : {};
-        let result = new PaginationInfo();
+        let result = new Headers();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["includeTotals"] = this.includeTotals;
-        data["perPage"] = this.perPage;
-        data["pageNo"] = this.pageNo;
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
         return data;
     }
 }
 
-/** Specifies pagination info to use when requesting paged results. */
-export interface IPaginationInfo {
-    /** Return results with a total result count (true) or with no totals (false, default). */
-    includeTotals: boolean;
-    /** Number of results per page. */
-    perPage: number;
-    /** Page index of the results to return. First page is 0. */
-    pageNo: number;
+export interface IHeaders {
+
+    [key: string]: any;
 }
 
-/** Contains details of permissions that should be assigned to a role. */
-export class AssignPermissionsRequest implements IAssignPermissionsRequest {
-    /** User IDs to assign to the role. */
-    permissions?: PermissionIdentity[] | undefined;
+export class Headers2 implements IHeaders2 {
 
-    constructor(data?: IAssignPermissionsRequest) {
+    [key: string]: any;
+
+    constructor(data?: IHeaders2) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -7448,46 +11472,40 @@ export class AssignPermissionsRequest implements IAssignPermissionsRequest {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["permissions"])) {
-                this.permissions = [] as any;
-                for (let item of _data["permissions"])
-                    this.permissions!.push(PermissionIdentity.fromJS(item));
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
             }
         }
     }
 
-    static fromJS(data: any): AssignPermissionsRequest {
+    static fromJS(data: any): Headers2 {
         data = typeof data === 'object' ? data : {};
-        let result = new AssignPermissionsRequest();
+        let result = new Headers2();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.permissions)) {
-            data["permissions"] = [];
-            for (let item of this.permissions)
-                data["permissions"].push(item.toJSON());
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
         }
         return data;
     }
 }
 
-/** Contains details of permissions that should be assigned to a role. */
-export interface IAssignPermissionsRequest {
-    /** User IDs to assign to the role. */
-    permissions?: PermissionIdentity[] | undefined;
+export interface IHeaders2 {
+
+    [key: string]: any;
 }
 
-/** Represents the properties of a permission that give it its unique identity. */
-export class PermissionIdentity implements IPermissionIdentity {
-    /** The resource server that the permission is attached to. */
-    resource_server_identifier?: string | undefined;
-    /** The name of the permission. */
-    permission_name?: string | undefined;
+export class Headers3 implements IHeaders3 {
 
-    constructor(data?: IPermissionIdentity) {
+    [key: string]: any;
+
+    constructor(data?: IHeaders3) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -7498,40 +11516,40 @@ export class PermissionIdentity implements IPermissionIdentity {
 
     init(_data?: any) {
         if (_data) {
-            this.resource_server_identifier = _data["resource_server_identifier"];
-            this.permission_name = _data["permission_name"];
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
         }
     }
 
-    static fromJS(data: any): PermissionIdentity {
+    static fromJS(data: any): Headers3 {
         data = typeof data === 'object' ? data : {};
-        let result = new PermissionIdentity();
+        let result = new Headers3();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["resource_server_identifier"] = this.resource_server_identifier;
-        data["permission_name"] = this.permission_name;
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
         return data;
     }
 }
 
-/** Represents the properties of a permission that give it its unique identity. */
-export interface IPermissionIdentity {
-    /** The resource server that the permission is attached to. */
-    resource_server_identifier?: string | undefined;
-    /** The name of the permission. */
-    permission_name?: string | undefined;
+export interface IHeaders3 {
+
+    [key: string]: any;
 }
 
-/** Contains details of roles that should be assigned to a user. */
-export class AssignRolesRequest implements IAssignRolesRequest {
-    /** Role IDs to assign to the user. */
-    roles?: string[] | undefined;
+export class Headers4 implements IHeaders4 {
 
-    constructor(data?: IAssignRolesRequest) {
+    [key: string]: any;
+
+    constructor(data?: IHeaders4) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -7542,36 +11560,429 @@ export class AssignRolesRequest implements IAssignRolesRequest {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["roles"])) {
-                this.roles = [] as any;
-                for (let item of _data["roles"])
-                    this.roles!.push(item);
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
             }
         }
     }
 
-    static fromJS(data: any): AssignRolesRequest {
+    static fromJS(data: any): Headers4 {
         data = typeof data === 'object' ? data : {};
-        let result = new AssignRolesRequest();
+        let result = new Headers4();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.roles)) {
-            data["roles"] = [];
-            for (let item of this.roles)
-                data["roles"].push(item);
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
         }
         return data;
     }
 }
 
-/** Contains details of roles that should be assigned to a user. */
-export interface IAssignRolesRequest {
-    /** Role IDs to assign to the user. */
-    roles?: string[] | undefined;
+export interface IHeaders4 {
+
+    [key: string]: any;
+}
+
+export class Headers5 implements IHeaders5 {
+
+    [key: string]: any;
+
+    constructor(data?: IHeaders5) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Headers5 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headers5();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IHeaders5 {
+
+    [key: string]: any;
+}
+
+export class Headers6 implements IHeaders6 {
+
+    [key: string]: any;
+
+    constructor(data?: IHeaders6) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Headers6 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headers6();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IHeaders6 {
+
+    [key: string]: any;
+}
+
+export class Headers7 implements IHeaders7 {
+
+    [key: string]: any;
+
+    constructor(data?: IHeaders7) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Headers7 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headers7();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IHeaders7 {
+
+    [key: string]: any;
+}
+
+export class Headers8 implements IHeaders8 {
+
+    [key: string]: any;
+
+    constructor(data?: IHeaders8) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Headers8 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headers8();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IHeaders8 {
+
+    [key: string]: any;
+}
+
+export class Headers9 implements IHeaders9 {
+
+    [key: string]: any;
+
+    constructor(data?: IHeaders9) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Headers9 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headers9();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IHeaders9 {
+
+    [key: string]: any;
+}
+
+export class Headers10 implements IHeaders10 {
+
+    [key: string]: any;
+
+    constructor(data?: IHeaders10) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Headers10 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headers10();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IHeaders10 {
+
+    [key: string]: any;
+}
+
+export class Headers11 implements IHeaders11 {
+
+    [key: string]: any;
+
+    constructor(data?: IHeaders11) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Headers11 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headers11();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IHeaders11 {
+
+    [key: string]: any;
+}
+
+export class Headers12 implements IHeaders12 {
+
+    [key: string]: any;
+
+    constructor(data?: IHeaders12) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Headers12 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headers12();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IHeaders12 {
+
+    [key: string]: any;
+}
+
+export class Headers13 implements IHeaders13 {
+
+    [key: string]: any;
+
+    constructor(data?: IHeaders13) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+        }
+    }
+
+    static fromJS(data: any): Headers13 {
+        data = typeof data === 'object' ? data : {};
+        let result = new Headers13();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        return data;
+    }
+}
+
+export interface IHeaders13 {
+
+    [key: string]: any;
 }
 
 export class Queryable implements IQueryable {

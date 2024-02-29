@@ -42,7 +42,6 @@ export async function get<T>(url: string, abortSignal?: AbortSignal) {
 
 export async function post<T>(url: string, body: T, file?: File) {
     try {
-        // debugger
         const config = file ? {
             headers: {
                 "content-type": "multipart/form-data"

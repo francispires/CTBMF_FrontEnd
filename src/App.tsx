@@ -10,23 +10,34 @@ import { ProtectedPage } from "./pages/protected-page.jsx";
 import { AdminPage } from "./pages/admin-page.jsx";
 import { CallbackPage } from "./pages/callback-page.jsx";
 import { NotFoundPage } from "./pages/not-found-page.jsx";
-import { Accounts } from "./components/accounts/accounts.tsx";
-import { Disciplines } from "./components/disciplines";
-import { DashBoard } from "./components/dashboard/dashBoard.tsx";
-import { Questions } from "./components/questions";
-import { Institutions } from "./components/institutions";
+import { Accounts } from "./pages/accounts/accounts.tsx";
+import { Disciplines } from "./pages/disciplines";
+import { DashBoard } from "./pages/dashboard/dashBoard.tsx";
+import { Questions } from "./pages/questions";
+import { Institutions } from "./pages/institutions";
 import { QuestionBank } from "./components/question-bank";
 import { UserQuestions } from "./pages/UserQuestions.tsx";
-import { EditQuestion } from "./components/questions/edit-question.tsx";
-import ViewQuestion from "./components/questions/view-question.tsx";
-import ViewDiscipline from "./components/disciplines/view-discipline.tsx";
-import EditDiscipline from "./components/disciplines/edit-discipline.tsx";
-import ViewInstitution from "./components/institutions/view-institution.tsx";
-import EditInstitution from "./components/institutions/edit-institution.tsx";
+import { EditQuestion } from "./pages/questions/edit-question.tsx";
+import ViewQuestion from "./pages/questions/view-question.tsx";
+import ViewDiscipline from "./pages/disciplines/view-discipline.tsx";
+import EditDiscipline from "./pages/disciplines/edit-discipline.tsx";
+import ViewInstitution from "./pages/institutions/view-institution.tsx";
+import EditInstitution from "./pages/institutions/edit-institution.tsx";
 import UserQuestionBank from "./pages/user-question-bank.tsx";
 import QuizzesAttempt from "./pages/quizzes-attempt.tsx";
-import {QuizAttemptConfiguration} from "./components/provas/quiz-attempt-configuration.tsx";
+import {QuizAttemptConfiguration} from "./pages/provas/quiz-attempt-configuration.tsx";
 import Provas from "./pages/provas.tsx";
+import QuizAttempt from "./pages/quiz-attempt.tsx";
+import {Configs} from "./pages/configs";
+import EditConfig from "./pages/configs/edit-config.tsx";
+import ViewConfig from "./pages/configs/view-config.tsx";
+import {Crews} from "./pages/crews";
+import ViewCrew from "./pages/crews/view-crew.tsx";
+import EditCrew from "./pages/crews/edit-crew.tsx";
+import {Enrollments} from "./pages/enrollments";
+import ViewEnroll from "./pages/enrollments/view-enroll.tsx";
+import EditEnroll from "./pages/enrollments/edit-enroll.tsx";
+
 
 const App = () => {
     const { isLoading } = useAuth0();
@@ -47,6 +58,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/banco-de-questoes" element={<UserQuestionBank />} />
             <Route path="/provas" element={<Provas />} />
+            <Route path="/provas/:attemptConfigId" element={<QuizAttempt />} />
             <Route path="/quizzes/:attemptConfigId" element={<QuizzesAttempt />} />
             <Route path="/questoes" element={<UserQuestions />} />
 
@@ -74,11 +86,25 @@ const App = () => {
             <Route path="/view-institution/:id" element={<AuthenticationGuard component={ViewInstitution} />} />
             <Route path="/edit-institution/:id" element={<AuthenticationGuard component={EditInstitution} />} />
 
+            <Route path="/crews" element={<AuthenticationGuard component={Crews} />} />
+            <Route path="/view-crew/:id" element={<AuthenticationGuard component={ViewCrew} />} />
+            <Route path="/edit-crew/:id" element={<AuthenticationGuard component={EditCrew} />} />
+
             <Route path="/question-banks" element={<QuestionBank />} />
 
             {/*Admin*/}
             <Route path="/protected" element={<AuthenticationGuard component={ProtectedPage} />} />
             <Route path="/admin" element={<AuthenticationGuard component={AdminPage} />} />
+
+            <Route path="/settings" element={<AuthenticationGuard component={Configs} />} />
+            <Route path="/view-config/:id" element={<AuthenticationGuard component={ViewConfig} />} />
+            <Route path="/edit-config/:id" element={<AuthenticationGuard component={EditConfig} />} />
+
+            <Route path="/enrollments" element={<AuthenticationGuard component={Enrollments} />} />
+            <Route path="/view-enroll/:id" element={<AuthenticationGuard component={ViewEnroll} />} />
+            <Route path="/edit-enroll/:id" element={<AuthenticationGuard component={EditEnroll} />} />
+
+
         </Routes>
     );
 };

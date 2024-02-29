@@ -42,7 +42,7 @@ export const StudentsScoreList = ({
             <TableRow
               key={index + 1}
               className={cn(
-                student.id === '3' ? 'bg-gray-700 bg-opacity-20' : ''
+                student.position === 3 ? 'bg-gray-700 bg-opacity-20' : ''
               )}
             >
               <TableCell>
@@ -57,15 +57,15 @@ export const StudentsScoreList = ({
                       {currentIndex}
                     </span>
                     <img
-                      src={student.image}
+                      src={student.userImage}
                       alt="Avatar estudante"
                       className="w-14 h-14 rounded-full object-cover z-10"
                     />
                   </div>
-                  <span>{student.name}</span>
+                  <span>{student.userName}</span>
                 </div>
               </TableCell>
-              <TableCell>{student.score} P</TableCell>
+              <TableCell>{student.questionScore} P</TableCell>
             </TableRow>
           )
         })}

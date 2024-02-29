@@ -1,7 +1,8 @@
-import Chart, { } from "react-apexcharts";
+import Chart, {} from "react-apexcharts";
+import {IRankingAnswersResponseDto} from "../../types_custom.ts";
 
-const state = {
-    series: [56,23],
+const baseState = {
+    series: [56, 23],
     labels: ["Acertos", "Erros"],
     legend: {
         position: 'bottom' as "bottom" | "top" | "right" | "left" | undefined
@@ -20,7 +21,18 @@ const state = {
     }]
 };
 
-export const QuestionRight = () => {
+export interface MyProps {
+    myAnswers: IRankingAnswersResponseDto[]
+}
+
+export const QuestionRight = ({myAnswers}: MyProps) => {
+    const wrongs = myAnswers.filter((answer: IRankingAnswersResponseDto) => !answer.correct).length;
+    const corrects = myAnswers.filter((answer: IRankingAnswersResponseDto) => !answer.correct).length;
+    const correctsAndWrongs = [corrects, wrongs];
+    // const [_, setSeries] = useState(baseState.series);
+    // useEffect(() => {
+    //     //setSeries(correctsAndWrongs);
+    // }, []);
     return (
         <>
             <div id="chart">
@@ -31,11 +43,13 @@ export const QuestionRight = () => {
                         </span>
                     </div>
                 </div>
-                <Chart
-                    options={state}
-                    series={state.series}
-                    type="donut"
-                />
+                {!correctsAndWrongs || (
+                    <Chart
+                        options={baseState}
+                        series={correctsAndWrongs}
+                        type="donut"
+                    />
+                )}
             </div>
         </>
     );

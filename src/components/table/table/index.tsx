@@ -1,4 +1,4 @@
-import React, { JSX, Key, ReactNode, useCallback, useState } from "react";
+import React, {JSX, Key, ReactNode, useCallback, useEffect, useState} from "react";
 import { TableTopContent } from "./table-top.tsx";
 import { TableBottomContent } from "./table-bottom.tsx";
 
@@ -42,7 +42,7 @@ export default function TTable<T>(props: Props<T>) {
     const [filterValue, setFilterValue] = useState("");
     const [appliedFilter, setAppliedFilter] = useState("");
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
-    const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(props.initialVisibleColumns));
+    const [visibleColumns, setVisibleColumnsState] = useState<Selection>(new Set(props.initialVisibleColumns));
     const [customFieldFilter, setCustomFieldFilter] = useState<Selection>("all");
     const [paging, setPaging] = useState({ currentPage: 1, pageSize: 10, sort: "", filter: "" } as PagedRequest);
     const [rowCount, setRowCount] = useState(0);
@@ -51,22 +51,34 @@ export default function TTable<T>(props: Props<T>) {
         direction: "ascending"
     });
 
+    const setVisibleColumns = (value: Selection) => {
+        setVisibleColumnsState(value);
+        localStorage.setItem(`visibleColumns${props.what}`, JSON.stringify(Array.from(value)));
+    }
+
+    useEffect(() => {
+        const stored = localStorage.getItem(`visibleColumns${props.what}`);
+        if (stored) {
+            setVisibleColumnsState(new Set(JSON.parse(stored)));
+        }
+    }, []);
+
     const headerColumns = React.useMemo(() => {
         if (visibleColumns === "all") return props.Columns;
         return props.Columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
     }, [visibleColumns]);
 
     const renderCell = useCallback(props.RenderCell, []);
-    const fetchData = async (pagination: PagedRequest, sort: string, filter: string) => {
+    const fetchData = async (pagination: PagedRequest, sort: string, filter: string,signal:AbortSignal) => {
         const url = `${apiUrl}/${props.url}?currentPage=${pagination.currentPage}&pageSize=${pagination.pageSize}&sort=${sort}&filter=${filter}`;
-        const response = await get<PagedResponse<T>>(url);
+        const response = await get<PagedResponse<T>>(url,signal);
         setRowCount((response as PagedResponse<T>).rowCount);
         return response;
     }
 
     const { isLoading, data } = useQuery({
-        queryKey: ['qryKey', { ...paging, sortDescriptor, filterValue }, props.what],
-        queryFn: () => fetchData(paging, parseSortDescriptor(props.luceneFilter,sortDescriptor), appliedFilter)
+        queryKey: ['qryKey', { ...paging, sortDescriptor, filterValue,appliedFilter }, props.what],
+        queryFn: (a) => fetchData(paging, parseSortDescriptor(props.luceneFilter,sortDescriptor), appliedFilter,a.signal)
     });
 
     const changePage = (pageNumber: number) => {

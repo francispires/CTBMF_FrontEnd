@@ -2,6 +2,7 @@ import React from "react";
 import {QuizAttemptConfigurationResponseDto} from "../../types_custom.ts";
 import {Button, Card, Image, CardFooter, CardHeader, CardBody} from "@nextui-org/react";
 import {imageUrl} from "../../_helpers/utils.ts";
+import {useNavigate} from "react-router-dom";
 
 interface Props {
     children?: React.ReactNode;
@@ -10,6 +11,10 @@ interface Props {
 }
 
 export const QuizConfigCard = ({children, className, config}: Props) => {
+    const navigation = useNavigate();
+    function gotoAnswerQuiz(attemptConfigId: string) {
+        navigation(`/provas/${attemptConfigId}`)
+    }
     return (
         <Card isFooterBlurred className={"w-full h-[300px] col-span-12 sm:col-span-7" + className}>
             <CardHeader className="absolute z-10 top-1 flex-col items-start">
@@ -40,7 +45,8 @@ export const QuizConfigCard = ({children, className, config}: Props) => {
                         <p className="text-tiny text-white/60">Dificuldade: {config.avgDifficulty}</p>
                     </div>
                 </div>
-                <Button radius="full" size="sm">Vamos lá!</Button>
+                <Button onClick={() => gotoAnswerQuiz(config.id!)} radius="full" size="sm">Vamos lá!</Button>
+
             </CardFooter>
         </Card>
     );

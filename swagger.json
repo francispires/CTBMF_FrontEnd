@@ -10,18 +10,51 @@
     "http"
   ],
   "paths": {
+    "/api/answers/ranking": {
+      "get": {
+        "tags": [
+          "Answer"
+        ],
+        "operationId": "Answer_Ranking",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RankingAnswersResponseDto"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/answers/my": {
       "get": {
         "tags": [
           "Answer"
         ],
-        "operationId": "Answer_GetMyAnswers",
+        "operationId": "Answer_My",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
         "responses": {
           "200": {
-            "x-nullable": true,
+            "x-nullable": false,
             "description": "",
             "schema": {
-              "type": "file"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/RankingAnswersResponseDto"
+              }
             }
           }
         }
@@ -251,12 +284,6 @@
           },
           {
             "type": "string",
-            "name": "User",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
             "name": "AlternativeId",
             "in": "formData",
             "format": "guid",
@@ -316,12 +343,6 @@
           },
           {
             "type": "string",
-            "name": "User",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
             "name": "AlternativeId",
             "in": "formData",
             "format": "guid",
@@ -358,12 +379,81 @@
           "Answer"
         ],
         "operationId": "Answer_Upload",
-        "consumes": [
-          "multipart/form-data"
-        ],
         "parameters": [
           {
-            "type": "file",
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/answers/upload64": {
+      "post": {
+        "tags": [
+          "Answer"
+        ],
+        "operationId": "Answer_Upload64",
+        "parameters": [
+          {
+            "type": "string",
             "name": "file",
             "in": "formData",
             "x-nullable": false
@@ -534,6 +624,1063 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/Message"
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/permissions/{id}": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_GetPermissions",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          },
+          {
+            "name": "paginationInfo",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaginationInfo"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_AddPermission",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          },
+          {
+            "name": "permissionsRequest",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AssignPermissionsRequest"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/roles/{id}": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_GetRoles",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          },
+          {
+            "name": "paginationInfo",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaginationInfo"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_AddRole",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          },
+          {
+            "name": "rolesRequest",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AssignRolesRequest"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/{id}": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_Get",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/all": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_Get2",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "currentPage",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "pageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "filter",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "sort",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/update_profile": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "Auth_UpdateProfile",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "userRequest",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateUserProfileRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/configs": {
+      "get": {
+        "tags": [
+          "Config"
+        ],
+        "summary": "Get all records of type T",
+        "operationId": "Config_GetAll",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "CurrentPage",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Sort",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "A PagedResult T with queryable holding the items",
+            "schema": {
+              "$ref": "#/definitions/PagedResultOfConfigResponseDto"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Config"
+        ],
+        "summary": "Create a record of type T",
+        "operationId": "Config_Create",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The RequestDto to create object",
+            "schema": {
+              "$ref": "#/definitions/ConfigRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "The created item T",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/configs/{id}": {
+      "get": {
+        "tags": [
+          "Config"
+        ],
+        "summary": "Get a record of type T by id",
+        "operationId": "Config_Get",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "A item T",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Config"
+        ],
+        "summary": "Delete a record of type T by id",
+        "operationId": "Config_Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be removed",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Config"
+        ],
+        "summary": "Update a record of type T by id",
+        "operationId": "Config_Update",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be updated",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The updated body to be saved",
+            "schema": {
+              "$ref": "#/definitions/ConfigRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/configs/file": {
+      "post": {
+        "tags": [
+          "Config"
+        ],
+        "operationId": "Config_CreateWithFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Key",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Value",
+            "in": "formData",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Config"
+        ],
+        "operationId": "Config_UpdateWithFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Key",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Value",
+            "in": "formData",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/configs/upload": {
+      "post": {
+        "tags": [
+          "Config"
+        ],
+        "operationId": "Config_Upload",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/configs/upload64": {
+      "post": {
+        "tags": [
+          "Config"
+        ],
+        "operationId": "Config_Upload64",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "file",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/crews": {
+      "get": {
+        "tags": [
+          "Crew"
+        ],
+        "summary": "Get all records of type T",
+        "operationId": "Crew_GetAll",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "CurrentPage",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Sort",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "A PagedResult T with queryable holding the items",
+            "schema": {
+              "$ref": "#/definitions/PagedResultOfCrewResponseDto"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Crew"
+        ],
+        "summary": "Create a record of type T",
+        "operationId": "Crew_Create",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The RequestDto to create object",
+            "schema": {
+              "$ref": "#/definitions/CrewRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "The created item T",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/crews/{id}": {
+      "get": {
+        "tags": [
+          "Crew"
+        ],
+        "summary": "Get a record of type T by id",
+        "operationId": "Crew_Get",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "A item T",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Crew"
+        ],
+        "summary": "Delete a record of type T by id",
+        "operationId": "Crew_Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be removed",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Crew"
+        ],
+        "summary": "Update a record of type T by id",
+        "operationId": "Crew_Update",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be updated",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The updated body to be saved",
+            "schema": {
+              "$ref": "#/definitions/CrewRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/crews/file": {
+      "post": {
+        "tags": [
+          "Crew"
+        ],
+        "operationId": "Crew_CreateWithFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Description",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Data",
+            "in": "formData",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Crew"
+        ],
+        "operationId": "Crew_UpdateWithFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Description",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Data",
+            "in": "formData",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/crews/upload": {
+      "post": {
+        "tags": [
+          "Crew"
+        ],
+        "operationId": "Crew_Upload",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/crews/upload64": {
+      "post": {
+        "tags": [
+          "Crew"
+        ],
+        "operationId": "Crew_Upload64",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "file",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
             }
           }
         }
@@ -837,12 +1984,500 @@
           "Disciplines"
         ],
         "operationId": "Disciplines_Upload",
-        "consumes": [
-          "multipart/form-data"
+        "parameters": [
+          {
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/disciplines/upload64": {
+      "post": {
+        "tags": [
+          "Disciplines"
+        ],
+        "operationId": "Disciplines_Upload64",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "file",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/enrollments": {
+      "get": {
+        "tags": [
+          "Enrollment"
+        ],
+        "summary": "Get all records of type T",
+        "operationId": "Enrollment_GetAll",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
         ],
         "parameters": [
           {
-            "type": "file",
+            "type": "integer",
+            "name": "CurrentPage",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Sort",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "A PagedResult T with queryable holding the items",
+            "schema": {
+              "$ref": "#/definitions/PagedResultOfEnrollmentResponseDto"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Enrollment"
+        ],
+        "summary": "Create a record of type T",
+        "operationId": "Enrollment_Create",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The RequestDto to create object",
+            "schema": {
+              "$ref": "#/definitions/EnrollmentRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "The created item T",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/enrollments/{id}": {
+      "get": {
+        "tags": [
+          "Enrollment"
+        ],
+        "summary": "Get a record of type T by id",
+        "operationId": "Enrollment_Get",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "A item T",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Enrollment"
+        ],
+        "summary": "Delete a record of type T by id",
+        "operationId": "Enrollment_Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be removed",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Enrollment"
+        ],
+        "summary": "Update a record of type T by id",
+        "operationId": "Enrollment_Update",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be updated",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The updated body to be saved",
+            "schema": {
+              "$ref": "#/definitions/EnrollmentRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/enrollments/file": {
+      "post": {
+        "tags": [
+          "Enrollment"
+        ],
+        "operationId": "Enrollment_CreateWithFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "StudentId",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "CrewId",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "StartDate",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "EndDate",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "Active",
+            "in": "formData",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Enrollment"
+        ],
+        "operationId": "Enrollment_UpdateWithFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "StudentId",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "CrewId",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "StartDate",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "EndDate",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "Active",
+            "in": "formData",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/enrollments/upload": {
+      "post": {
+        "tags": [
+          "Enrollment"
+        ],
+        "operationId": "Enrollment_Upload",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/enrollments/upload64": {
+      "post": {
+        "tags": [
+          "Enrollment"
+        ],
+        "operationId": "Enrollment_Upload64",
+        "parameters": [
+          {
+            "type": "string",
             "name": "file",
             "in": "formData",
             "x-nullable": false
@@ -1199,12 +2834,81 @@
           "Institutions"
         ],
         "operationId": "Institutions_Upload",
-        "consumes": [
-          "multipart/form-data"
-        ],
         "parameters": [
           {
-            "type": "file",
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/institutions/upload64": {
+      "post": {
+        "tags": [
+          "Institutions"
+        ],
+        "operationId": "Institutions_Upload64",
+        "parameters": [
+          {
+            "type": "string",
             "name": "file",
             "in": "formData",
             "x-nullable": false
@@ -2491,12 +4195,81 @@
           "Observations"
         ],
         "operationId": "Observations_Upload",
-        "consumes": [
-          "multipart/form-data"
-        ],
         "parameters": [
           {
-            "type": "file",
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/observations/upload64": {
+      "post": {
+        "tags": [
+          "Observations"
+        ],
+        "operationId": "Observations_Upload64",
+        "parameters": [
+          {
+            "type": "string",
             "name": "file",
             "in": "formData",
             "x-nullable": false
@@ -2729,12 +4502,6 @@
             "x-nullable": true
           },
           {
-            "type": "string",
-            "name": "User",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
             "type": "boolean",
             "name": "Resolved",
             "in": "formData",
@@ -2799,12 +4566,6 @@
             "x-nullable": true
           },
           {
-            "type": "string",
-            "name": "User",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
             "type": "boolean",
             "name": "Resolved",
             "in": "formData",
@@ -2847,12 +4608,81 @@
           "ObservationsRequest"
         ],
         "operationId": "ObservationsRequest_Upload",
-        "consumes": [
-          "multipart/form-data"
-        ],
         "parameters": [
           {
-            "type": "file",
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/observations_request/upload64": {
+      "post": {
+        "tags": [
+          "ObservationsRequest"
+        ],
+        "operationId": "ObservationsRequest_Upload64",
+        "parameters": [
+          {
+            "type": "string",
             "name": "file",
             "in": "formData",
             "x-nullable": false
@@ -3221,12 +5051,81 @@
           "QuestionBank"
         ],
         "operationId": "QuestionBank_Upload",
-        "consumes": [
-          "multipart/form-data"
-        ],
         "parameters": [
           {
-            "type": "file",
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/question_banks/upload64": {
+      "post": {
+        "tags": [
+          "QuestionBank"
+        ],
+        "operationId": "QuestionBank_Upload64",
+        "parameters": [
+          {
+            "type": "string",
             "name": "file",
             "in": "formData",
             "x-nullable": false
@@ -3255,23 +5154,6 @@
         }
       }
     },
-    "/api/questions/my": {
-      "get": {
-        "tags": [
-          "Question"
-        ],
-        "operationId": "Question_GetMyAnswers",
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
     "/api/questions/answer": {
       "post": {
         "tags": [
@@ -3283,6 +5165,11 @@
           "application/json",
           "text/json",
           "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
         ],
         "parameters": [
           {
@@ -3297,10 +5184,10 @@
         ],
         "responses": {
           "200": {
-            "x-nullable": true,
+            "x-nullable": false,
             "description": "",
             "schema": {
-              "type": "file"
+              "$ref": "#/definitions/AnswerResponseDto"
             }
           }
         }
@@ -3549,6 +5436,36 @@
         ],
         "parameters": [
           {
+            "type": "boolean",
+            "name": "OnlyWrongs",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "Random",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "OnlyNotAnswereds",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "OnlyAnswereds",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "OnlyCorrects",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
             "type": "array",
             "name": "InstitutionIds",
             "in": "query",
@@ -3590,16 +5507,14 @@
             }
           },
           {
-            "type": "boolean",
-            "name": "OnlyAnswereds",
+            "type": "array",
+            "name": "SubDisciplines",
             "in": "query",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "OnlyCorrects",
-            "in": "query",
-            "x-nullable": true
+            "collectionFormat": "multi",
+            "x-nullable": true,
+            "items": {
+              "type": "string"
+            }
           },
           {
             "type": "integer",
@@ -3628,6 +5543,26 @@
             "in": "query",
             "format": "int32",
             "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "AttemptId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "AttemptConfigId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "boolean",
+            "name": "GetAll",
+            "in": "query",
+            "x-nullable": false
           }
         ],
         "responses": {
@@ -4066,12 +6001,514 @@
           "Question"
         ],
         "operationId": "Question_Upload",
-        "consumes": [
-          "multipart/form-data"
+        "parameters": [
+          {
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/questions/upload64": {
+      "post": {
+        "tags": [
+          "Question"
+        ],
+        "operationId": "Question_Upload64",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "file",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempts/{attemptConfigurationId}": {
+      "get": {
+        "tags": [
+          "QuizAttempt"
+        ],
+        "operationId": "QuizAttempt_Get",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "attemptConfigurationId",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempts": {
+      "get": {
+        "tags": [
+          "QuizAttempt"
+        ],
+        "summary": "Get all records of type T",
+        "operationId": "QuizAttempt_GetAll",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
         ],
         "parameters": [
           {
-            "type": "file",
+            "type": "integer",
+            "name": "CurrentPage",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Sort",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "A PagedResult T with queryable holding the items",
+            "schema": {
+              "$ref": "#/definitions/PagedResultOfQuizAttemptResponseDto"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "QuizAttempt"
+        ],
+        "summary": "Create a record of type T",
+        "operationId": "QuizAttempt_Create",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The RequestDto to create object",
+            "schema": {
+              "$ref": "#/definitions/QuizAttemptRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "The created item T",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempts/file": {
+      "post": {
+        "tags": [
+          "QuizAttempt"
+        ],
+        "operationId": "QuizAttempt_CreateWithFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "StartedAt",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FinishedAt",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "DConfigureServicesuration",
+            "in": "formData",
+            "format": "duration",
+            "x-nullable": true
+          },
+          {
+            "type": "integer",
+            "name": "Score",
+            "in": "formData",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "Total",
+            "in": "formData",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "boolean",
+            "name": "Passed",
+            "in": "formData",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "QuizAttempt"
+        ],
+        "operationId": "QuizAttempt_UpdateWithFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "StartedAt",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FinishedAt",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "DConfigureServicesuration",
+            "in": "formData",
+            "format": "duration",
+            "x-nullable": true
+          },
+          {
+            "type": "integer",
+            "name": "Score",
+            "in": "formData",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "Total",
+            "in": "formData",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "boolean",
+            "name": "Passed",
+            "in": "formData",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempts/{id}": {
+      "delete": {
+        "tags": [
+          "QuizAttempt"
+        ],
+        "summary": "Delete a record of type T by id",
+        "operationId": "QuizAttempt_Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be removed",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "QuizAttempt"
+        ],
+        "summary": "Update a record of type T by id",
+        "operationId": "QuizAttempt_Update",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be updated",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The updated body to be saved",
+            "schema": {
+              "$ref": "#/definitions/QuizAttemptRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempts/upload": {
+      "post": {
+        "tags": [
+          "QuizAttempt"
+        ],
+        "operationId": "QuizAttempt_Upload",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempts/upload64": {
+      "post": {
+        "tags": [
+          "QuizAttempt"
+        ],
+        "operationId": "QuizAttempt_Upload64",
+        "parameters": [
+          {
+            "type": "string",
             "name": "file",
             "in": "formData",
             "x-nullable": false
@@ -4309,12 +6746,6 @@
           },
           {
             "type": "string",
-            "name": "User",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
             "name": "Description",
             "in": "formData",
             "x-nullable": true
@@ -4513,12 +6944,6 @@
           },
           {
             "type": "string",
-            "name": "User",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
             "name": "Description",
             "in": "formData",
             "x-nullable": true
@@ -4689,12 +7114,81 @@
           "QuizAttemptConfiguration"
         ],
         "operationId": "QuizAttemptConfiguration_Upload",
-        "consumes": [
-          "multipart/form-data"
-        ],
         "parameters": [
           {
-            "type": "file",
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempt_configs/upload64": {
+      "post": {
+        "tags": [
+          "QuizAttemptConfiguration"
+        ],
+        "operationId": "QuizAttemptConfiguration_Upload64",
+        "parameters": [
+          {
+            "type": "string",
             "name": "file",
             "in": "formData",
             "x-nullable": false
@@ -4723,18 +7217,12 @@
         }
       }
     },
-    "/api/users/permissions/{id}": {
+    "/api/users": {
       "get": {
         "tags": [
-          "User"
+          "Users"
         ],
-        "operationId": "User_GetPermissions",
-        "consumes": [
-          "application/json-patch+json",
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
+        "operationId": "Users_GetAll",
         "produces": [
           "text/plain",
           "application/json",
@@ -4742,20 +7230,30 @@
         ],
         "parameters": [
           {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
+            "type": "integer",
+            "name": "CurrentPage",
+            "in": "query",
+            "format": "int32",
             "x-nullable": false
           },
           {
-            "name": "paginationInfo",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/PaginationInfo"
-            },
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
             "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Sort",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": true
           }
         ],
         "responses": {
@@ -4763,141 +7261,41 @@
             "x-nullable": false,
             "description": "",
             "schema": {
-              "$ref": "#/definitions/Message"
+              "$ref": "#/definitions/PagedResultOfUserResponseDto"
             }
           }
         }
       },
       "post": {
         "tags": [
-          "User"
+          "Users"
         ],
-        "operationId": "User_AddPermission",
+        "summary": "Create a record of type T",
+        "operationId": "Users_Create",
         "consumes": [
           "application/json-patch+json",
           "application/json",
           "text/json",
           "application/*+json"
         ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
         "parameters": [
           {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "x-nullable": false
-          },
-          {
-            "name": "permissionsRequest",
+            "name": "body",
             "in": "body",
             "required": true,
+            "description": "The RequestDto to create object",
             "schema": {
-              "$ref": "#/definitions/AssignPermissionsRequest"
+              "$ref": "#/definitions/UserRequestDto"
             },
             "x-nullable": false
           }
         ],
         "responses": {
           "200": {
-            "x-nullable": false,
-            "description": "",
+            "x-nullable": true,
+            "description": "The created item T",
             "schema": {
-              "$ref": "#/definitions/Message"
-            }
-          }
-        }
-      }
-    },
-    "/api/users/roles/{id}": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "operationId": "User_GetRoles",
-        "consumes": [
-          "application/json-patch+json",
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "x-nullable": false
-          },
-          {
-            "name": "paginationInfo",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/PaginationInfo"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Message"
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "operationId": "User_AddRole",
-        "consumes": [
-          "application/json-patch+json",
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "x-nullable": false
-          },
-          {
-            "name": "rolesRequest",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/AssignRolesRequest"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Message"
+              "type": "file"
             }
           }
         }
@@ -4906,13 +7304,69 @@
     "/api/users/{id}": {
       "get": {
         "tags": [
-          "User"
+          "Users"
         ],
-        "operationId": "User_Get",
-        "produces": [
-          "text/plain",
+        "summary": "Get a record of type T by id",
+        "operationId": "Users_Get",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "A item T",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete a record of type T by id",
+        "operationId": "Users_Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be removed",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update a record of type T by id",
+        "operationId": "Users_Update",
+        "consumes": [
+          "application/json-patch+json",
           "application/json",
-          "text/json"
+          "text/json",
+          "application/*+json"
         ],
         "parameters": [
           {
@@ -4920,52 +7374,272 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The id of the item to be updated",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "The updated body to be saved",
+            "schema": {
+              "$ref": "#/definitions/UserRequestDto"
+            },
             "x-nullable": false
           }
         ],
         "responses": {
           "200": {
-            "x-nullable": false,
-            "description": "",
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
             "schema": {
-              "$ref": "#/definitions/Message"
+              "type": "file"
             }
           }
         }
       }
     },
-    "/api/users/all": {
-      "get": {
+    "/api/users/file": {
+      "post": {
         "tags": [
-          "User"
+          "Users"
         ],
-        "operationId": "User_Get2",
+        "operationId": "Users_CreateWithFile",
         "parameters": [
           {
-            "type": "integer",
-            "name": "currentPage",
-            "in": "query",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "pageSize",
-            "in": "query",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
             "type": "string",
-            "name": "filter",
-            "in": "query",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
             "x-nullable": true
           },
           {
             "type": "string",
-            "name": "sort",
-            "in": "query",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Address",
+            "in": "formData",
             "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "BirthDay",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Image",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Email",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Role",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Sid",
+            "in": "formData",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "Users_UpdateWithFile",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Id",
+            "in": "formData",
+            "format": "guid",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Address",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "BirthDay",
+            "in": "formData",
+            "format": "date-time",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Image",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Email",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Role",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Sid",
+            "in": "formData",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/users/upload": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "Users_Upload",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/users/upload64": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "Users_Upload64",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "file",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
           }
         ],
         "responses": {
@@ -4981,6 +7655,53 @@
     }
   },
   "definitions": {
+    "RankingAnswersResponseDto": {
+      "type": "object",
+      "required": [
+        "correct",
+        "questionScore"
+      ],
+      "properties": {
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "quizAttemptId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "userImage": {
+          "type": "string"
+        },
+        "userSid": {
+          "type": "string"
+        },
+        "questionDisciplineName": {
+          "type": "string"
+        },
+        "questionDisciplineId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "questionDisciplineParentId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "questionDisciplineParentName": {
+          "type": "string"
+        },
+        "correct": {
+          "type": "boolean"
+        },
+        "questionScore": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "PagedResultOfAnswerResponseDto": {
       "allOf": [
         {
@@ -5010,6 +7731,11 @@
         },
         {
           "type": "object",
+          "required": [
+            "user",
+            "complete",
+            "isCorrect"
+          ],
           "properties": {
             "question": {
               "$ref": "#/definitions/QuestionResponseDto"
@@ -5019,6 +7745,33 @@
             },
             "quizAttempt": {
               "$ref": "#/definitions/QuizAttemptResponseDto"
+            },
+            "userId": {
+              "type": "string",
+              "format": "guid"
+            },
+            "user": {
+              "$ref": "#/definitions/UserResponseDto"
+            },
+            "userName": {
+              "type": "string"
+            },
+            "correctId": {
+              "type": "string",
+              "format": "guid"
+            },
+            "complete": {
+              "type": "boolean"
+            },
+            "questionDisciplineName": {
+              "type": "string"
+            },
+            "questionDisciplineId": {
+              "type": "string",
+              "format": "guid"
+            },
+            "isCorrect": {
+              "type": "boolean"
             }
           }
         }
@@ -5043,6 +7796,7 @@
             "alternativesCount",
             "observationsCount",
             "answersCount",
+            "answersCorrectCount",
             "observationRequestsCount"
           ],
           "properties": {
@@ -5095,9 +7849,17 @@
               "type": "integer",
               "format": "int32"
             },
+            "answersCorrectCount": {
+              "type": "integer",
+              "format": "int32"
+            },
             "observationRequestsCount": {
               "type": "integer",
               "format": "int32"
+            },
+            "correctId": {
+              "type": "string",
+              "format": "guid"
             }
           }
         }
@@ -5155,6 +7917,10 @@
           "properties": {
             "question": {
               "$ref": "#/definitions/QuestionResponseDto"
+            },
+            "userId": {
+              "type": "string",
+              "format": "guid"
             }
           }
         }
@@ -5342,6 +8108,10 @@
           "properties": {
             "question": {
               "$ref": "#/definitions/QuestionRequestDto"
+            },
+            "userId": {
+              "type": "string",
+              "format": "guid"
             }
           }
         }
@@ -5361,9 +8131,6 @@
         "questionId": {
           "type": "string",
           "format": "guid"
-        },
-        "user": {
-          "type": "string"
         },
         "resolved": {
           "type": "boolean"
@@ -5460,7 +8227,6 @@
       "type": "object",
       "required": [
         "id",
-        "user",
         "startedAt",
         "score",
         "total",
@@ -5470,9 +8236,6 @@
         "id": {
           "type": "string",
           "format": "guid"
-        },
-        "user": {
-          "type": "string"
         },
         "startedAt": {
           "type": "string",
@@ -5499,6 +8262,97 @@
         }
       }
     },
+    "UserResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/UserRequestDto"
+        },
+        {
+          "type": "object",
+          "required": [
+            "enrollmentsCount"
+          ],
+          "properties": {
+            "enrollments": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EnrollmentRequestDto"
+              }
+            },
+            "enrollmentsCount": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      ]
+    },
+    "EnrollmentRequestDto": {
+      "type": "object",
+      "required": [
+        "active"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "studentId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "crewId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "UserRequestDto": {
+      "type": "object",
+      "required": [
+        "name",
+        "email"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "birthDay": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "image": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "sid": {
+          "type": "string"
+        }
+      }
+    },
     "AnswerRequestDto": {
       "type": "object",
       "required": [
@@ -5513,9 +8367,6 @@
         "questionId": {
           "type": "string",
           "format": "guid"
-        },
-        "user": {
-          "type": "string"
         },
         "alternativeId": {
           "type": "string",
@@ -5727,6 +8578,211 @@
         }
       }
     },
+    "PaginationInfo": {
+      "type": "object",
+      "description": "Specifies pagination info to use when requesting paged results.",
+      "required": [
+        "includeTotals",
+        "perPage",
+        "pageNo"
+      ],
+      "properties": {
+        "includeTotals": {
+          "type": "boolean",
+          "description": "Return results with a total result count (true) or with no totals (false, default)."
+        },
+        "perPage": {
+          "type": "integer",
+          "description": "Number of results per page.",
+          "format": "int32"
+        },
+        "pageNo": {
+          "type": "integer",
+          "description": "Page index of the results to return. First page is 0.",
+          "format": "int32"
+        }
+      }
+    },
+    "AssignPermissionsRequest": {
+      "type": "object",
+      "description": "Contains details of permissions that should be assigned to a role.",
+      "properties": {
+        "permissions": {
+          "type": "array",
+          "description": "User IDs to assign to the role.",
+          "items": {
+            "$ref": "#/definitions/PermissionIdentity"
+          }
+        }
+      }
+    },
+    "PermissionIdentity": {
+      "type": "object",
+      "description": "Represents the properties of a permission that give it its unique identity.",
+      "properties": {
+        "resource_server_identifier": {
+          "type": "string",
+          "description": "The resource server that the permission is attached to."
+        },
+        "permission_name": {
+          "type": "string",
+          "description": "The name of the permission."
+        }
+      }
+    },
+    "AssignRolesRequest": {
+      "type": "object",
+      "description": "Contains details of roles that should be assigned to a user.",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "description": "Role IDs to assign to the user.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "UpdateUserProfileRequestDto": {
+      "type": "object",
+      "required": [
+        "name",
+        "address",
+        "birthDay",
+        "email",
+        "phoneNumber",
+        "crew"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "birthDay": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "image": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phoneNumber": {
+          "type": "string"
+        },
+        "crew": {
+          "type": "string"
+        }
+      }
+    },
+    "PagedResultOfConfigResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PagedResult"
+        },
+        {
+          "type": "object",
+          "description": "PagedResult{TSource}",
+          "required": [
+            "queryable"
+          ],
+          "properties": {
+            "queryable": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ConfigResponseDto"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ConfigResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ConfigRequestDto"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    },
+    "ConfigRequestDto": {
+      "type": "object",
+      "required": [
+        "key",
+        "value"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "PagedResultOfCrewResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PagedResult"
+        },
+        {
+          "type": "object",
+          "description": "PagedResult{TSource}",
+          "required": [
+            "queryable"
+          ],
+          "properties": {
+            "queryable": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CrewResponseDto"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "CrewResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/CrewRequestDto"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    },
+    "CrewRequestDto": {
+      "type": "object",
+      "required": [
+        "name",
+        "description"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      }
+    },
     "PagedResultOfDisciplineResponseDto": {
       "allOf": [
         {
@@ -5744,6 +8800,56 @@
               "items": {
                 "$ref": "#/definitions/DisciplineResponseDto"
               }
+            }
+          }
+        }
+      ]
+    },
+    "PagedResultOfEnrollmentResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PagedResult"
+        },
+        {
+          "type": "object",
+          "description": "PagedResult{TSource}",
+          "required": [
+            "queryable"
+          ],
+          "properties": {
+            "queryable": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EnrollmentResponseDto"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "EnrollmentResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/EnrollmentRequestDto"
+        },
+        {
+          "type": "object",
+          "required": [
+            "studentName",
+            "crewName"
+          ],
+          "properties": {
+            "student": {
+              "$ref": "#/definitions/UserRequestDto"
+            },
+            "crew": {
+              "$ref": "#/definitions/CrewRequestDto"
+            },
+            "studentName": {
+              "type": "string"
+            },
+            "crewName": {
+              "type": "string"
             }
           }
         }
@@ -6046,6 +9152,28 @@
         }
       ]
     },
+    "PagedResultOfQuizAttemptResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PagedResult"
+        },
+        {
+          "type": "object",
+          "description": "PagedResult{TSource}",
+          "required": [
+            "queryable"
+          ],
+          "properties": {
+            "queryable": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuizAttemptResponseDto"
+              }
+            }
+          }
+        }
+      ]
+    },
     "PagedResultOfQuizAttemptConfigurationResponseDto": {
       "allOf": [
         {
@@ -6111,9 +9239,6 @@
           "type": "string"
         },
         "image": {
-          "type": "string"
-        },
-        "user": {
           "type": "string"
         },
         "description": {
@@ -6205,105 +9330,27 @@
         }
       }
     },
-    "CrewRequestDto": {
-      "type": "object",
-      "required": [
-        "id",
-        "name",
-        "user",
-        "users",
-        "description",
-        "data"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
+    "PagedResultOfUserResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PagedResult"
         },
-        "name": {
-          "type": "string"
-        },
-        "user": {
-          "type": "string"
-        },
-        "users": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "description": {
-          "type": "string"
-        },
-        "data": {
-          "type": "string"
-        }
-      }
-    },
-    "PaginationInfo": {
-      "type": "object",
-      "description": "Specifies pagination info to use when requesting paged results.",
-      "required": [
-        "includeTotals",
-        "perPage",
-        "pageNo"
-      ],
-      "properties": {
-        "includeTotals": {
-          "type": "boolean",
-          "description": "Return results with a total result count (true) or with no totals (false, default)."
-        },
-        "perPage": {
-          "type": "integer",
-          "description": "Number of results per page.",
-          "format": "int32"
-        },
-        "pageNo": {
-          "type": "integer",
-          "description": "Page index of the results to return. First page is 0.",
-          "format": "int32"
-        }
-      }
-    },
-    "AssignPermissionsRequest": {
-      "type": "object",
-      "description": "Contains details of permissions that should be assigned to a role.",
-      "properties": {
-        "permissions": {
-          "type": "array",
-          "description": "User IDs to assign to the role.",
-          "items": {
-            "$ref": "#/definitions/PermissionIdentity"
+        {
+          "type": "object",
+          "description": "PagedResult{TSource}",
+          "required": [
+            "queryable"
+          ],
+          "properties": {
+            "queryable": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/UserResponseDto"
+              }
+            }
           }
         }
-      }
-    },
-    "PermissionIdentity": {
-      "type": "object",
-      "description": "Represents the properties of a permission that give it its unique identity.",
-      "properties": {
-        "resource_server_identifier": {
-          "type": "string",
-          "description": "The resource server that the permission is attached to."
-        },
-        "permission_name": {
-          "type": "string",
-          "description": "The name of the permission."
-        }
-      }
-    },
-    "AssignRolesRequest": {
-      "type": "object",
-      "description": "Contains details of roles that should be assigned to a user.",
-      "properties": {
-        "roles": {
-          "type": "array",
-          "description": "Role IDs to assign to the user.",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
+      ]
     }
   }
 }

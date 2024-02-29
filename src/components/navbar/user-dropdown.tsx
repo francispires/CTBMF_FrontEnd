@@ -67,18 +67,18 @@ export const UserDropdown = () => {
         <DropdownItem onClick={handleLogin} key="Login" color="danger" className={isAuthenticated?"text-danger hidden":"text-danger"}>
           Entrar
         </DropdownItem>
-        <DropdownItem
-          key="profile"
-          className="flex flex-col justify-start w-full items-start"
-        >
-          <p>Entrou como</p>
-          <p>{user?.email}</p>
-        </DropdownItem>
-        <DropdownItem key="settings">Configurações</DropdownItem>
-        <DropdownItem key="team_settings">Minha Turma</DropdownItem>
-        <DropdownItem key="analytics">Estatísticas</DropdownItem>
-        <DropdownItem key="system">Sistema</DropdownItem>
-        <DropdownItem key="configurations">Configurations</DropdownItem>
+        {/*<DropdownItem*/}
+        {/*  key="profile"*/}
+        {/*  className="flex flex-col justify-start w-full items-start"*/}
+        {/*>*/}
+        {/*  <p>Entrou como</p>*/}
+        {/*  <p>{user?.email}</p>*/}
+        {/*</DropdownItem>*/}
+        <DropdownItem key="settings">Meu Perfil</DropdownItem>
+        {/*<DropdownItem key="team_settings">Minha Turma</DropdownItem>*/}
+        {/*<DropdownItem key="analytics">Estatísticas</DropdownItem>*/}
+        {/*<DropdownItem key="system">Sistema</DropdownItem>*/}
+        {/*<DropdownItem key="configurations">Configurations</DropdownItem>*/}
         <DropdownItem key="help_and_feedback">Ajuda & Feedback</DropdownItem>
       </DropdownMenu>
     </Dropdown>
