@@ -54,10 +54,9 @@ export const UserQuestions = () => {
         setTriggerFilter(true);
     }
 
-    const onAnswer = async (answer: AnswerResponseDto) => {
+    const onAnswer = async () => {
         await queryClient.invalidateQueries({queryKey: ['qryFilterQuestions', url]});
         filterChanged();
-        console.log(answer);
     };
 
     return (
@@ -84,6 +83,7 @@ export const UserQuestions = () => {
             {isLoading && <div>Carregando...</div>}
             {data && data.queryable.length === 0 && !isLoading && <div>Não existem mais questões a responder</div>}
             {!isLoading && data != undefined && data.queryable[0] && (<AnswerQuestion
+                questionLoading={isLoading}
                 quizAttemptId={""}
                 onAnswer={onAnswer}
                 question={data.queryable[0]} />)}

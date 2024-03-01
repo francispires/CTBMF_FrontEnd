@@ -11,7 +11,7 @@ import {
     Checkbox,
     Divider,
     Image,
-    Button, Chip
+    Button, Chip, Spinner
 } from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
 import {post} from "../../_helpers/api.ts";
@@ -22,16 +22,12 @@ import {abc, htmlText, imageUrl, toggleCorrectAlternative} from "../../_helpers/
 import {AddObservation} from "./add-observation.tsx";
 import ReactCardFlip from "react-card-flip";
 import {PageLoader} from "../../components/page-loader.tsx";
-import {DeleteDocumentIcon} from "../../components/icons/DeleteDocumentIcon.tsx";
-
-
 type Props = {
     question: QuestionResponseDto,
     quizAttemptId: string | undefined,
-    onAnswer: (answer: AnswerResponseDto) => void
+    onAnswer: () => void,
+    questionLoading: boolean
 };
-
-
 export const AnswerQuestion = (props: Props) => {
     const [alternatives, setAlternatives] = useState<AlternativeRequestDto[]>([]);
     const [correctAlternative, setCorrectAlternative] = useState("");
@@ -74,11 +70,6 @@ export const AnswerQuestion = (props: Props) => {
             setIsLoading(false);
             if (result) {
                 setIsFlipped(true);
-                setTimeout(() => {
-                    setIsFlipped(false);
-                    props.onAnswer(result);
-                }, 1000);
-
                 result.correctId && setCorrectAlternative(result.correctId);
                 result.alternativeId && setSelectedAlternative(result.alternativeId);
                 if (result.correct) {
@@ -92,8 +83,9 @@ export const AnswerQuestion = (props: Props) => {
         }
     }
 
-    function goBack() {
-        window.history.back();
+    async function nextQuestion() {
+        await props.onAnswer();
+        setIsFlipped(false)
     }
 
     const helps = props.question.observationRequests.filter(x => x.type === 0);
@@ -150,7 +142,9 @@ export const AnswerQuestion = (props: Props) => {
                 </CardBody>
                 <Divider/>
                 <CardBody className="pl-10">
-                    {/*<CardBody className="grid md:grid-cols-1 grid-cols-12 2xl:grid-cols-12 p-1 items-center pl-10 ">*/}
+                    {!(isLoading || props.questionLoading) ||(
+                        <Spinner size="md" className="flex items-center" />
+                    )}
                     <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal">
                         <div className={""}>
                             {alternatives.map(
@@ -193,10 +187,14 @@ export const AnswerQuestion = (props: Props) => {
                     </ReactCardFlip>
 
                 </CardBody>
-                <CardFooter className={"flex justify-end gap-12 grid grid-cols-12"}>
-                    <div className={"col-span-1"}></div>
-                    <Button color={"primary"} onClick={answerQuestion} className={"w-1/4"}>Responder</Button>
-                    <Button color={"secondary"} onClick={goBack} className={"w-1/4"}>Voltar</Button>
+                <CardFooter className={"flex grid-cols-2 items-center justify-center gap-3"}>
+                    {isFlipped || (
+                        <Button variant={"shadow"} color={"primary"} onClick={answerQuestion}
+                                className={"w-1/4"}>
+                            Responder
+                        </Button>
+                    )}
+                    <Button variant={"shadow"} color={"secondary"} onClick={nextQuestion} className={"w-1/4"}>Próxima</Button>
                 </CardFooter>
             </Card>
         </>

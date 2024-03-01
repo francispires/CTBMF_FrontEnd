@@ -191,7 +191,7 @@ export const AddQuestion = () => {
     };
 
     return (
-        <div>
+        <div className={"z-1000"}>
             <>
                 <Button onPress={onOpen} color="primary">
                     Nova
@@ -201,12 +201,12 @@ export const AddQuestion = () => {
                     isOpen={isOpen}
                     onOpenChange={handleOpenModalChange}
                     placement="top-center"
-                    className="max-h-[calc(100vh-50px)] overflow-auto"
+                    className="max-h-[calc(100vh-50px)] overflow-auto z-[202]"
                 >
                     <ModalContent>
                         {(onClose) => (
                             <>
-                                <form onSubmit={handleSubmit(onSubmit)}>
+                                <form onSubmit={handleSubmit(onSubmit)} >
                                     <ModalHeader className="flex flex-col gap-1">
                                         Questão
                                     </ModalHeader>
