@@ -42,25 +42,25 @@ export default function Provas() {
   }
 
   return (
-    <div className="p-6 overflow-auto min-h-[calc(100vh-65px)]">
-      <div
-        className="
-          grid items-center w-full gap-6 pt-8 mt-8
-          lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1
-        "
-      >
-        {
-          data.queryable.map((quizz) => (
-            <button
-              key={quizz.id}
-              className="bg-none border-none"
-              onClick={() => {}}
-            >
-              <QuizConfigCard config={quizz} className="border-2 hover:border-primary cursor-pointer"></QuizConfigCard>
-            </button>
-          ))
-        }
-      </div>
-    </div>
+        <div
+            className="
+          grid items-center gap-6
+          my-5 max-w-[99rem] items-center
+          lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1"
+        >
+          {
+            data.queryable.map((quizz) => (
+                <div
+                    key={quizz.id}
+                    className="bg-none border-none"
+                    onClick={() => {
+                    }}
+                >
+                  <QuizConfigCard config={quizz}
+                                  className="border-2 hover:border-primary cursor-pointer"></QuizConfigCard>
+                </div>
+            ))
+          }
+        </div>
   )
 }

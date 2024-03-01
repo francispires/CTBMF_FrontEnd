@@ -1,5 +1,6 @@
 import { shortName } from '../../utils/string'
 import { PodiumSvg } from '../icons/podium/podium'
+import {defaultUserPic} from "../../_helpers/utils.ts";
 
 export interface Student {
   userSid?: string | undefined,
@@ -17,8 +18,6 @@ export interface ThreeBestPodiumProps {
   all?: Student[],
   position?: number
 }
-
-
 export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
   if (!first && !second && !third)
     return <div></div>
@@ -40,7 +39,7 @@ export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
           {!second || second.questionScore}P
         </span>
         <img
-          src={second.userImage}
+          src={defaultUserPic(second)}
           alt="Avatar estudante"
           className="w-14 h-14 rounded-full object-cover"
         />
@@ -68,7 +67,7 @@ export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
            {!first || first.questionScore}P
         </span>
         <img
-          src={first.userImage}
+            src={defaultUserPic(first)}
           alt="Avatar estudante"
           className="w-14 h-14 rounded-full object-cover"
         />
@@ -96,7 +95,7 @@ export const Top3 = ({first,second,third}:ThreeBestPodiumProps) => {
           {!third || third.questionScore}P
         </span>
         <img
-          src={third.userImage}
+            src={defaultUserPic(third)}
           alt="Avatar estudante"
           className="w-14 h-14 rounded-full object-cover"
         />

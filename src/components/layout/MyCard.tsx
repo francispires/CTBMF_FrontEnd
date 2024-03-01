@@ -1,12 +1,9 @@
 import React from "react";
 import {Card, CardBody} from "@nextui-org/react";
-import {QuizAttemptConfigurationResponseDto} from "../../types_custom.ts";
-
 interface Props {
     children: React.ReactNode;
     className?: string;
 }
-
 export const MyCard = ({ children, className }: Props) => {
     return (
         <Card className={"bg-default-50 rounded-xl shadow-md px-3 "+className}>
@@ -16,5 +13,3 @@ export const MyCard = ({ children, className }: Props) => {
         </Card>
     );
 };
-
-

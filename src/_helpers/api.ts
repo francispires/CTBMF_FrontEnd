@@ -13,12 +13,17 @@ export async function get<T>(url: string, abortSignal?: AbortSignal) {
         const config = {
             signal: abortSignal,
             headers: {
-                Accept: '*/*'
+                Accept: '*/*',
+                Authorization: ''
             }
         };
         if (authToken())
             config.headers.Authorization = `Bearer ${authToken()}`;
         const {data, status} = await axios.get<T>(url, config);
+        if (status>=400) {
+            console.log(JSON.stringify(data, null, 4));
+            console.log('response status is: ', status);
+        }
         return data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -42,8 +47,10 @@ export async function post<T>(url: string, body: T, file?: File) {
         } : {};
         //if (file) {url = url + '/file';}
         const {data, status} = await axios.post(url, {...body, file}, config);
-        //console.log(JSON.stringify(data, null, 4));
-        //console.log('response status is: ', status);
+        if (status>=400) {
+            console.log(JSON.stringify(data, null, 4));
+            console.log('response status is: ', status);
+        }
         return data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -69,8 +76,10 @@ export async function patch<T>(url: string, body: T, file?: File) {
             url = url + '/file';
         }
         const {data, status} = await axios.patch(url, {...body, file}, config);
-        //console.log(JSON.stringify(data, null, 4));
-        //console.log('response status is: ', status);
+        if (status>=400) {
+            console.log(JSON.stringify(data, null, 4));
+            console.log('response status is: ', status);
+        }
 
         return data;
     } catch (error) {

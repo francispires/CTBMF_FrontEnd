@@ -9,6 +9,7 @@ import {
   TableRow,
   cn
 } from "@nextui-org/react";
+import {defaultUserPic} from "../../_helpers/utils.ts";
 
 interface StudentsScoreListProps {
   isLarge?: boolean
@@ -57,7 +58,7 @@ export const StudentsScoreList = ({
                       {currentIndex}
                     </span>
                     <img
-                      src={student.userImage}
+                      src={defaultUserPic(student)}
                       alt="Avatar estudante"
                       className="w-14 h-14 rounded-full object-cover z-10"
                     />

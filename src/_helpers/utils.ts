@@ -1,7 +1,7 @@
 import t from "./Translations.ts";
-import {AlternativeRequestDto, IRankingAnswersResponseDto} from "../types_custom.ts";
+import {AlternativeRequestDto} from "../types_custom.ts";
 import {SortDescriptor} from "@nextui-org/react";
-import {eachWeekOfInterval, interval, NormalizedInterval} from "date-fns";
+import {Student} from "../components/podium/three-best.tsx";
 
 export class Utils{
     static GetInitialVisibleColumns<T>(obj:T) {
@@ -34,24 +34,27 @@ export const imageUrl = (folder:string,img:string)=>(
     `${import.meta.env.VITE_REACT_APP_BUCKET_URL}/${folder}/${img}`
 );
 
-
-export const urltoFile = (url:string, filename:string, mimeType:string)=>{
-    if (url.startsWith('data:')) {
-        var arr = url.split(','),
-            mime = arr[0].match(/:(.*?);/)[1],
-            bstr = atob(arr[arr.length - 1]),
-            n = bstr.length,
-            u8arr = new Uint8Array(n);
-        while(n--){
-            u8arr[n] = bstr.charCodeAt(n);
-        }
-        var file = new File([u8arr], filename, {type:mime || mimeType});
-        return Promise.resolve(file);
-    }
-    return fetch(url)
-        .then(res => res.arrayBuffer())
-        .then(buf => new File([buf], filename,{type:mimeType}));
-}
+// export const urltoFile = (url:string, filename:string, mimeType:string)=>{
+//     if (url.startsWith('data:')) {
+//         // eslint-disable-next-line prefer-const
+//         let arr = url.split(','),
+//             // eslint-disable-next-line prefer-const
+//             mime = arr[0] ? arr[0].match(/:(.*?);/)[1]: mimeType,
+//             // eslint-disable-next-line prefer-const
+//             bst = atob(arr[arr.length - 1]),
+//             n = bst.length,
+//             // eslint-disable-next-line prefer-const
+//             u8arr = new Uint8Array(n);
+//         while(n--){
+//             u8arr[n] = bst.charCodeAt(n);
+//         }
+//         const file = new File([u8arr], filename, {type: mime || mimeType});
+//         return Promise.resolve(file);
+//     }
+//     return fetch(url)
+//         .then(res => res.arrayBuffer())
+//         .then(buf => new File([buf], filename,{type:mimeType}));
+// }
 
 export const parseSortDescriptor = (lucene:boolean|undefined,sortDescriptor:SortDescriptor) => {
     if (lucene===true)
@@ -124,16 +127,22 @@ export const toggleCorrectAlternativeReq = (alternatives: AlternativeRequestDto[
  */
 //export function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
 //    const map = new Map<K, Array<V>>();
-export const groupBy = (list, keyGetter)=> {
-    const map = new Map();
-    list.forEach((item) => {
-        const key = keyGetter(item);
-        const collection = map.get(key);
-        if (!collection) {
-            map.set(key, [item]);
-        } else {
-            collection.push(item);
-        }
-    });
-    return map;
+// export const groupBy = (list, keyGetter)=> {
+//     const map = new Map();
+//     list.forEach((item) => {
+//         const key = keyGetter(item);
+//         const collection = map.get(key);
+//         if (!collection) {
+//             map.set(key, [item]);
+//         } else {
+//             collection.push(item);
+//         }
+//     });
+//     return map;
+// }
+export const defaultUserPic = (u:Student) => {
+    if (!u) return `https://www.gravatar.com/avatar/94d093eda664adde6e450d7e9881bcan?s=32&d=identicon&r=PG`;
+    if (u.userImage) return u.userImage;
+    const ss = u.userSid?.substring(14, 2);
+    return `https://www.gravatar.com/avatar/94d093eda664adde6e450d7e9881bc${ss}?s=32&d=identicon&r=PG`;
 }

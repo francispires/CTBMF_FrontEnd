@@ -1,21 +1,18 @@
 import {Sidebar} from "./sidebar.styles";
-import {cn, Image} from "@nextui-org/react";
+import {Image} from "@nextui-org/react";
 import {SidebarItem} from "./sidebar-item";
 import {SidebarMenu} from "./sidebar-menu";
 import {useSidebarContext} from "../layout/layout-context";
 import {useAuth0} from "@auth0/auth0-react";
-import useWindowSize from "../hooks/useWindowSize.ts";
 import {useLocation} from "react-router-dom";
-import {BurguerButton} from "../navbar/burguer-button.tsx";
 import useDarkMode from "use-dark-mode";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faBuilding,
-    faCircleQuestion, faClipboardCheck, faDoorOpen, faGauge, faGear, faGraduationCap, faInstitution, faUser, faUsers
+    faCircleQuestion, faClipboardCheck, faDoorOpen, faGauge, faGear, faGraduationCap, faUser, faUsers
 } from "@fortawesome/free-solid-svg-icons";
 
 export const SidebarWrapper = () => {
-    const {width} = useWindowSize()
     const {pathname} = useLocation()
 
     const {collapsed, setCollapsed} = useSidebarContext();
