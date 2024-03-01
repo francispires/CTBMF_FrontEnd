@@ -16,13 +16,13 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup/src/index.ts";
 import { boolean, number, object, setLocale } from "yup";
 import { ptForm } from 'yup-locale-pt';
-import { AlternativeRequestDto, DisciplineRequestDto, QuestionRequestDto } from "../../types_custom.ts";
+import { AlternativeRequestDto,  QuestionRequestDto } from "../../types_custom.ts";
 
 import ImageUpload from "../../components/image-upload";
 import { PlusIcon } from "../../components/icons/PlusIcon.tsx";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import {faCheck, faCircleXmark, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill"
@@ -34,23 +34,11 @@ import {v4 as uuidv4} from "uuid";
 setLocale(ptForm);
 
 const createSchema = object().shape({
-    //  board: string().required('Banca é obrigatória'),
     year: number().required('Ano é obrigatório')
         .min(1900, 'Deve ser maior que 1900')
         .max(2050, 'Deve ser menor que 2050'),
     active: boolean().required('Status é obrigatório'),
-    score: number().required('Pontuação é obrigatória'),
-    //text: string().required('Enunciado é obrigatório'),
-    //    institutionId: string().required('Insituição é obrigatória'),
-    //     alternatives: array().of(
-    //         object().shape({
-    //             questionId: string().required('Questão é obrigatória'),
-    //             correct: boolean()
-    //                 .required('Se é correta ou não é obrigatório'),
-    //             text: string().required('Texto é obrigatório'),
-    //             id: string().required('ID é obrigatório'),
-    //         })
-    //     ).required('Pelo menos uma alternativa correta é obrigatória'),
+    score: number().required('Pontuação é obrigatória')
 });
 export const AddQuestion = () => {
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -115,7 +103,16 @@ export const AddQuestion = () => {
             return alternatives[index]["text"];
         }
     }
-
+    const removeAlternative = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const id = event.currentTarget.getAttribute("data-id");
+        if (!id) return;
+        const index = alternatives.findIndex(x => x.id === id);
+        if (index !== -1) {
+            const tempArray = alternatives.slice();
+            tempArray.splice(index, 1);
+            setAlternatives(tempArray);
+        }
+    }
     const toggleCorrect = (event: React.MouseEvent<HTMLButtonElement>) => {
         const id = event.currentTarget.getAttribute("data-id");
         const index = alternatives.findIndex(x => x.id === id);
@@ -374,39 +371,45 @@ export const AddQuestion = () => {
                                                                 data-id={a.id || i}
                                                             ></ReactQuill>
                                                         </div>
-                                                        <div>
+                                                        <div
+                                                            className={"col-span-1 flex flex-col w-1/2 border rounded-r-lg border-gray-400"}>
+                                                            <button
+                                                                onClick={removeAlternative}
+                                                                data-id={a.id || i}
+                                                                className="rounded-l-none h-1/3 rounded-r-lg rounded-br-none p-2 bg-gray-500/20 border-none"
+                                                                type="button">
+                                                                <FontAwesomeIcon className={"text-gray-500"}
+                                                                                 icon={faTrashCan}/>
+                                                            </button>
                                                             {
                                                                 a.correct ?
                                                                     <button
                                                                         onClick={toggleCorrect}
                                                                         data-id={a.id || i}
-                                                                        className="
-                                                                            rounded-l-none h-full rounded-r-lg p-2
-                                                                            bg-success/20 border-none
-                                                                        "
+                                                                        className="rounded-l-none h-full rounded-r-lg rounded-tr-none p-2 bg-success/20 border-none"
                                                                         type="button"
                                                                     >
-                                                                        <FontAwesomeIcon className={"text-success"} icon={faCheck} />
+                                                                        <FontAwesomeIcon className={"text-success"}
+                                                                                         icon={faCheck}/>
                                                                     </button>
                                                                     :
                                                                     <button
                                                                         onClick={toggleCorrect}
                                                                         data-id={a.id || i}
-                                                                        className="
-                                                                            rounded-l-none h-full rounded-r-lg p-2
-                                                                            bg-danger/20 border-none
-                                                                        "
+                                                                        className="                          rounded-l-none h-full rounded-r-lg p-2  rounded-tr-none                          bg-danger/20 border-none                        "
                                                                         type="button"
                                                                     >
-                                                                        <FontAwesomeIcon className={"text-danger"} icon={faCircleXmark} />
+                                                                        <FontAwesomeIcon className={"text-danger"}
+                                                                                         icon={faCircleXmark}/>
                                                                     </button>
 
                                                             }
                                                         </div>
                                                     </div>
-                                                ))}
+                                                    ))}
                                                 {invalidAlternatives &&
-                                                    <cite className={"text-danger"}>Adicione uma alternativa correta e ao menos uma incorreta.</cite>}
+                                                    <cite className={"text-danger"}>Adicione uma alternativa correta e
+                                                        ao menos uma incorreta.</cite>}
                                                 {errors.alternatives && <cite
                                                     className={"text-danger"}>{errors.alternatives.message}</cite>}
                                             </div>
