@@ -7,28 +7,31 @@ import {
     ModalContent,
     ModalFooter,
     ModalHeader,
+    Select,
+    SelectItem,
+    SelectSection,
     useDisclosure,
 } from "@nextui-org/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { post } from "../../_helpers/api.ts";
-import { Controller, useForm } from "react-hook-form";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {get, post} from "../../_helpers/api.ts";
+import {Controller, useForm} from "react-hook-form";
 
-import { yupResolver } from "@hookform/resolvers/yup/src/index.ts";
-import { boolean, number, object, setLocale } from "yup";
-import { ptForm } from 'yup-locale-pt';
-import { AlternativeRequestDto,  QuestionRequestDto } from "../../types_custom.ts";
+import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
+import {boolean, number, object, setLocale} from "yup";
+import {ptForm} from 'yup-locale-pt';
+import {AlternativeRequestDto, DisciplineResponseDto, QuestionRequestDto} from "../../types_custom.ts";
 
 import ImageUpload from "../../components/image-upload";
-import { PlusIcon } from "../../components/icons/PlusIcon.tsx";
+import {PlusIcon} from "../../components/icons/PlusIcon.tsx";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faCircleXmark, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-import { toast } from "react-toastify";
+import {useState} from "react";
+import {toast} from "react-toastify";
 import ReactQuill from "react-quill"
 import 'react-quill/dist/quill.snow.css'
 import Select2 from "../../components/select2";
-import { abc } from "../../_helpers/utils.ts";
+import {abc, apiUrl} from "../../_helpers/utils.ts";
 import {v4 as uuidv4} from "uuid";
 
 setLocale(ptForm);
@@ -55,9 +58,22 @@ export const AddQuestion = () => {
     const hasCorrectAlternative = alternatives.find((alternative) => alternative.correct === true)
     const [invalidAlternatives, setInvalidAlternatives] = useState(false)
     const [invalidDiscipline, setInvalidDiscipline] = useState(false)
+
     const [question, setQuestion] = useState<QuestionRequestDto>(new QuestionRequestDto({
         id: "", year: 0, score: 0, board: "", active: true, alternatives: [], institutionId: "", isValid: true
     }));
+
+    const fetchDisciplines = async () => {
+        const url = `${apiUrl}/disciplines?currentPage=1&pageSize=1000&sort=name`
+        return await get<PagedResponse<DisciplineResponseDto>>(url);
+    }
+
+    const { isLoading:loadingDisciplines, data:disciplines } = useQuery({
+        queryKey: ['disciplines'],
+        queryFn: fetchDisciplines
+    });
+
+
     setTimeout(() => {
         setQuestion({
             init() {
@@ -176,7 +192,7 @@ export const AddQuestion = () => {
                     { id:discipline,name: discipline, description: discipline }
         data.image = image;
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
-        await post<QuestionRequestDto>(`${apiUrl}/questions/create`, data as QuestionRequestDto, file);
+        await post<QuestionRequestDto>(`${apiUrl}/questions/create`, data as QuestionRequestDto);
         setFile(undefined);
         await queryClient.invalidateQueries({ queryKey: ['qryKey'] });
         setText("");
@@ -189,6 +205,13 @@ export const AddQuestion = () => {
         toast.success("Questão adicionada com sucesso")
         onClose();
     };
+
+    const setDisciplineWrapper = (id: string) => {
+        const d = disciplines.queryable.find(d => d.id === id)
+        if (d) {
+            setDiscipline(d.id)
+        }
+    }
 
     return (
         <div className={"z-1000"}>
@@ -221,21 +244,37 @@ export const AddQuestion = () => {
                                                     control={control}
                                                     render={() => {
                                                         return (
-                                                            <Select2
-                                                                setValue={setDiscipline}
-                                                                setIsNew={setIsNewDiscipline}
-                                                                useKey={true}
-                                                                value={question.discipline}
-                                                                defaultInputValue={question.discipline}
-                                                                valueProp={"id"}
-                                                                textProp={"name"}
-                                                                allowsCustomValue={true}
-                                                                url={"disciplines"}
-                                                                selectionMode="single"
-                                                                className="max-w"
-                                                                label="Disciplina"
-                                                                placeholder="Selecione uma Disciplina">
-                                                            </Select2>
+                                                            <>
+                                                                <Select
+                                                                    label="Conteúdo (Temas específicos)"
+                                                                    placeholder="Conteúdo"
+                                                                    selectionMode={"single"}
+                                                                    variant="bordered"
+                                                                    isLoading={loadingDisciplines}
+                                                                    onSelectionChange={(s) => {
+                                                                        setDisciplineWrapper(s.anchorKey)
+                                                                    }}
+
+                                                                >
+                                                                    {disciplines && disciplines.queryable.filter(d => d.childsCount > 0).map((discipline) => (
+                                                                        <SelectSection key={discipline.id} showDivider title={discipline.name}>
+                                                                            {
+                                                                                discipline.childs.map((subDiscipline) => (
+                                                                                    <SelectItem key={subDiscipline.id}
+                                                                                                textValue={subDiscipline.name}>
+                                                                                        <div className="flex gap-2 items-center">
+                                                                                            <div className="flex flex-col">
+                                                                        <span
+                                                                            className="text-small">{subDiscipline.name}</span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </SelectItem>
+                                                                                ))}
+                                                                        </SelectSection>
+                                                                    ))}
+                                                                </Select>
+
+                                                            </>
                                                         );
                                                     }}
                                                 />

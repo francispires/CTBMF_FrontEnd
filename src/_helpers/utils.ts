@@ -1,10 +1,11 @@
 import t from "./Translations.ts";
-import {AlternativeRequestDto} from "../types_custom.ts";
+import {AlternativeRequestDto, IRankingAnswersResponseDto} from "../types_custom.ts";
 import {SortDescriptor} from "@nextui-org/react";
 import {Student} from "../components/podium/three-best.tsx";
+import _ from "lodash";
 
-export class Utils{
-    static GetInitialVisibleColumns<T>(obj:T) {
+export class Utils {
+    static GetInitialVisibleColumns<T>(obj: T) {
         type StringKeys<T> = { [P in keyof T]: T[P] extends string ? P : never }[keyof T]
         type NewType = Pick<T, StringKeys<T>>; // { a: string; c: string; }
 
@@ -25,14 +26,15 @@ export class Utils{
     }
 }
 
-
 export const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 export const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
 
-export const imageUrl = (folder:string,img:string)=>(
-    `${import.meta.env.VITE_REACT_APP_BUCKET_URL}/${folder}/${img}`
+export const getImageUrl = (folder: string, img: string | undefined) => (
+    img?.toString().startsWith("http") ? img :
+        `${import.meta.env.VITE_REACT_APP_BUCKET_URL}/${folder}/${img}`
 );
+
 
 // export const urltoFile = (url:string, filename:string, mimeType:string)=>{
 //     if (url.startsWith('data:')) {
@@ -56,33 +58,33 @@ export const imageUrl = (folder:string,img:string)=>(
 //         .then(buf => new File([buf], filename,{type:mimeType}));
 // }
 
-export const parseSortDescriptor = (lucene:boolean|undefined,sortDescriptor:SortDescriptor) => {
-    if (lucene===true)
+export const parseSortDescriptor = (lucene: boolean | undefined, sortDescriptor: SortDescriptor) => {
+    if (lucene === true)
         return `${sortDescriptor.column}:${sortDescriptor.direction === "ascending" ? "1" : "0"}`;
 
     return `${sortDescriptor.column} ${sortDescriptor.direction === "ascending" ? "Asc" : "Desc"}`;
 };
 
-export const htmlText = (t:string)=>{
-    return {__html: t} as string|TrustedHTML
+export const htmlText = (t: string) => {
+    return {__html: t}
 };
 
 export const clean = (arr: string[]) => {
-    if(!arr) return [];
+    if (!arr) return [];
     return arr.filter((x) => x);
 }
 
 
-export const addParams = (url: URL, name:string,params: string[]) => {
+export const addParams = (url: URL, name: string, params: string[]) => {
     clean(params).map((p) => {
         url.searchParams.append(name, p);
     });
 }
-export const addParam = (url: URL, name:string,p: string) => {
+export const addParam = (url: URL, name: string, p: string) => {
     url.searchParams.append(name, p);
 }
 
-export const toggleCorrectAlternative = (alternatives: AlternativeRequestDto[], id:string) => {
+export const toggleCorrectAlternative = (alternatives: AlternativeRequestDto[], id: string) => {
     const index = alternatives.findIndex(x => x.id === id);
     if (index === -1) {
         return alternatives;
@@ -98,7 +100,7 @@ export const toggleCorrectAlternative = (alternatives: AlternativeRequestDto[], 
     return tempArray;
 }
 
-export const toggleCorrectAlternativeReq = (alternatives: AlternativeRequestDto[], id:string) => {
+export const toggleCorrectAlternativeReq = (alternatives: AlternativeRequestDto[], id: string) => {
     const index = alternatives.findIndex(x => x.id === id);
     if (index === -1) {
         return alternatives;
@@ -140,9 +142,32 @@ export const toggleCorrectAlternativeReq = (alternatives: AlternativeRequestDto[
 //     });
 //     return map;
 // }
-export const defaultUserPic = (u:Student) => {
+export const defaultUserPic = (u: Student) => {
     if (!u) return `https://www.gravatar.com/avatar/94d093eda664adde6e450d7e9881bcan?s=32&d=identicon&r=PG`;
     if (u.userImage) return u.userImage;
     const ss = u.userSid?.substring(14, 2);
-    return `https://www.gravatar.com/avatar/94d093eda664adde6e450d7e9881bc${ss}?s=32&d=identicon&r=PG`;
+    return `https://robohash.org/94d093eda664adde6e450d7e9881bc${ss}?s=32&d=identicon&r=PG`;
+}
+
+export interface DisciplineGroup {
+    discipline: string,
+    corrects: number,
+    wrongs: number,
+    balance: number,
+    questionDisciplineParentName: string
+}
+
+export const groupByDisciplines = (myAnswers: IRankingAnswersResponseDto[]) => {
+    const disciplines = _.toArray(_.groupBy(myAnswers, a => a.questionDisciplineParentName));
+    return disciplines.map((userAnswers: IRankingAnswersResponseDto[]) => {
+        const corrects = userAnswers.filter((answer: IRankingAnswersResponseDto) => answer.correct);
+        const wrongs = userAnswers.filter((answer: IRankingAnswersResponseDto) => !answer.correct);
+        return {
+            discipline: userAnswers[0].questionDisciplineParentName,
+            questionDisciplineParentName: userAnswers[0].questionDisciplineParentName,
+            corrects: corrects.length,
+            wrongs: wrongs.length,
+            balance: corrects.length - wrongs.length
+        } as DisciplineGroup;
+    });
 }

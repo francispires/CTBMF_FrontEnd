@@ -53,7 +53,7 @@ export const WeekBalance = ({myAnswers}: Props) => {
     const weekDiff = thisWeekSum - olderSum;
     const weekPositive = weekDiff > 0;
     const todayDiff = todaySum - yesterdaySum;
-    const todayPercent = (todayDiff / (yesterdaySum || 1)) * 100;
+    const todayPercent = ((todayDiff / (yesterdaySum || 1)) * 100).toFixed(2);
 
     const openDiff = openTodaySum - openYesterdaySum;
     const openPositive = openDiff > 0;

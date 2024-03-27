@@ -24,8 +24,7 @@ export type Props = {
 export default function SelectStatic<T>({ className="",...props }) {
     const [isOpen, setIsOpen] = useState(false);
     const {items, hasMore, isLoading, onLoadMore} = useSelect2List<T>(props.url,props.valueProp,props.textProp);
-    const [innerItems, setInnerItems] = useState(items);
-    const [values, setValues] = useState(new Set([""]));
+    const [values, setValues] = useState(new Set<string>([]));
     const [, scrollerRef] = useInfiniteScroll({
         hasMore,
         isEnabled: isOpen,
@@ -42,13 +41,11 @@ export default function SelectStatic<T>({ className="",...props }) {
     const clearItems = () => {
         setValues(new Set([]));
         props.setValues([]);
-        setInnerItems([])
     }
 
     return (
         <div className="flex w-full flex-col w-1/4">
             <Select
-                items={innerItems}
                 classNames={{
                     innerWrapper: "h-auto w-full",
                     value: "whitespace-break-spaces",
@@ -62,6 +59,8 @@ export default function SelectStatic<T>({ className="",...props }) {
                 placeholder={props.placeholder}
                 scrollRef={scrollerRef}
                 isLoading={isLoading}
+                selectedKeys={values}
+                onSelectionChange={(s)=>{setValues(new Set(Array.from(s).join(",")));}}
                 onOpenChange={setIsOpen}
                 onChange={handleSelectionChange}
                 renderValue={(items) => {

@@ -102,45 +102,6 @@ export class AnswerClient {
         return Promise.resolve<RankingAnswersResponseDto[]>(null as any);
     }
 
-    generateFakeAnswers(signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/answers/generate";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGenerateFakeAnswers(_response);
-        });
-    }
-
-    protected processGenerateFakeAnswers(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
     /**
      * Get all records of type T
      * @param currentPage (optional) 
@@ -369,121 +330,6 @@ export class AnswerClient {
     }
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    createWithFile(id: string | undefined, questionId: string | null | undefined, alternativeId: string | null | undefined, correct: boolean | undefined, quizAttemptId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/answers/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id === null || id === undefined)
-            throw new Error("The parameter 'id' cannot be null.");
-        else
-            content_.append("Id", id.toString());
-        if (questionId !== null && questionId !== undefined)
-            content_.append("QuestionId", questionId.toString());
-        if (alternativeId !== null && alternativeId !== undefined)
-            content_.append("AlternativeId", alternativeId.toString());
-        if (correct === null || correct === undefined)
-            throw new Error("The parameter 'correct' cannot be null.");
-        else
-            content_.append("Correct", correct.toString());
-        if (quizAttemptId !== null && quizAttemptId !== undefined)
-            content_.append("QuizAttemptId", quizAttemptId.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | undefined, questionId: string | null | undefined, alternativeId: string | null | undefined, correct: boolean | undefined, quizAttemptId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/answers/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData === null || idFormData === undefined)
-            throw new Error("The parameter 'idFormData' cannot be null.");
-        else
-            content_.append("Id", idFormData.toString());
-        if (questionId !== null && questionId !== undefined)
-            content_.append("QuestionId", questionId.toString());
-        if (alternativeId !== null && alternativeId !== undefined)
-            content_.append("AlternativeId", alternativeId.toString());
-        if (correct === null || correct === undefined)
-            throw new Error("The parameter 'correct' cannot be null.");
-        else
-            content_.append("Correct", correct.toString());
-        if (quizAttemptId !== null && quizAttemptId !== undefined)
-            content_.append("QuizAttemptId", quizAttemptId.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -1056,46 +902,6 @@ export class AuthClient {
         }
         return Promise.resolve<FileResponse | null>(null as any);
     }
-
-    updateProfile(userRequest: UpdateUserProfileRequestDto, signal?: AbortSignal): Promise<string> {
-        let url_ = this.baseUrl + "/api/auth/update_profile";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(userRequest);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateProfile(_response);
-        });
-    }
-
-    protected processUpdateProfile(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
 }
 
 export class ConfigClient {
@@ -1108,14 +914,6 @@ export class ConfigClient {
         this.baseUrl = baseUrl ?? "http://localhost";
     }
 
-    /**
-     * Get all records of type T
-     * @param currentPage (optional) 
-     * @param pageSize (optional) 
-     * @param sort (optional) 
-     * @param filter (optional) 
-     * @return A PagedResult T with queryable holding the items
-     */
     getAll(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfConfigResponseDto> {
         let url_ = this.baseUrl + "/api/configs?";
         if (currentPage === null)
@@ -1336,113 +1134,6 @@ export class ConfigClient {
     }
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    createWithFile(id: string | null | undefined, key: string | undefined, value: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/configs/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id !== null && id !== undefined)
-            content_.append("Id", id.toString());
-        if (key === null || key === undefined)
-            throw new Error("The parameter 'key' cannot be null.");
-        else
-            content_.append("Key", key.toString());
-        if (value === null || value === undefined)
-            throw new Error("The parameter 'value' cannot be null.");
-        else
-            content_.append("Value", value.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | null | undefined, key: string | undefined, value: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/configs/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData !== null && idFormData !== undefined)
-            content_.append("Id", idFormData.toString());
-        if (key === null || key === undefined)
-            throw new Error("The parameter 'key' cannot be null.");
-        else
-            content_.append("Key", key.toString());
-        if (value === null || value === undefined)
-            throw new Error("The parameter 'value' cannot be null.");
-        else
-            content_.append("Value", value.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -1852,117 +1543,6 @@ export class CrewClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    createWithFile(id: string | null | undefined, name: string | undefined, description: string | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/crews/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id !== null && id !== undefined)
-            content_.append("Id", id.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (description === null || description === undefined)
-            throw new Error("The parameter 'description' cannot be null.");
-        else
-            content_.append("Description", description.toString());
-        if (data !== null && data !== undefined)
-            content_.append("Data", data.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | null | undefined, name: string | undefined, description: string | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/crews/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData !== null && idFormData !== undefined)
-            content_.append("Id", idFormData.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (description === null || description === undefined)
-            throw new Error("The parameter 'description' cannot be null.");
-        else
-            content_.append("Description", description.toString());
-        if (data !== null && data !== undefined)
-            content_.append("Data", data.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
     upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers3[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/crews/upload?";
         if (fileNameQuery === null)
@@ -2351,125 +1931,6 @@ export class DisciplinesClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    createWithFile(id: string | undefined, name: string | undefined, description: string | undefined, image: string | null | undefined, parentId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/disciplines/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id === null || id === undefined)
-            throw new Error("The parameter 'id' cannot be null.");
-        else
-            content_.append("Id", id.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (description === null || description === undefined)
-            throw new Error("The parameter 'description' cannot be null.");
-        else
-            content_.append("Description", description.toString());
-        if (image !== null && image !== undefined)
-            content_.append("Image", image.toString());
-        if (parentId !== null && parentId !== undefined)
-            content_.append("ParentId", parentId.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | undefined, name: string | undefined, description: string | undefined, image: string | null | undefined, parentId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/disciplines/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData === null || idFormData === undefined)
-            throw new Error("The parameter 'idFormData' cannot be null.");
-        else
-            content_.append("Id", idFormData.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (description === null || description === undefined)
-            throw new Error("The parameter 'description' cannot be null.");
-        else
-            content_.append("Description", description.toString());
-        if (image !== null && image !== undefined)
-            content_.append("Image", image.toString());
-        if (parentId !== null && parentId !== undefined)
-            content_.append("ParentId", parentId.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
     upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers4[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/disciplines/upload?";
         if (fileNameQuery === null)
@@ -2837,121 +2298,6 @@ export class EnrollmentClient {
     }
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    createWithFile(id: string | null | undefined, studentId: string | null | undefined, crewId: string | null | undefined, startDate: Date | null | undefined, endDate: Date | null | undefined, active: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/enrollments/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id !== null && id !== undefined)
-            content_.append("Id", id.toString());
-        if (studentId !== null && studentId !== undefined)
-            content_.append("StudentId", studentId.toString());
-        if (crewId !== null && crewId !== undefined)
-            content_.append("CrewId", crewId.toString());
-        if (startDate !== null && startDate !== undefined)
-            content_.append("StartDate", startDate.toJSON());
-        if (endDate !== null && endDate !== undefined)
-            content_.append("EndDate", endDate.toJSON());
-        if (active === null || active === undefined)
-            throw new Error("The parameter 'active' cannot be null.");
-        else
-            content_.append("Active", active.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | null | undefined, studentId: string | null | undefined, crewId: string | null | undefined, startDate: Date | null | undefined, endDate: Date | null | undefined, active: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/enrollments/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData !== null && idFormData !== undefined)
-            content_.append("Id", idFormData.toString());
-        if (studentId !== null && studentId !== undefined)
-            content_.append("StudentId", studentId.toString());
-        if (crewId !== null && crewId !== undefined)
-            content_.append("CrewId", crewId.toString());
-        if (startDate !== null && startDate !== undefined)
-            content_.append("StartDate", startDate.toJSON());
-        if (endDate !== null && endDate !== undefined)
-            content_.append("EndDate", endDate.toJSON());
-        if (active === null || active === undefined)
-            throw new Error("The parameter 'active' cannot be null.");
-        else
-            content_.append("Active", active.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -3450,133 +2796,6 @@ export class InstitutionsClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    createWithFile(id: string | undefined, name: string | undefined, state: string | undefined, stadual: boolean | undefined, privateInstitution: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/institutions/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id === null || id === undefined)
-            throw new Error("The parameter 'id' cannot be null.");
-        else
-            content_.append("Id", id.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (state === null || state === undefined)
-            throw new Error("The parameter 'state' cannot be null.");
-        else
-            content_.append("State", state.toString());
-        if (stadual === null || stadual === undefined)
-            throw new Error("The parameter 'stadual' cannot be null.");
-        else
-            content_.append("Stadual", stadual.toString());
-        if (privateInstitution === null || privateInstitution === undefined)
-            throw new Error("The parameter 'privateInstitution' cannot be null.");
-        else
-            content_.append("PrivateInstitution", privateInstitution.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | undefined, name: string | undefined, state: string | undefined, stadual: boolean | undefined, privateInstitution: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/institutions/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData === null || idFormData === undefined)
-            throw new Error("The parameter 'idFormData' cannot be null.");
-        else
-            content_.append("Id", idFormData.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (state === null || state === undefined)
-            throw new Error("The parameter 'state' cannot be null.");
-        else
-            content_.append("State", state.toString());
-        if (stadual === null || stadual === undefined)
-            throw new Error("The parameter 'stadual' cannot be null.");
-        else
-            content_.append("Stadual", stadual.toString());
-        if (privateInstitution === null || privateInstitution === undefined)
-            throw new Error("The parameter 'privateInstitution' cannot be null.");
-        else
-            content_.append("PrivateInstitution", privateInstitution.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
     upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers6[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/institutions/upload?";
         if (fileNameQuery === null)
@@ -3960,541 +3179,6 @@ export class ObservationsClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    createWithFile(id: string | undefined, questionId: string | null | undefined, question_Id: string | undefined, question_Year: number | undefined, question_Board: string | undefined, question_Image: string | null | undefined, question_Text: string | null | undefined, question_Score: number | undefined, question_Active: boolean | undefined, question_QuestionNumber: number | null | undefined, question_InstitutionId: string | null | undefined, question_QuestionBankId: string | null | undefined, question_QuizAttemptId: string | null | undefined, question_DisciplineId: string | null | undefined, question_Alternatives: AlternativeRequestDto[] | null | undefined, question_Discipline_Id: string | undefined, question_Discipline_Name: string | undefined, question_Discipline_Description: string | undefined, question_Discipline_Image: string | null | undefined, question_Discipline_ParentId: string | null | undefined, question_IsValid: boolean | undefined, question_File: FileParameter | null | undefined, observationRequestId: string | null | undefined, observationRequest_Id: string | undefined, observationRequest_QuestionId: string | null | undefined, observationRequest_Question_Id: string | undefined, observationRequest_Question_Year: number | undefined, observationRequest_Question_Board: string | undefined, observationRequest_Question_Image: string | null | undefined, observationRequest_Question_Text: string | null | undefined, observationRequest_Question_Score: number | undefined, observationRequest_Question_Active: boolean | undefined, observationRequest_Question_QuestionNumber: number | null | undefined, observationRequest_Question_InstitutionId: string | null | undefined, observationRequest_Question_QuestionBankId: string | null | undefined, observationRequest_Question_QuizAttemptId: string | null | undefined, observationRequest_Question_DisciplineId: string | null | undefined, observationRequest_Question_Alternatives: AlternativeRequestDto[] | null | undefined, observationRequest_Question_Discipline_Id: string | undefined, observationRequest_Question_Discipline_Name: string | undefined, observationRequest_Question_Discipline_Description: string | undefined, observationRequest_Question_Discipline_Image: string | null | undefined, observationRequest_Question_Discipline_ParentId: string | null | undefined, observationRequest_Question_IsValid: boolean | undefined, observationRequest_Question_File: FileParameter | null | undefined, observationRequest_ObservationRequestId: string | null | undefined, observationRequest_ObservationRequest_Id: string | undefined, observationRequest_ObservationRequest_QuestionId: string | null | undefined, observationRequest_ObservationRequest_Question_Id: string | undefined, observationRequest_ObservationRequest_Question_Year: number | undefined, observationRequest_ObservationRequest_Question_Board: string | undefined, observationRequest_ObservationRequest_Question_Image: string | null | undefined, observationRequest_ObservationRequest_Question_Text: string | null | undefined, observationRequest_ObservationRequest_Question_Score: number | undefined, observationRequest_ObservationRequest_Question_Active: boolean | undefined, observationRequest_ObservationRequest_Question_QuestionNumber: number | null | undefined, observationRequest_ObservationRequest_Question_InstitutionId: string | null | undefined, observationRequest_ObservationRequest_Question_QuestionBankId: string | null | undefined, observationRequest_ObservationRequest_Question_QuizAttemptId: string | null | undefined, observationRequest_ObservationRequest_Question_DisciplineId: string | null | undefined, observationRequest_ObservationRequest_Question_Alternatives: AlternativeRequestDto[] | null | undefined, observationRequest_ObservationRequest_Question_Discipline_Id: string | undefined, observationRequest_ObservationRequest_Question_Discipline_Name: string | undefined, observationRequest_ObservationRequest_Question_Discipline_Description: string | undefined, observationRequest_ObservationRequest_Question_Discipline_Image: string | null | undefined, observationRequest_ObservationRequest_Question_Discipline_ParentId: string | null | undefined, observationRequest_ObservationRequest_Question_IsValid: boolean | undefined, observationRequest_ObservationRequest_Question_File: FileParameter | null | undefined, observationRequest_ObservationRequest_ObservationRequestId: string | null | undefined, observationRequest_ObservationRequest_ObservationRequest: ObservationRequestDto | null | undefined, observationRequest_ObservationRequest_Text: string | undefined, observationRequest_ObservationRequest_User: string | undefined, observationRequest_Text: string | undefined, observationRequest_User: string | undefined, text: string | undefined, user: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/observations/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id === null || id === undefined)
-            throw new Error("The parameter 'id' cannot be null.");
-        else
-            content_.append("Id", id.toString());
-        if (questionId !== null && questionId !== undefined)
-            content_.append("QuestionId", questionId.toString());
-        if (question_Id === null || question_Id === undefined)
-            throw new Error("The parameter 'question_Id' cannot be null.");
-        else
-            content_.append("Question.Id", question_Id.toString());
-        if (question_Year === null || question_Year === undefined)
-            throw new Error("The parameter 'question_Year' cannot be null.");
-        else
-            content_.append("Question.Year", question_Year.toString());
-        if (question_Board === null || question_Board === undefined)
-            throw new Error("The parameter 'question_Board' cannot be null.");
-        else
-            content_.append("Question.Board", question_Board.toString());
-        if (question_Image !== null && question_Image !== undefined)
-            content_.append("Question.Image", question_Image.toString());
-        if (question_Text !== null && question_Text !== undefined)
-            content_.append("Question.Text", question_Text.toString());
-        if (question_Score === null || question_Score === undefined)
-            throw new Error("The parameter 'question_Score' cannot be null.");
-        else
-            content_.append("Question.Score", question_Score.toString());
-        if (question_Active === null || question_Active === undefined)
-            throw new Error("The parameter 'question_Active' cannot be null.");
-        else
-            content_.append("Question.Active", question_Active.toString());
-        if (question_QuestionNumber !== null && question_QuestionNumber !== undefined)
-            content_.append("Question.QuestionNumber", question_QuestionNumber.toString());
-        if (question_InstitutionId !== null && question_InstitutionId !== undefined)
-            content_.append("Question.InstitutionId", question_InstitutionId.toString());
-        if (question_QuestionBankId !== null && question_QuestionBankId !== undefined)
-            content_.append("Question.QuestionBankId", question_QuestionBankId.toString());
-        if (question_QuizAttemptId !== null && question_QuizAttemptId !== undefined)
-            content_.append("Question.QuizAttemptId", question_QuizAttemptId.toString());
-        if (question_DisciplineId !== null && question_DisciplineId !== undefined)
-            content_.append("Question.DisciplineId", question_DisciplineId.toString());
-        if (question_Alternatives !== null && question_Alternatives !== undefined)
-            question_Alternatives.forEach(item_ => content_.append("Question.Alternatives", item_.toString()));
-        if (question_Discipline_Id === null || question_Discipline_Id === undefined)
-            throw new Error("The parameter 'question_Discipline_Id' cannot be null.");
-        else
-            content_.append("Question.Discipline.Id", question_Discipline_Id.toString());
-        if (question_Discipline_Name === null || question_Discipline_Name === undefined)
-            throw new Error("The parameter 'question_Discipline_Name' cannot be null.");
-        else
-            content_.append("Question.Discipline.Name", question_Discipline_Name.toString());
-        if (question_Discipline_Description === null || question_Discipline_Description === undefined)
-            throw new Error("The parameter 'question_Discipline_Description' cannot be null.");
-        else
-            content_.append("Question.Discipline.Description", question_Discipline_Description.toString());
-        if (question_Discipline_Image !== null && question_Discipline_Image !== undefined)
-            content_.append("Question.Discipline.Image", question_Discipline_Image.toString());
-        if (question_Discipline_ParentId !== null && question_Discipline_ParentId !== undefined)
-            content_.append("Question.Discipline.ParentId", question_Discipline_ParentId.toString());
-        if (question_IsValid === null || question_IsValid === undefined)
-            throw new Error("The parameter 'question_IsValid' cannot be null.");
-        else
-            content_.append("Question.IsValid", question_IsValid.toString());
-        if (question_File !== null && question_File !== undefined)
-            content_.append("Question.File", question_File.data, question_File.fileName ? question_File.fileName : "Question.File");
-        if (observationRequestId !== null && observationRequestId !== undefined)
-            content_.append("ObservationRequestId", observationRequestId.toString());
-        if (observationRequest_Id === null || observationRequest_Id === undefined)
-            throw new Error("The parameter 'observationRequest_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.Id", observationRequest_Id.toString());
-        if (observationRequest_QuestionId !== null && observationRequest_QuestionId !== undefined)
-            content_.append("ObservationRequest.QuestionId", observationRequest_QuestionId.toString());
-        if (observationRequest_Question_Id === null || observationRequest_Question_Id === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Id", observationRequest_Question_Id.toString());
-        if (observationRequest_Question_Year === null || observationRequest_Question_Year === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Year' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Year", observationRequest_Question_Year.toString());
-        if (observationRequest_Question_Board === null || observationRequest_Question_Board === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Board' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Board", observationRequest_Question_Board.toString());
-        if (observationRequest_Question_Image !== null && observationRequest_Question_Image !== undefined)
-            content_.append("ObservationRequest.Question.Image", observationRequest_Question_Image.toString());
-        if (observationRequest_Question_Text !== null && observationRequest_Question_Text !== undefined)
-            content_.append("ObservationRequest.Question.Text", observationRequest_Question_Text.toString());
-        if (observationRequest_Question_Score === null || observationRequest_Question_Score === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Score' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Score", observationRequest_Question_Score.toString());
-        if (observationRequest_Question_Active === null || observationRequest_Question_Active === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Active' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Active", observationRequest_Question_Active.toString());
-        if (observationRequest_Question_QuestionNumber !== null && observationRequest_Question_QuestionNumber !== undefined)
-            content_.append("ObservationRequest.Question.QuestionNumber", observationRequest_Question_QuestionNumber.toString());
-        if (observationRequest_Question_InstitutionId !== null && observationRequest_Question_InstitutionId !== undefined)
-            content_.append("ObservationRequest.Question.InstitutionId", observationRequest_Question_InstitutionId.toString());
-        if (observationRequest_Question_QuestionBankId !== null && observationRequest_Question_QuestionBankId !== undefined)
-            content_.append("ObservationRequest.Question.QuestionBankId", observationRequest_Question_QuestionBankId.toString());
-        if (observationRequest_Question_QuizAttemptId !== null && observationRequest_Question_QuizAttemptId !== undefined)
-            content_.append("ObservationRequest.Question.QuizAttemptId", observationRequest_Question_QuizAttemptId.toString());
-        if (observationRequest_Question_DisciplineId !== null && observationRequest_Question_DisciplineId !== undefined)
-            content_.append("ObservationRequest.Question.DisciplineId", observationRequest_Question_DisciplineId.toString());
-        if (observationRequest_Question_Alternatives !== null && observationRequest_Question_Alternatives !== undefined)
-            observationRequest_Question_Alternatives.forEach(item_ => content_.append("ObservationRequest.Question.Alternatives", item_.toString()));
-        if (observationRequest_Question_Discipline_Id === null || observationRequest_Question_Discipline_Id === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Discipline_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Discipline.Id", observationRequest_Question_Discipline_Id.toString());
-        if (observationRequest_Question_Discipline_Name === null || observationRequest_Question_Discipline_Name === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Discipline_Name' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Discipline.Name", observationRequest_Question_Discipline_Name.toString());
-        if (observationRequest_Question_Discipline_Description === null || observationRequest_Question_Discipline_Description === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Discipline_Description' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Discipline.Description", observationRequest_Question_Discipline_Description.toString());
-        if (observationRequest_Question_Discipline_Image !== null && observationRequest_Question_Discipline_Image !== undefined)
-            content_.append("ObservationRequest.Question.Discipline.Image", observationRequest_Question_Discipline_Image.toString());
-        if (observationRequest_Question_Discipline_ParentId !== null && observationRequest_Question_Discipline_ParentId !== undefined)
-            content_.append("ObservationRequest.Question.Discipline.ParentId", observationRequest_Question_Discipline_ParentId.toString());
-        if (observationRequest_Question_IsValid === null || observationRequest_Question_IsValid === undefined)
-            throw new Error("The parameter 'observationRequest_Question_IsValid' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.IsValid", observationRequest_Question_IsValid.toString());
-        if (observationRequest_Question_File !== null && observationRequest_Question_File !== undefined)
-            content_.append("ObservationRequest.Question.File", observationRequest_Question_File.data, observationRequest_Question_File.fileName ? observationRequest_Question_File.fileName : "ObservationRequest.Question.File");
-        if (observationRequest_ObservationRequestId !== null && observationRequest_ObservationRequestId !== undefined)
-            content_.append("ObservationRequest.ObservationRequestId", observationRequest_ObservationRequestId.toString());
-        if (observationRequest_ObservationRequest_Id === null || observationRequest_ObservationRequest_Id === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Id", observationRequest_ObservationRequest_Id.toString());
-        if (observationRequest_ObservationRequest_QuestionId !== null && observationRequest_ObservationRequest_QuestionId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.QuestionId", observationRequest_ObservationRequest_QuestionId.toString());
-        if (observationRequest_ObservationRequest_Question_Id === null || observationRequest_ObservationRequest_Question_Id === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Id", observationRequest_ObservationRequest_Question_Id.toString());
-        if (observationRequest_ObservationRequest_Question_Year === null || observationRequest_ObservationRequest_Question_Year === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Year' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Year", observationRequest_ObservationRequest_Question_Year.toString());
-        if (observationRequest_ObservationRequest_Question_Board === null || observationRequest_ObservationRequest_Question_Board === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Board' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Board", observationRequest_ObservationRequest_Question_Board.toString());
-        if (observationRequest_ObservationRequest_Question_Image !== null && observationRequest_ObservationRequest_Question_Image !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.Image", observationRequest_ObservationRequest_Question_Image.toString());
-        if (observationRequest_ObservationRequest_Question_Text !== null && observationRequest_ObservationRequest_Question_Text !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.Text", observationRequest_ObservationRequest_Question_Text.toString());
-        if (observationRequest_ObservationRequest_Question_Score === null || observationRequest_ObservationRequest_Question_Score === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Score' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Score", observationRequest_ObservationRequest_Question_Score.toString());
-        if (observationRequest_ObservationRequest_Question_Active === null || observationRequest_ObservationRequest_Question_Active === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Active' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Active", observationRequest_ObservationRequest_Question_Active.toString());
-        if (observationRequest_ObservationRequest_Question_QuestionNumber !== null && observationRequest_ObservationRequest_Question_QuestionNumber !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.QuestionNumber", observationRequest_ObservationRequest_Question_QuestionNumber.toString());
-        if (observationRequest_ObservationRequest_Question_InstitutionId !== null && observationRequest_ObservationRequest_Question_InstitutionId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.InstitutionId", observationRequest_ObservationRequest_Question_InstitutionId.toString());
-        if (observationRequest_ObservationRequest_Question_QuestionBankId !== null && observationRequest_ObservationRequest_Question_QuestionBankId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.QuestionBankId", observationRequest_ObservationRequest_Question_QuestionBankId.toString());
-        if (observationRequest_ObservationRequest_Question_QuizAttemptId !== null && observationRequest_ObservationRequest_Question_QuizAttemptId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.QuizAttemptId", observationRequest_ObservationRequest_Question_QuizAttemptId.toString());
-        if (observationRequest_ObservationRequest_Question_DisciplineId !== null && observationRequest_ObservationRequest_Question_DisciplineId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.DisciplineId", observationRequest_ObservationRequest_Question_DisciplineId.toString());
-        if (observationRequest_ObservationRequest_Question_Alternatives !== null && observationRequest_ObservationRequest_Question_Alternatives !== undefined)
-            observationRequest_ObservationRequest_Question_Alternatives.forEach(item_ => content_.append("ObservationRequest.ObservationRequest.Question.Alternatives", item_.toString()));
-        if (observationRequest_ObservationRequest_Question_Discipline_Id === null || observationRequest_ObservationRequest_Question_Discipline_Id === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Discipline_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.Id", observationRequest_ObservationRequest_Question_Discipline_Id.toString());
-        if (observationRequest_ObservationRequest_Question_Discipline_Name === null || observationRequest_ObservationRequest_Question_Discipline_Name === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Discipline_Name' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.Name", observationRequest_ObservationRequest_Question_Discipline_Name.toString());
-        if (observationRequest_ObservationRequest_Question_Discipline_Description === null || observationRequest_ObservationRequest_Question_Discipline_Description === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Discipline_Description' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.Description", observationRequest_ObservationRequest_Question_Discipline_Description.toString());
-        if (observationRequest_ObservationRequest_Question_Discipline_Image !== null && observationRequest_ObservationRequest_Question_Discipline_Image !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.Image", observationRequest_ObservationRequest_Question_Discipline_Image.toString());
-        if (observationRequest_ObservationRequest_Question_Discipline_ParentId !== null && observationRequest_ObservationRequest_Question_Discipline_ParentId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.ParentId", observationRequest_ObservationRequest_Question_Discipline_ParentId.toString());
-        if (observationRequest_ObservationRequest_Question_IsValid === null || observationRequest_ObservationRequest_Question_IsValid === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_IsValid' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.IsValid", observationRequest_ObservationRequest_Question_IsValid.toString());
-        if (observationRequest_ObservationRequest_Question_File !== null && observationRequest_ObservationRequest_Question_File !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.File", observationRequest_ObservationRequest_Question_File.data, observationRequest_ObservationRequest_Question_File.fileName ? observationRequest_ObservationRequest_Question_File.fileName : "ObservationRequest.ObservationRequest.Question.File");
-        if (observationRequest_ObservationRequest_ObservationRequestId !== null && observationRequest_ObservationRequest_ObservationRequestId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.ObservationRequestId", observationRequest_ObservationRequest_ObservationRequestId.toString());
-        if (observationRequest_ObservationRequest_ObservationRequest !== null && observationRequest_ObservationRequest_ObservationRequest !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.ObservationRequest", JSON.stringify(observationRequest_ObservationRequest_ObservationRequest));
-        if (observationRequest_ObservationRequest_Text === null || observationRequest_ObservationRequest_Text === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Text' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Text", observationRequest_ObservationRequest_Text.toString());
-        if (observationRequest_ObservationRequest_User === null || observationRequest_ObservationRequest_User === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_User' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.User", observationRequest_ObservationRequest_User.toString());
-        if (observationRequest_Text === null || observationRequest_Text === undefined)
-            throw new Error("The parameter 'observationRequest_Text' cannot be null.");
-        else
-            content_.append("ObservationRequest.Text", observationRequest_Text.toString());
-        if (observationRequest_User === null || observationRequest_User === undefined)
-            throw new Error("The parameter 'observationRequest_User' cannot be null.");
-        else
-            content_.append("ObservationRequest.User", observationRequest_User.toString());
-        if (text === null || text === undefined)
-            throw new Error("The parameter 'text' cannot be null.");
-        else
-            content_.append("Text", text.toString());
-        if (user === null || user === undefined)
-            throw new Error("The parameter 'user' cannot be null.");
-        else
-            content_.append("User", user.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | undefined, questionId: string | null | undefined, question_Id: string | undefined, question_Year: number | undefined, question_Board: string | undefined, question_Image: string | null | undefined, question_Text: string | null | undefined, question_Score: number | undefined, question_Active: boolean | undefined, question_QuestionNumber: number | null | undefined, question_InstitutionId: string | null | undefined, question_QuestionBankId: string | null | undefined, question_QuizAttemptId: string | null | undefined, question_DisciplineId: string | null | undefined, question_Alternatives: AlternativeRequestDto[] | null | undefined, question_Discipline_Id: string | undefined, question_Discipline_Name: string | undefined, question_Discipline_Description: string | undefined, question_Discipline_Image: string | null | undefined, question_Discipline_ParentId: string | null | undefined, question_IsValid: boolean | undefined, question_File: FileParameter | null | undefined, observationRequestId: string | null | undefined, observationRequest_Id: string | undefined, observationRequest_QuestionId: string | null | undefined, observationRequest_Question_Id: string | undefined, observationRequest_Question_Year: number | undefined, observationRequest_Question_Board: string | undefined, observationRequest_Question_Image: string | null | undefined, observationRequest_Question_Text: string | null | undefined, observationRequest_Question_Score: number | undefined, observationRequest_Question_Active: boolean | undefined, observationRequest_Question_QuestionNumber: number | null | undefined, observationRequest_Question_InstitutionId: string | null | undefined, observationRequest_Question_QuestionBankId: string | null | undefined, observationRequest_Question_QuizAttemptId: string | null | undefined, observationRequest_Question_DisciplineId: string | null | undefined, observationRequest_Question_Alternatives: AlternativeRequestDto[] | null | undefined, observationRequest_Question_Discipline_Id: string | undefined, observationRequest_Question_Discipline_Name: string | undefined, observationRequest_Question_Discipline_Description: string | undefined, observationRequest_Question_Discipline_Image: string | null | undefined, observationRequest_Question_Discipline_ParentId: string | null | undefined, observationRequest_Question_IsValid: boolean | undefined, observationRequest_Question_File: FileParameter | null | undefined, observationRequest_ObservationRequestId: string | null | undefined, observationRequest_ObservationRequest_Id: string | undefined, observationRequest_ObservationRequest_QuestionId: string | null | undefined, observationRequest_ObservationRequest_Question_Id: string | undefined, observationRequest_ObservationRequest_Question_Year: number | undefined, observationRequest_ObservationRequest_Question_Board: string | undefined, observationRequest_ObservationRequest_Question_Image: string | null | undefined, observationRequest_ObservationRequest_Question_Text: string | null | undefined, observationRequest_ObservationRequest_Question_Score: number | undefined, observationRequest_ObservationRequest_Question_Active: boolean | undefined, observationRequest_ObservationRequest_Question_QuestionNumber: number | null | undefined, observationRequest_ObservationRequest_Question_InstitutionId: string | null | undefined, observationRequest_ObservationRequest_Question_QuestionBankId: string | null | undefined, observationRequest_ObservationRequest_Question_QuizAttemptId: string | null | undefined, observationRequest_ObservationRequest_Question_DisciplineId: string | null | undefined, observationRequest_ObservationRequest_Question_Alternatives: AlternativeRequestDto[] | null | undefined, observationRequest_ObservationRequest_Question_Discipline_Id: string | undefined, observationRequest_ObservationRequest_Question_Discipline_Name: string | undefined, observationRequest_ObservationRequest_Question_Discipline_Description: string | undefined, observationRequest_ObservationRequest_Question_Discipline_Image: string | null | undefined, observationRequest_ObservationRequest_Question_Discipline_ParentId: string | null | undefined, observationRequest_ObservationRequest_Question_IsValid: boolean | undefined, observationRequest_ObservationRequest_Question_File: FileParameter | null | undefined, observationRequest_ObservationRequest_ObservationRequestId: string | null | undefined, observationRequest_ObservationRequest_ObservationRequest: ObservationRequestDto | null | undefined, observationRequest_ObservationRequest_Text: string | undefined, observationRequest_ObservationRequest_User: string | undefined, observationRequest_Text: string | undefined, observationRequest_User: string | undefined, text: string | undefined, user: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/observations/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData === null || idFormData === undefined)
-            throw new Error("The parameter 'idFormData' cannot be null.");
-        else
-            content_.append("Id", idFormData.toString());
-        if (questionId !== null && questionId !== undefined)
-            content_.append("QuestionId", questionId.toString());
-        if (question_Id === null || question_Id === undefined)
-            throw new Error("The parameter 'question_Id' cannot be null.");
-        else
-            content_.append("Question.Id", question_Id.toString());
-        if (question_Year === null || question_Year === undefined)
-            throw new Error("The parameter 'question_Year' cannot be null.");
-        else
-            content_.append("Question.Year", question_Year.toString());
-        if (question_Board === null || question_Board === undefined)
-            throw new Error("The parameter 'question_Board' cannot be null.");
-        else
-            content_.append("Question.Board", question_Board.toString());
-        if (question_Image !== null && question_Image !== undefined)
-            content_.append("Question.Image", question_Image.toString());
-        if (question_Text !== null && question_Text !== undefined)
-            content_.append("Question.Text", question_Text.toString());
-        if (question_Score === null || question_Score === undefined)
-            throw new Error("The parameter 'question_Score' cannot be null.");
-        else
-            content_.append("Question.Score", question_Score.toString());
-        if (question_Active === null || question_Active === undefined)
-            throw new Error("The parameter 'question_Active' cannot be null.");
-        else
-            content_.append("Question.Active", question_Active.toString());
-        if (question_QuestionNumber !== null && question_QuestionNumber !== undefined)
-            content_.append("Question.QuestionNumber", question_QuestionNumber.toString());
-        if (question_InstitutionId !== null && question_InstitutionId !== undefined)
-            content_.append("Question.InstitutionId", question_InstitutionId.toString());
-        if (question_QuestionBankId !== null && question_QuestionBankId !== undefined)
-            content_.append("Question.QuestionBankId", question_QuestionBankId.toString());
-        if (question_QuizAttemptId !== null && question_QuizAttemptId !== undefined)
-            content_.append("Question.QuizAttemptId", question_QuizAttemptId.toString());
-        if (question_DisciplineId !== null && question_DisciplineId !== undefined)
-            content_.append("Question.DisciplineId", question_DisciplineId.toString());
-        if (question_Alternatives !== null && question_Alternatives !== undefined)
-            question_Alternatives.forEach(item_ => content_.append("Question.Alternatives", item_.toString()));
-        if (question_Discipline_Id === null || question_Discipline_Id === undefined)
-            throw new Error("The parameter 'question_Discipline_Id' cannot be null.");
-        else
-            content_.append("Question.Discipline.Id", question_Discipline_Id.toString());
-        if (question_Discipline_Name === null || question_Discipline_Name === undefined)
-            throw new Error("The parameter 'question_Discipline_Name' cannot be null.");
-        else
-            content_.append("Question.Discipline.Name", question_Discipline_Name.toString());
-        if (question_Discipline_Description === null || question_Discipline_Description === undefined)
-            throw new Error("The parameter 'question_Discipline_Description' cannot be null.");
-        else
-            content_.append("Question.Discipline.Description", question_Discipline_Description.toString());
-        if (question_Discipline_Image !== null && question_Discipline_Image !== undefined)
-            content_.append("Question.Discipline.Image", question_Discipline_Image.toString());
-        if (question_Discipline_ParentId !== null && question_Discipline_ParentId !== undefined)
-            content_.append("Question.Discipline.ParentId", question_Discipline_ParentId.toString());
-        if (question_IsValid === null || question_IsValid === undefined)
-            throw new Error("The parameter 'question_IsValid' cannot be null.");
-        else
-            content_.append("Question.IsValid", question_IsValid.toString());
-        if (question_File !== null && question_File !== undefined)
-            content_.append("Question.File", question_File.data, question_File.fileName ? question_File.fileName : "Question.File");
-        if (observationRequestId !== null && observationRequestId !== undefined)
-            content_.append("ObservationRequestId", observationRequestId.toString());
-        if (observationRequest_Id === null || observationRequest_Id === undefined)
-            throw new Error("The parameter 'observationRequest_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.Id", observationRequest_Id.toString());
-        if (observationRequest_QuestionId !== null && observationRequest_QuestionId !== undefined)
-            content_.append("ObservationRequest.QuestionId", observationRequest_QuestionId.toString());
-        if (observationRequest_Question_Id === null || observationRequest_Question_Id === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Id", observationRequest_Question_Id.toString());
-        if (observationRequest_Question_Year === null || observationRequest_Question_Year === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Year' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Year", observationRequest_Question_Year.toString());
-        if (observationRequest_Question_Board === null || observationRequest_Question_Board === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Board' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Board", observationRequest_Question_Board.toString());
-        if (observationRequest_Question_Image !== null && observationRequest_Question_Image !== undefined)
-            content_.append("ObservationRequest.Question.Image", observationRequest_Question_Image.toString());
-        if (observationRequest_Question_Text !== null && observationRequest_Question_Text !== undefined)
-            content_.append("ObservationRequest.Question.Text", observationRequest_Question_Text.toString());
-        if (observationRequest_Question_Score === null || observationRequest_Question_Score === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Score' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Score", observationRequest_Question_Score.toString());
-        if (observationRequest_Question_Active === null || observationRequest_Question_Active === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Active' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Active", observationRequest_Question_Active.toString());
-        if (observationRequest_Question_QuestionNumber !== null && observationRequest_Question_QuestionNumber !== undefined)
-            content_.append("ObservationRequest.Question.QuestionNumber", observationRequest_Question_QuestionNumber.toString());
-        if (observationRequest_Question_InstitutionId !== null && observationRequest_Question_InstitutionId !== undefined)
-            content_.append("ObservationRequest.Question.InstitutionId", observationRequest_Question_InstitutionId.toString());
-        if (observationRequest_Question_QuestionBankId !== null && observationRequest_Question_QuestionBankId !== undefined)
-            content_.append("ObservationRequest.Question.QuestionBankId", observationRequest_Question_QuestionBankId.toString());
-        if (observationRequest_Question_QuizAttemptId !== null && observationRequest_Question_QuizAttemptId !== undefined)
-            content_.append("ObservationRequest.Question.QuizAttemptId", observationRequest_Question_QuizAttemptId.toString());
-        if (observationRequest_Question_DisciplineId !== null && observationRequest_Question_DisciplineId !== undefined)
-            content_.append("ObservationRequest.Question.DisciplineId", observationRequest_Question_DisciplineId.toString());
-        if (observationRequest_Question_Alternatives !== null && observationRequest_Question_Alternatives !== undefined)
-            observationRequest_Question_Alternatives.forEach(item_ => content_.append("ObservationRequest.Question.Alternatives", item_.toString()));
-        if (observationRequest_Question_Discipline_Id === null || observationRequest_Question_Discipline_Id === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Discipline_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Discipline.Id", observationRequest_Question_Discipline_Id.toString());
-        if (observationRequest_Question_Discipline_Name === null || observationRequest_Question_Discipline_Name === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Discipline_Name' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Discipline.Name", observationRequest_Question_Discipline_Name.toString());
-        if (observationRequest_Question_Discipline_Description === null || observationRequest_Question_Discipline_Description === undefined)
-            throw new Error("The parameter 'observationRequest_Question_Discipline_Description' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.Discipline.Description", observationRequest_Question_Discipline_Description.toString());
-        if (observationRequest_Question_Discipline_Image !== null && observationRequest_Question_Discipline_Image !== undefined)
-            content_.append("ObservationRequest.Question.Discipline.Image", observationRequest_Question_Discipline_Image.toString());
-        if (observationRequest_Question_Discipline_ParentId !== null && observationRequest_Question_Discipline_ParentId !== undefined)
-            content_.append("ObservationRequest.Question.Discipline.ParentId", observationRequest_Question_Discipline_ParentId.toString());
-        if (observationRequest_Question_IsValid === null || observationRequest_Question_IsValid === undefined)
-            throw new Error("The parameter 'observationRequest_Question_IsValid' cannot be null.");
-        else
-            content_.append("ObservationRequest.Question.IsValid", observationRequest_Question_IsValid.toString());
-        if (observationRequest_Question_File !== null && observationRequest_Question_File !== undefined)
-            content_.append("ObservationRequest.Question.File", observationRequest_Question_File.data, observationRequest_Question_File.fileName ? observationRequest_Question_File.fileName : "ObservationRequest.Question.File");
-        if (observationRequest_ObservationRequestId !== null && observationRequest_ObservationRequestId !== undefined)
-            content_.append("ObservationRequest.ObservationRequestId", observationRequest_ObservationRequestId.toString());
-        if (observationRequest_ObservationRequest_Id === null || observationRequest_ObservationRequest_Id === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Id", observationRequest_ObservationRequest_Id.toString());
-        if (observationRequest_ObservationRequest_QuestionId !== null && observationRequest_ObservationRequest_QuestionId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.QuestionId", observationRequest_ObservationRequest_QuestionId.toString());
-        if (observationRequest_ObservationRequest_Question_Id === null || observationRequest_ObservationRequest_Question_Id === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Id", observationRequest_ObservationRequest_Question_Id.toString());
-        if (observationRequest_ObservationRequest_Question_Year === null || observationRequest_ObservationRequest_Question_Year === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Year' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Year", observationRequest_ObservationRequest_Question_Year.toString());
-        if (observationRequest_ObservationRequest_Question_Board === null || observationRequest_ObservationRequest_Question_Board === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Board' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Board", observationRequest_ObservationRequest_Question_Board.toString());
-        if (observationRequest_ObservationRequest_Question_Image !== null && observationRequest_ObservationRequest_Question_Image !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.Image", observationRequest_ObservationRequest_Question_Image.toString());
-        if (observationRequest_ObservationRequest_Question_Text !== null && observationRequest_ObservationRequest_Question_Text !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.Text", observationRequest_ObservationRequest_Question_Text.toString());
-        if (observationRequest_ObservationRequest_Question_Score === null || observationRequest_ObservationRequest_Question_Score === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Score' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Score", observationRequest_ObservationRequest_Question_Score.toString());
-        if (observationRequest_ObservationRequest_Question_Active === null || observationRequest_ObservationRequest_Question_Active === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Active' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Active", observationRequest_ObservationRequest_Question_Active.toString());
-        if (observationRequest_ObservationRequest_Question_QuestionNumber !== null && observationRequest_ObservationRequest_Question_QuestionNumber !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.QuestionNumber", observationRequest_ObservationRequest_Question_QuestionNumber.toString());
-        if (observationRequest_ObservationRequest_Question_InstitutionId !== null && observationRequest_ObservationRequest_Question_InstitutionId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.InstitutionId", observationRequest_ObservationRequest_Question_InstitutionId.toString());
-        if (observationRequest_ObservationRequest_Question_QuestionBankId !== null && observationRequest_ObservationRequest_Question_QuestionBankId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.QuestionBankId", observationRequest_ObservationRequest_Question_QuestionBankId.toString());
-        if (observationRequest_ObservationRequest_Question_QuizAttemptId !== null && observationRequest_ObservationRequest_Question_QuizAttemptId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.QuizAttemptId", observationRequest_ObservationRequest_Question_QuizAttemptId.toString());
-        if (observationRequest_ObservationRequest_Question_DisciplineId !== null && observationRequest_ObservationRequest_Question_DisciplineId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.DisciplineId", observationRequest_ObservationRequest_Question_DisciplineId.toString());
-        if (observationRequest_ObservationRequest_Question_Alternatives !== null && observationRequest_ObservationRequest_Question_Alternatives !== undefined)
-            observationRequest_ObservationRequest_Question_Alternatives.forEach(item_ => content_.append("ObservationRequest.ObservationRequest.Question.Alternatives", item_.toString()));
-        if (observationRequest_ObservationRequest_Question_Discipline_Id === null || observationRequest_ObservationRequest_Question_Discipline_Id === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Discipline_Id' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.Id", observationRequest_ObservationRequest_Question_Discipline_Id.toString());
-        if (observationRequest_ObservationRequest_Question_Discipline_Name === null || observationRequest_ObservationRequest_Question_Discipline_Name === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Discipline_Name' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.Name", observationRequest_ObservationRequest_Question_Discipline_Name.toString());
-        if (observationRequest_ObservationRequest_Question_Discipline_Description === null || observationRequest_ObservationRequest_Question_Discipline_Description === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_Discipline_Description' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.Description", observationRequest_ObservationRequest_Question_Discipline_Description.toString());
-        if (observationRequest_ObservationRequest_Question_Discipline_Image !== null && observationRequest_ObservationRequest_Question_Discipline_Image !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.Image", observationRequest_ObservationRequest_Question_Discipline_Image.toString());
-        if (observationRequest_ObservationRequest_Question_Discipline_ParentId !== null && observationRequest_ObservationRequest_Question_Discipline_ParentId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.Discipline.ParentId", observationRequest_ObservationRequest_Question_Discipline_ParentId.toString());
-        if (observationRequest_ObservationRequest_Question_IsValid === null || observationRequest_ObservationRequest_Question_IsValid === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Question_IsValid' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Question.IsValid", observationRequest_ObservationRequest_Question_IsValid.toString());
-        if (observationRequest_ObservationRequest_Question_File !== null && observationRequest_ObservationRequest_Question_File !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.Question.File", observationRequest_ObservationRequest_Question_File.data, observationRequest_ObservationRequest_Question_File.fileName ? observationRequest_ObservationRequest_Question_File.fileName : "ObservationRequest.ObservationRequest.Question.File");
-        if (observationRequest_ObservationRequest_ObservationRequestId !== null && observationRequest_ObservationRequest_ObservationRequestId !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.ObservationRequestId", observationRequest_ObservationRequest_ObservationRequestId.toString());
-        if (observationRequest_ObservationRequest_ObservationRequest !== null && observationRequest_ObservationRequest_ObservationRequest !== undefined)
-            content_.append("ObservationRequest.ObservationRequest.ObservationRequest", JSON.stringify(observationRequest_ObservationRequest_ObservationRequest));
-        if (observationRequest_ObservationRequest_Text === null || observationRequest_ObservationRequest_Text === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_Text' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.Text", observationRequest_ObservationRequest_Text.toString());
-        if (observationRequest_ObservationRequest_User === null || observationRequest_ObservationRequest_User === undefined)
-            throw new Error("The parameter 'observationRequest_ObservationRequest_User' cannot be null.");
-        else
-            content_.append("ObservationRequest.ObservationRequest.User", observationRequest_ObservationRequest_User.toString());
-        if (observationRequest_Text === null || observationRequest_Text === undefined)
-            throw new Error("The parameter 'observationRequest_Text' cannot be null.");
-        else
-            content_.append("ObservationRequest.Text", observationRequest_Text.toString());
-        if (observationRequest_User === null || observationRequest_User === undefined)
-            throw new Error("The parameter 'observationRequest_User' cannot be null.");
-        else
-            content_.append("ObservationRequest.User", observationRequest_User.toString());
-        if (text === null || text === undefined)
-            throw new Error("The parameter 'text' cannot be null.");
-        else
-            content_.append("Text", text.toString());
-        if (user === null || user === undefined)
-            throw new Error("The parameter 'user' cannot be null.");
-        else
-            content_.append("User", user.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
     upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers7[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/observations/upload?";
         if (fileNameQuery === null)
@@ -4732,6 +3416,98 @@ export class ObservationsRequestClient {
         return Promise.resolve<PagedResultOfObservationRequestResponseDto>(null as any);
     }
 
+    getByQuestionId(id: string, currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfObservationRequestResponseDto> {
+        let url_ = this.baseUrl + "/api/observations_request/question/{id}?";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (currentPage === null)
+            throw new Error("The parameter 'currentPage' cannot be null.");
+        else if (currentPage !== undefined)
+            url_ += "CurrentPage=" + encodeURIComponent("" + currentPage) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (sort !== undefined && sort !== null)
+            url_ += "Sort=" + encodeURIComponent("" + sort) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetByQuestionId(_response);
+        });
+    }
+
+    protected processGetByQuestionId(response: Response): Promise<PagedResultOfObservationRequestResponseDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfObservationRequestResponseDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PagedResultOfObservationRequestResponseDto>(null as any);
+    }
+
+    answer(id: string, request: ObservationRequestDto, signal?: AbortSignal): Promise<PagedResultOfObservationRequestResponseDto> {
+        let url_ = this.baseUrl + "/api/observations_request/answer/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAnswer(_response);
+        });
+    }
+
+    protected processAnswer(response: Response): Promise<PagedResultOfObservationRequestResponseDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfObservationRequestResponseDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PagedResultOfObservationRequestResponseDto>(null as any);
+    }
+
     /**
      * Get a record of type T by id
      * @param id The id of the item
@@ -4857,121 +3633,6 @@ export class ObservationsRequestClient {
     }
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    createWithFile(id: string | null | undefined, questionId: string | null | undefined, resolved: boolean | null | undefined, type: ObservationType | undefined, text: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/observations_request/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id !== null && id !== undefined)
-            content_.append("Id", id.toString());
-        if (questionId !== null && questionId !== undefined)
-            content_.append("QuestionId", questionId.toString());
-        if (resolved !== null && resolved !== undefined)
-            content_.append("Resolved", resolved.toString());
-        if (type === null || type === undefined)
-            throw new Error("The parameter 'type' cannot be null.");
-        else
-            content_.append("Type", type.toString());
-        if (text === null || text === undefined)
-            throw new Error("The parameter 'text' cannot be null.");
-        else
-            content_.append("Text", text.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | null | undefined, questionId: string | null | undefined, resolved: boolean | null | undefined, type: ObservationType | undefined, text: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/observations_request/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData !== null && idFormData !== undefined)
-            content_.append("Id", idFormData.toString());
-        if (questionId !== null && questionId !== undefined)
-            content_.append("QuestionId", questionId.toString());
-        if (resolved !== null && resolved !== undefined)
-            content_.append("Resolved", resolved.toString());
-        if (type === null || type === undefined)
-            throw new Error("The parameter 'type' cannot be null.");
-        else
-            content_.append("Type", type.toString());
-        if (text === null || text === undefined)
-            throw new Error("The parameter 'text' cannot be null.");
-        else
-            content_.append("Text", text.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -5497,113 +4158,6 @@ export class QuestionBankClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    createWithFile(id: string | undefined, name: string | undefined, institutionId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/question_banks/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id === null || id === undefined)
-            throw new Error("The parameter 'id' cannot be null.");
-        else
-            content_.append("Id", id.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (institutionId !== null && institutionId !== undefined)
-            content_.append("InstitutionId", institutionId.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | undefined, name: string | undefined, institutionId: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/question_banks/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData === null || idFormData === undefined)
-            throw new Error("The parameter 'idFormData' cannot be null.");
-        else
-            content_.append("Id", idFormData.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (institutionId !== null && institutionId !== undefined)
-            content_.append("InstitutionId", institutionId.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
     upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers9[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
         let url_ = this.baseUrl + "/api/question_banks/upload?";
         if (fileNameQuery === null)
@@ -5965,8 +4519,8 @@ export class QuestionClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
-    boards(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfSelectListItem> {
-        let url_ = this.baseUrl + "/api/questions/boards?";
+    getAll(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfQuestionResponseDto> {
+        let url_ = this.baseUrl + "/api/questions?";
         if (currentPage === null)
             throw new Error("The parameter 'currentPage' cannot be null.");
         else if (currentPage !== undefined)
@@ -5990,18 +4544,18 @@ export class QuestionClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processBoards(_response);
+            return this.processGetAll(_response);
         });
     }
 
-    protected processBoards(response: Response): Promise<PagedResultOfSelectListItem> {
+    protected processGetAll(response: Response): Promise<PagedResultOfQuestionResponseDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PagedResultOfSelectListItem.fromJS(resultData200);
+            result200 = PagedResultOfQuestionResponseDto.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -6009,54 +4563,7 @@ export class QuestionClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<PagedResultOfSelectListItem>(null as any);
-    }
-
-    numbers(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfSelectListItem> {
-        let url_ = this.baseUrl + "/api/questions/numbers?";
-        if (currentPage === null)
-            throw new Error("The parameter 'currentPage' cannot be null.");
-        else if (currentPage !== undefined)
-            url_ += "CurrentPage=" + encodeURIComponent("" + currentPage) + "&";
-        if (pageSize === null)
-            throw new Error("The parameter 'pageSize' cannot be null.");
-        else if (pageSize !== undefined)
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
-        if (sort !== undefined && sort !== null)
-            url_ += "Sort=" + encodeURIComponent("" + sort) + "&";
-        if (filter !== undefined && filter !== null)
-            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            signal,
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processNumbers(_response);
-        });
-    }
-
-    protected processNumbers(response: Response): Promise<PagedResultOfSelectListItem> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PagedResultOfSelectListItem.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<PagedResultOfSelectListItem>(null as any);
+        return Promise.resolve<PagedResultOfQuestionResponseDto>(null as any);
     }
 
     filter(onlyWrongs: boolean | null | undefined, random: boolean | null | undefined, onlyNotAnswereds: boolean | null | undefined, onlyAnswereds: boolean | null | undefined, onlyCorrects: boolean | null | undefined, institutionIds: string[] | null | undefined, boards: string[] | null | undefined, years: number[] | null | undefined, disciplines: string[] | null | undefined, subDisciplines: string[] | null | undefined, greatherThan: number | null | undefined, lessThan: number | null | undefined, quantity: number | null | undefined, questionNumber: number | null | undefined, attemptId: string | null | undefined, attemptConfigId: string | null | undefined, getAll: boolean | undefined, signal?: AbortSignal): Promise<PagedResultOfQuestionRequestDto> {
@@ -6177,16 +4684,8 @@ export class QuestionClient {
         return Promise.resolve<PagedResultOfSelectListItem>(null as any);
     }
 
-    /**
-     * Get all records of type T
-     * @param currentPage (optional) 
-     * @param pageSize (optional) 
-     * @param sort (optional) 
-     * @param filter (optional) 
-     * @return A PagedResult T with queryable holding the items
-     */
-    getAll(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfQuestionResponseDto> {
-        let url_ = this.baseUrl + "/api/questions?";
+    boards(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfSelectListItem> {
+        let url_ = this.baseUrl + "/api/questions/boards?";
         if (currentPage === null)
             throw new Error("The parameter 'currentPage' cannot be null.");
         else if (currentPage !== undefined)
@@ -6210,18 +4709,18 @@ export class QuestionClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetAll(_response);
+            return this.processBoards(_response);
         });
     }
 
-    protected processGetAll(response: Response): Promise<PagedResultOfQuestionResponseDto> {
+    protected processBoards(response: Response): Promise<PagedResultOfSelectListItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PagedResultOfQuestionResponseDto.fromJS(resultData200);
+            result200 = PagedResultOfSelectListItem.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -6229,210 +4728,54 @@ export class QuestionClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<PagedResultOfQuestionResponseDto>(null as any);
+        return Promise.resolve<PagedResultOfSelectListItem>(null as any);
     }
 
-    createWithFile(id: string | undefined, year: number | undefined, board: string | undefined, image: string | null | undefined, text: string | null | undefined, score: number | undefined, active: boolean | undefined, questionNumber: number | null | undefined, institutionId: string | null | undefined, questionBankId: string | null | undefined, quizAttemptId: string | null | undefined, disciplineId: string | null | undefined, alternatives: AlternativeRequestDto[] | null | undefined, discipline_Id: string | undefined, discipline_Name: string | undefined, discipline_Description: string | undefined, discipline_Image: string | null | undefined, discipline_ParentId: string | null | undefined, isValid: boolean | undefined, file: FileParameter | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/questions/file";
+    numbers(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfSelectListItem> {
+        let url_ = this.baseUrl + "/api/questions/numbers?";
+        if (currentPage === null)
+            throw new Error("The parameter 'currentPage' cannot be null.");
+        else if (currentPage !== undefined)
+            url_ += "CurrentPage=" + encodeURIComponent("" + currentPage) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (sort !== undefined && sort !== null)
+            url_ += "Sort=" + encodeURIComponent("" + sort) + "&";
+        if (filter !== undefined && filter !== null)
+            url_ += "Filter=" + encodeURIComponent("" + filter) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = new FormData();
-        if (id === null || id === undefined)
-            throw new Error("The parameter 'id' cannot be null.");
-        else
-            content_.append("Id", id.toString());
-        if (year === null || year === undefined)
-            throw new Error("The parameter 'year' cannot be null.");
-        else
-            content_.append("Year", year.toString());
-        if (board === null || board === undefined)
-            throw new Error("The parameter 'board' cannot be null.");
-        else
-            content_.append("Board", board.toString());
-        if (image !== null && image !== undefined)
-            content_.append("Image", image.toString());
-        if (text !== null && text !== undefined)
-            content_.append("Text", text.toString());
-        if (score === null || score === undefined)
-            throw new Error("The parameter 'score' cannot be null.");
-        else
-            content_.append("Score", score.toString());
-        if (active === null || active === undefined)
-            throw new Error("The parameter 'active' cannot be null.");
-        else
-            content_.append("Active", active.toString());
-        if (questionNumber !== null && questionNumber !== undefined)
-            content_.append("QuestionNumber", questionNumber.toString());
-        if (institutionId !== null && institutionId !== undefined)
-            content_.append("InstitutionId", institutionId.toString());
-        if (questionBankId !== null && questionBankId !== undefined)
-            content_.append("QuestionBankId", questionBankId.toString());
-        if (quizAttemptId !== null && quizAttemptId !== undefined)
-            content_.append("QuizAttemptId", quizAttemptId.toString());
-        if (disciplineId !== null && disciplineId !== undefined)
-            content_.append("DisciplineId", disciplineId.toString());
-        if (alternatives !== null && alternatives !== undefined)
-            alternatives.forEach(item_ => content_.append("Alternatives", item_.toString()));
-        if (discipline_Id === null || discipline_Id === undefined)
-            throw new Error("The parameter 'discipline_Id' cannot be null.");
-        else
-            content_.append("Discipline.Id", discipline_Id.toString());
-        if (discipline_Name === null || discipline_Name === undefined)
-            throw new Error("The parameter 'discipline_Name' cannot be null.");
-        else
-            content_.append("Discipline.Name", discipline_Name.toString());
-        if (discipline_Description === null || discipline_Description === undefined)
-            throw new Error("The parameter 'discipline_Description' cannot be null.");
-        else
-            content_.append("Discipline.Description", discipline_Description.toString());
-        if (discipline_Image !== null && discipline_Image !== undefined)
-            content_.append("Discipline.Image", discipline_Image.toString());
-        if (discipline_ParentId !== null && discipline_ParentId !== undefined)
-            content_.append("Discipline.ParentId", discipline_ParentId.toString());
-        if (isValid === null || isValid === undefined)
-            throw new Error("The parameter 'isValid' cannot be null.");
-        else
-            content_.append("IsValid", isValid.toString());
-        if (file !== null && file !== undefined)
-            content_.append("File", file.data, file.fileName ? file.fileName : "File");
-
         let options_: RequestInit = {
-            body: content_,
-            method: "POST",
+            method: "GET",
             signal,
             headers: {
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
+            return this.processNumbers(_response);
         });
     }
 
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
+    protected processNumbers(response: Response): Promise<PagedResultOfSelectListItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfSelectListItem.fromJS(resultData200);
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | undefined, year: number | undefined, board: string | undefined, image: string | null | undefined, text: string | null | undefined, score: number | undefined, active: boolean | undefined, questionNumber: number | null | undefined, institutionId: string | null | undefined, questionBankId: string | null | undefined, quizAttemptId: string | null | undefined, disciplineId: string | null | undefined, alternatives: AlternativeRequestDto[] | null | undefined, discipline_Id: string | undefined, discipline_Name: string | undefined, discipline_Description: string | undefined, discipline_Image: string | null | undefined, discipline_ParentId: string | null | undefined, isValid: boolean | undefined, file: FileParameter | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/questions/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData === null || idFormData === undefined)
-            throw new Error("The parameter 'idFormData' cannot be null.");
-        else
-            content_.append("Id", idFormData.toString());
-        if (year === null || year === undefined)
-            throw new Error("The parameter 'year' cannot be null.");
-        else
-            content_.append("Year", year.toString());
-        if (board === null || board === undefined)
-            throw new Error("The parameter 'board' cannot be null.");
-        else
-            content_.append("Board", board.toString());
-        if (image !== null && image !== undefined)
-            content_.append("Image", image.toString());
-        if (text !== null && text !== undefined)
-            content_.append("Text", text.toString());
-        if (score === null || score === undefined)
-            throw new Error("The parameter 'score' cannot be null.");
-        else
-            content_.append("Score", score.toString());
-        if (active === null || active === undefined)
-            throw new Error("The parameter 'active' cannot be null.");
-        else
-            content_.append("Active", active.toString());
-        if (questionNumber !== null && questionNumber !== undefined)
-            content_.append("QuestionNumber", questionNumber.toString());
-        if (institutionId !== null && institutionId !== undefined)
-            content_.append("InstitutionId", institutionId.toString());
-        if (questionBankId !== null && questionBankId !== undefined)
-            content_.append("QuestionBankId", questionBankId.toString());
-        if (quizAttemptId !== null && quizAttemptId !== undefined)
-            content_.append("QuizAttemptId", quizAttemptId.toString());
-        if (disciplineId !== null && disciplineId !== undefined)
-            content_.append("DisciplineId", disciplineId.toString());
-        if (alternatives !== null && alternatives !== undefined)
-            alternatives.forEach(item_ => content_.append("Alternatives", item_.toString()));
-        if (discipline_Id === null || discipline_Id === undefined)
-            throw new Error("The parameter 'discipline_Id' cannot be null.");
-        else
-            content_.append("Discipline.Id", discipline_Id.toString());
-        if (discipline_Name === null || discipline_Name === undefined)
-            throw new Error("The parameter 'discipline_Name' cannot be null.");
-        else
-            content_.append("Discipline.Name", discipline_Name.toString());
-        if (discipline_Description === null || discipline_Description === undefined)
-            throw new Error("The parameter 'discipline_Description' cannot be null.");
-        else
-            content_.append("Discipline.Description", discipline_Description.toString());
-        if (discipline_Image !== null && discipline_Image !== undefined)
-            content_.append("Discipline.Image", discipline_Image.toString());
-        if (discipline_ParentId !== null && discipline_ParentId !== undefined)
-            content_.append("Discipline.ParentId", discipline_ParentId.toString());
-        if (isValid === null || isValid === undefined)
-            throw new Error("The parameter 'isValid' cannot be null.");
-        else
-            content_.append("IsValid", isValid.toString());
-        if (file !== null && file !== undefined)
-            content_.append("File", file.data, file.fileName ? file.fileName : "File");
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
+        return Promise.resolve<PagedResultOfSelectListItem>(null as any);
     }
 
     upload(contentType: string | undefined, contentDisposition: string | undefined, headers: Headers10[] | undefined, length: number | undefined, name: string | undefined, fileNameFormData: string | undefined, fileNameQuery: string | undefined, folderName: string | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
@@ -6698,141 +5041,6 @@ export class QuizAttemptClient {
     }
 
     protected processCreate(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    createWithFile(id: string | undefined, startedAt: Date | undefined, finishedAt: Date | null | undefined, dConfigureServicesuration: string | null | undefined, score: number | undefined, total: number | undefined, passed: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/quiz_attempts/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id === null || id === undefined)
-            throw new Error("The parameter 'id' cannot be null.");
-        else
-            content_.append("Id", id.toString());
-        if (startedAt === null || startedAt === undefined)
-            throw new Error("The parameter 'startedAt' cannot be null.");
-        else
-            content_.append("StartedAt", startedAt.toJSON());
-        if (finishedAt !== null && finishedAt !== undefined)
-            content_.append("FinishedAt", finishedAt.toJSON());
-        if (dConfigureServicesuration !== null && dConfigureServicesuration !== undefined)
-            content_.append("DConfigureServicesuration", dConfigureServicesuration.toString());
-        if (score === null || score === undefined)
-            throw new Error("The parameter 'score' cannot be null.");
-        else
-            content_.append("Score", score.toString());
-        if (total === null || total === undefined)
-            throw new Error("The parameter 'total' cannot be null.");
-        else
-            content_.append("Total", total.toString());
-        if (passed === null || passed === undefined)
-            throw new Error("The parameter 'passed' cannot be null.");
-        else
-            content_.append("Passed", passed.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | undefined, startedAt: Date | undefined, finishedAt: Date | null | undefined, dConfigureServicesuration: string | null | undefined, score: number | undefined, total: number | undefined, passed: boolean | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/quiz_attempts/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData === null || idFormData === undefined)
-            throw new Error("The parameter 'idFormData' cannot be null.");
-        else
-            content_.append("Id", idFormData.toString());
-        if (startedAt === null || startedAt === undefined)
-            throw new Error("The parameter 'startedAt' cannot be null.");
-        else
-            content_.append("StartedAt", startedAt.toJSON());
-        if (finishedAt !== null && finishedAt !== undefined)
-            content_.append("FinishedAt", finishedAt.toJSON());
-        if (dConfigureServicesuration !== null && dConfigureServicesuration !== undefined)
-            content_.append("DConfigureServicesuration", dConfigureServicesuration.toString());
-        if (score === null || score === undefined)
-            throw new Error("The parameter 'score' cannot be null.");
-        else
-            content_.append("Score", score.toString());
-        if (total === null || total === undefined)
-            throw new Error("The parameter 'total' cannot be null.");
-        else
-            content_.append("Total", total.toString());
-        if (passed === null || passed === undefined)
-            throw new Error("The parameter 'passed' cannot be null.");
-        else
-            content_.append("Passed", passed.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -7182,6 +5390,52 @@ export class QuizAttemptConfigurationClient {
         return Promise.resolve<FileResponse | null>(null as any);
     }
 
+    update(id: string, body: QuizAttemptConfigurationRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/quiz_attempt_configs/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse | null>(null as any);
+    }
+
     /**
      * Get a record of type T by id
      * @param id The id of the item
@@ -7255,261 +5509,6 @@ export class QuizAttemptConfigurationClient {
     }
 
     protected processDelete(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    /**
-     * Update a record of type T by id
-     * @param id The id of the item to be updated
-     * @param body The updated body to be saved
-     * @return True on success, false otherwise
-     */
-    update(id: string, body: QuizAttemptConfigurationRequestDto, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/quiz_attempt_configs/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdate(_response);
-        });
-    }
-
-    protected processUpdate(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    createWithFile(id: string | null | undefined, name: string | undefined, image: string | null | undefined, description: string | null | undefined, boards: string[] | null | undefined, years: number[] | null | undefined, institutions: string[] | null | undefined, disciplines: string[] | null | undefined, random: boolean | null | undefined, onlyNotAnswered: boolean | null | undefined, onlyWrongs: boolean | null | undefined, active: boolean | undefined, showOnFront: boolean | undefined, users: string[] | null | undefined, usersCount: number | undefined, userIds: string | null | undefined, crews: CrewRequestDto[] | null | undefined, crewsCount: number | undefined, crewsIds: string | null | undefined, questions: QuestionRequestDto[] | null | undefined, questionsCount: number | undefined, questionsIds: string | null | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/quiz_attempt_configs/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id !== null && id !== undefined)
-            content_.append("Id", id.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (image !== null && image !== undefined)
-            content_.append("Image", image.toString());
-        if (description !== null && description !== undefined)
-            content_.append("Description", description.toString());
-        if (boards !== null && boards !== undefined)
-            boards.forEach(item_ => content_.append("Boards", item_.toString()));
-        if (years !== null && years !== undefined)
-            years.forEach(item_ => content_.append("Years", item_.toString()));
-        if (institutions !== null && institutions !== undefined)
-            institutions.forEach(item_ => content_.append("Institutions", item_.toString()));
-        if (disciplines !== null && disciplines !== undefined)
-            disciplines.forEach(item_ => content_.append("Disciplines", item_.toString()));
-        if (random !== null && random !== undefined)
-            content_.append("Random", random.toString());
-        if (onlyNotAnswered !== null && onlyNotAnswered !== undefined)
-            content_.append("OnlyNotAnswered", onlyNotAnswered.toString());
-        if (onlyWrongs !== null && onlyWrongs !== undefined)
-            content_.append("OnlyWrongs", onlyWrongs.toString());
-        if (active === null || active === undefined)
-            throw new Error("The parameter 'active' cannot be null.");
-        else
-            content_.append("Active", active.toString());
-        if (showOnFront === null || showOnFront === undefined)
-            throw new Error("The parameter 'showOnFront' cannot be null.");
-        else
-            content_.append("ShowOnFront", showOnFront.toString());
-        if (users !== null && users !== undefined)
-            users.forEach(item_ => content_.append("Users", item_.toString()));
-        if (usersCount === null || usersCount === undefined)
-            throw new Error("The parameter 'usersCount' cannot be null.");
-        else
-            content_.append("UsersCount", usersCount.toString());
-        if (userIds !== null && userIds !== undefined)
-            content_.append("UserIds", userIds.toString());
-        if (crews !== null && crews !== undefined)
-            crews.forEach(item_ => content_.append("Crews", item_.toString()));
-        if (crewsCount === null || crewsCount === undefined)
-            throw new Error("The parameter 'crewsCount' cannot be null.");
-        else
-            content_.append("CrewsCount", crewsCount.toString());
-        if (crewsIds !== null && crewsIds !== undefined)
-            content_.append("CrewsIds", crewsIds.toString());
-        if (questions !== null && questions !== undefined)
-            questions.forEach(item_ => content_.append("Questions", item_.toString()));
-        if (questionsCount === null || questionsCount === undefined)
-            throw new Error("The parameter 'questionsCount' cannot be null.");
-        else
-            content_.append("QuestionsCount", questionsCount.toString());
-        if (questionsIds !== null && questionsIds !== undefined)
-            content_.append("QuestionsIds", questionsIds.toString());
-        if (data !== null && data !== undefined)
-            content_.append("Data", data.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | null | undefined, name: string | undefined, image: string | null | undefined, description: string | null | undefined, boards: string[] | null | undefined, years: number[] | null | undefined, institutions: string[] | null | undefined, disciplines: string[] | null | undefined, random: boolean | null | undefined, onlyNotAnswered: boolean | null | undefined, onlyWrongs: boolean | null | undefined, active: boolean | undefined, showOnFront: boolean | undefined, users: string[] | null | undefined, usersCount: number | undefined, userIds: string | null | undefined, crews: CrewRequestDto[] | null | undefined, crewsCount: number | undefined, crewsIds: string | null | undefined, questions: QuestionRequestDto[] | null | undefined, questionsCount: number | undefined, questionsIds: string | null | undefined, data: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/quiz_attempt_configs/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData !== null && idFormData !== undefined)
-            content_.append("Id", idFormData.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (image !== null && image !== undefined)
-            content_.append("Image", image.toString());
-        if (description !== null && description !== undefined)
-            content_.append("Description", description.toString());
-        if (boards !== null && boards !== undefined)
-            boards.forEach(item_ => content_.append("Boards", item_.toString()));
-        if (years !== null && years !== undefined)
-            years.forEach(item_ => content_.append("Years", item_.toString()));
-        if (institutions !== null && institutions !== undefined)
-            institutions.forEach(item_ => content_.append("Institutions", item_.toString()));
-        if (disciplines !== null && disciplines !== undefined)
-            disciplines.forEach(item_ => content_.append("Disciplines", item_.toString()));
-        if (random !== null && random !== undefined)
-            content_.append("Random", random.toString());
-        if (onlyNotAnswered !== null && onlyNotAnswered !== undefined)
-            content_.append("OnlyNotAnswered", onlyNotAnswered.toString());
-        if (onlyWrongs !== null && onlyWrongs !== undefined)
-            content_.append("OnlyWrongs", onlyWrongs.toString());
-        if (active === null || active === undefined)
-            throw new Error("The parameter 'active' cannot be null.");
-        else
-            content_.append("Active", active.toString());
-        if (showOnFront === null || showOnFront === undefined)
-            throw new Error("The parameter 'showOnFront' cannot be null.");
-        else
-            content_.append("ShowOnFront", showOnFront.toString());
-        if (users !== null && users !== undefined)
-            users.forEach(item_ => content_.append("Users", item_.toString()));
-        if (usersCount === null || usersCount === undefined)
-            throw new Error("The parameter 'usersCount' cannot be null.");
-        else
-            content_.append("UsersCount", usersCount.toString());
-        if (userIds !== null && userIds !== undefined)
-            content_.append("UserIds", userIds.toString());
-        if (crews !== null && crews !== undefined)
-            crews.forEach(item_ => content_.append("Crews", item_.toString()));
-        if (crewsCount === null || crewsCount === undefined)
-            throw new Error("The parameter 'crewsCount' cannot be null.");
-        else
-            content_.append("CrewsCount", crewsCount.toString());
-        if (crewsIds !== null && crewsIds !== undefined)
-            content_.append("CrewsIds", crewsIds.toString());
-        if (questions !== null && questions !== undefined)
-            questions.forEach(item_ => content_.append("Questions", item_.toString()));
-        if (questionsCount === null || questionsCount === undefined)
-            throw new Error("The parameter 'questionsCount' cannot be null.");
-        else
-            content_.append("QuestionsCount", questionsCount.toString());
-        if (questionsIds !== null && questionsIds !== undefined)
-            content_.append("QuestionsIds", questionsIds.toString());
-        if (data !== null && data !== undefined)
-            content_.append("Data", data.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -7668,6 +5667,82 @@ export class UsersClient {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         this.http = http ? http : window as any;
         this.baseUrl = baseUrl ?? "http://localhost";
+    }
+
+    updateMe(userRequestDto: UserRequestDto, signal?: AbortSignal): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/users/me";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(userRequestDto);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PATCH",
+            signal,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateMe(_response);
+        });
+    }
+
+    protected processUpdateMe(response: Response): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<boolean>(null as any);
+    }
+
+    me(signal?: AbortSignal): Promise<boolean> {
+        let url_ = this.baseUrl + "/api/users/me";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            signal,
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processMe(_response);
+        });
+    }
+
+    protected processMe(response: Response): Promise<boolean> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<boolean>(null as any);
     }
 
     getAll(currentPage: number | undefined, pageSize: number | undefined, sort: string | null | undefined, filter: string | null | undefined, signal?: AbortSignal): Promise<PagedResultOfUserResponseDto> {
@@ -7890,133 +5965,6 @@ export class UsersClient {
     }
 
     protected processUpdate(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    createWithFile(id: string | null | undefined, name: string | undefined, address: string | null | undefined, birthDay: Date | null | undefined, image: string | null | undefined, email: string | undefined, role: string | null | undefined, sid: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/users/file";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (id !== null && id !== undefined)
-            content_.append("Id", id.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (address !== null && address !== undefined)
-            content_.append("Address", address.toString());
-        if (birthDay !== null && birthDay !== undefined)
-            content_.append("BirthDay", birthDay.toJSON());
-        if (image !== null && image !== undefined)
-            content_.append("Image", image.toString());
-        if (email === null || email === undefined)
-            throw new Error("The parameter 'email' cannot be null.");
-        else
-            content_.append("Email", email.toString());
-        if (role !== null && role !== undefined)
-            content_.append("Role", role.toString());
-        if (sid !== null && sid !== undefined)
-            content_.append("Sid", sid.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateWithFile(_response);
-        });
-    }
-
-    protected processCreateWithFile(response: Response): Promise<FileResponse | null> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse | null>(null as any);
-    }
-
-    updateWithFile(idPath: string, idFormData: string | null | undefined, name: string | undefined, address: string | null | undefined, birthDay: Date | null | undefined, image: string | null | undefined, email: string | undefined, role: string | null | undefined, sid: string | null | undefined, signal?: AbortSignal): Promise<FileResponse | null> {
-        let url_ = this.baseUrl + "/api/users/file";
-        if (idPath === undefined || idPath === null)
-            throw new Error("The parameter 'idPath' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + idPath));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (idFormData !== null && idFormData !== undefined)
-            content_.append("Id", idFormData.toString());
-        if (name === null || name === undefined)
-            throw new Error("The parameter 'name' cannot be null.");
-        else
-            content_.append("Name", name.toString());
-        if (address !== null && address !== undefined)
-            content_.append("Address", address.toString());
-        if (birthDay !== null && birthDay !== undefined)
-            content_.append("BirthDay", birthDay.toJSON());
-        if (image !== null && image !== undefined)
-            content_.append("Image", image.toString());
-        if (email === null || email === undefined)
-            throw new Error("The parameter 'email' cannot be null.");
-        else
-            content_.append("Email", email.toString());
-        if (role !== null && role !== undefined)
-            content_.append("Role", role.toString());
-        if (sid !== null && sid !== undefined)
-            content_.append("Sid", sid.toString());
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "PATCH",
-            signal,
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpdateWithFile(_response);
-        });
-    }
-
-    protected processUpdateWithFile(response: Response): Promise<FileResponse | null> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200 || status === 206) {
@@ -8492,43 +6440,7 @@ export interface IAnswerResponseDto extends IAnswerRequestDto {
     isCorrect: boolean;
 }
 
-export class HasFile implements IHasFile {
-    file?: any | undefined;
-
-    constructor(data?: IHasFile) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.file = _data["file"];
-        }
-    }
-
-    static fromJS(data: any): HasFile {
-        data = typeof data === 'object' ? data : {};
-        let result = new HasFile();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["file"] = this.file;
-        return data;
-    }
-}
-
-export interface IHasFile {
-    file?: any | undefined;
-}
-
-export class QuestionRequestDto extends HasFile implements IQuestionRequestDto {
+export class QuestionRequestDto implements IQuestionRequestDto {
     id!: string;
     year!: number;
     board!: string;
@@ -8546,11 +6458,15 @@ export class QuestionRequestDto extends HasFile implements IQuestionRequestDto {
     isValid!: boolean;
 
     constructor(data?: IQuestionRequestDto) {
-        super(data);
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
     }
 
-    override init(_data?: any) {
-        super.init(_data);
+    init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
             this.year = _data["year"];
@@ -8574,14 +6490,14 @@ export class QuestionRequestDto extends HasFile implements IQuestionRequestDto {
         }
     }
 
-    static override fromJS(data: any): QuestionRequestDto {
+    static fromJS(data: any): QuestionRequestDto {
         data = typeof data === 'object' ? data : {};
         let result = new QuestionRequestDto();
         result.init(data);
         return result;
     }
 
-    override toJSON(data?: any) {
+    toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["year"] = this.year;
@@ -8602,12 +6518,11 @@ export class QuestionRequestDto extends HasFile implements IQuestionRequestDto {
         }
         data["discipline"] = this.discipline ? this.discipline.toJSON() : <any>undefined;
         data["isValid"] = this.isValid;
-        super.toJSON(data);
         return data;
     }
 }
 
-export interface IQuestionRequestDto extends IHasFile {
+export interface IQuestionRequestDto {
     id: string;
     year: number;
     board: string;
@@ -8633,6 +6548,7 @@ export class QuestionResponseDto extends QuestionRequestDto implements IQuestion
     discipline!: DisciplineResponseDto;
     questionNumber!: number;
     disciplineName!: string;
+    disciplineParentName!: string;
     institutionName!: string;
     alternativesCount!: number;
     observationsCount!: number;
@@ -8678,6 +6594,7 @@ export class QuestionResponseDto extends QuestionRequestDto implements IQuestion
             this.discipline = _data["discipline"] ? DisciplineResponseDto.fromJS(_data["discipline"]) : new DisciplineResponseDto();
             this.questionNumber = _data["questionNumber"];
             this.disciplineName = _data["disciplineName"];
+            this.disciplineParentName = _data["disciplineParentName"];
             this.institutionName = _data["institutionName"];
             this.alternativesCount = _data["alternativesCount"];
             this.observationsCount = _data["observationsCount"];
@@ -8720,6 +6637,7 @@ export class QuestionResponseDto extends QuestionRequestDto implements IQuestion
         data["discipline"] = this.discipline ? this.discipline.toJSON() : <any>undefined;
         data["questionNumber"] = this.questionNumber;
         data["disciplineName"] = this.disciplineName;
+        data["disciplineParentName"] = this.disciplineParentName;
         data["institutionName"] = this.institutionName;
         data["alternativesCount"] = this.alternativesCount;
         data["observationsCount"] = this.observationsCount;
@@ -8740,6 +6658,7 @@ export interface IQuestionResponseDto extends IQuestionRequestDto {
     discipline: DisciplineResponseDto;
     questionNumber: number;
     disciplineName: string;
+    disciplineParentName: string;
     institutionName: string;
     alternativesCount: number;
     observationsCount: number;
@@ -8827,11 +6746,8 @@ export interface IAlternativeResponseDto {
 export class ObservationRequestDto implements IObservationRequestDto {
     id!: string;
     questionId?: string | undefined;
-    question?: QuestionRequestDto | undefined;
-    observationRequestId?: string | undefined;
-    observationRequest?: ObservationRequestDto | undefined;
+    type!: ObservationType;
     text!: string;
-    user!: string;
 
     constructor(data?: IObservationRequestDto) {
         if (data) {
@@ -8846,11 +6762,8 @@ export class ObservationRequestDto implements IObservationRequestDto {
         if (_data) {
             this.id = _data["id"];
             this.questionId = _data["questionId"];
-            this.question = _data["question"] ? QuestionRequestDto.fromJS(_data["question"]) : <any>undefined;
-            this.observationRequestId = _data["observationRequestId"];
-            this.observationRequest = _data["observationRequest"] ? ObservationRequestDto.fromJS(_data["observationRequest"]) : <any>undefined;
+            this.type = _data["type"];
             this.text = _data["text"];
-            this.user = _data["user"];
         }
     }
 
@@ -8865,11 +6778,8 @@ export class ObservationRequestDto implements IObservationRequestDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["questionId"] = this.questionId;
-        data["question"] = this.question ? this.question.toJSON() : <any>undefined;
-        data["observationRequestId"] = this.observationRequestId;
-        data["observationRequest"] = this.observationRequest ? this.observationRequest.toJSON() : <any>undefined;
+        data["type"] = this.type;
         data["text"] = this.text;
-        data["user"] = this.user;
         return data;
     }
 }
@@ -8877,16 +6787,14 @@ export class ObservationRequestDto implements IObservationRequestDto {
 export interface IObservationRequestDto {
     id: string;
     questionId?: string | undefined;
-    question?: QuestionRequestDto | undefined;
-    observationRequestId?: string | undefined;
-    observationRequest?: ObservationRequestDto | undefined;
+    type: ObservationType;
     text: string;
-    user: string;
 }
 
 export class ObservationResponseDto extends ObservationRequestDto implements IObservationResponseDto {
     question?: QuestionResponseDto | undefined;
     userId?: string | undefined;
+    user?: UserResponseDto | undefined;
 
     constructor(data?: IObservationResponseDto) {
         super(data);
@@ -8897,6 +6805,7 @@ export class ObservationResponseDto extends ObservationRequestDto implements IOb
         if (_data) {
             this.question = _data["question"] ? QuestionResponseDto.fromJS(_data["question"]) : <any>undefined;
             this.userId = _data["userId"];
+            this.user = _data["user"] ? UserResponseDto.fromJS(_data["user"]) : <any>undefined;
         }
     }
 
@@ -8911,6 +6820,7 @@ export class ObservationResponseDto extends ObservationRequestDto implements IOb
         data = typeof data === 'object' ? data : {};
         data["question"] = this.question ? this.question.toJSON() : <any>undefined;
         data["userId"] = this.userId;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
@@ -8919,68 +6829,22 @@ export class ObservationResponseDto extends ObservationRequestDto implements IOb
 export interface IObservationResponseDto extends IObservationRequestDto {
     question?: QuestionResponseDto | undefined;
     userId?: string | undefined;
+    user?: UserResponseDto | undefined;
 }
 
-export class AlternativeRequestDto implements IAlternativeRequestDto {
+export class UserRequestDto implements IUserRequestDto {
     id?: string | undefined;
-    questionId?: string | undefined;
-    text!: string;
-    correct!: boolean;
-    aiExplanation!: string;
-
-    constructor(data?: IAlternativeRequestDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.questionId = _data["questionId"];
-            this.text = _data["text"];
-            this.correct = _data["correct"];
-            this.aiExplanation = _data["aiExplanation"];
-        }
-    }
-
-    static fromJS(data: any): AlternativeRequestDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new AlternativeRequestDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["questionId"] = this.questionId;
-        data["text"] = this.text;
-        data["correct"] = this.correct;
-        data["aiExplanation"] = this.aiExplanation;
-        return data;
-    }
-}
-
-export interface IAlternativeRequestDto {
-    id?: string | undefined;
-    questionId?: string | undefined;
-    text: string;
-    correct: boolean;
-    aiExplanation: string;
-}
-
-export class DisciplineRequestDto implements IDisciplineRequestDto {
-    id!: string;
     name!: string;
-    description!: string;
+    address?: string | undefined;
+    birthDay?: Date | undefined;
     image?: string | undefined;
-    parentId?: string | undefined;
+    email!: string;
+    phoneNumber?: string | undefined;
+    role?: string | undefined;
+    sid?: string | undefined;
+    crewId?: string | undefined;
 
-    constructor(data?: IDisciplineRequestDto) {
+    constructor(data?: IUserRequestDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -8993,15 +6857,20 @@ export class DisciplineRequestDto implements IDisciplineRequestDto {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
-            this.description = _data["description"];
+            this.address = _data["address"];
+            this.birthDay = _data["birthDay"] ? new Date(_data["birthDay"].toString()) : <any>undefined;
             this.image = _data["image"];
-            this.parentId = _data["parentId"];
+            this.email = _data["email"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.role = _data["role"];
+            this.sid = _data["sid"];
+            this.crewId = _data["crewId"];
         }
     }
 
-    static fromJS(data: any): DisciplineRequestDto {
+    static fromJS(data: any): UserRequestDto {
         data = typeof data === 'object' ? data : {};
-        let result = new DisciplineRequestDto();
+        let result = new UserRequestDto();
         result.init(data);
         return result;
     }
@@ -9010,20 +6879,133 @@ export class DisciplineRequestDto implements IDisciplineRequestDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
-        data["description"] = this.description;
+        data["address"] = this.address;
+        data["birthDay"] = this.birthDay ? this.birthDay.toISOString() : <any>undefined;
         data["image"] = this.image;
-        data["parentId"] = this.parentId;
+        data["email"] = this.email;
+        data["phoneNumber"] = this.phoneNumber;
+        data["role"] = this.role;
+        data["sid"] = this.sid;
+        data["crewId"] = this.crewId;
         return data;
     }
 }
 
-export interface IDisciplineRequestDto {
-    id: string;
+export interface IUserRequestDto {
+    id?: string | undefined;
     name: string;
-    description: string;
+    address?: string | undefined;
+    birthDay?: Date | undefined;
     image?: string | undefined;
-    parentId?: string | undefined;
+    email: string;
+    phoneNumber?: string | undefined;
+    role?: string | undefined;
+    sid?: string | undefined;
+    crewId?: string | undefined;
 }
+
+export class UserResponseDto extends UserRequestDto implements IUserResponseDto {
+    enrollments?: EnrollmentRequestDto[] | undefined;
+    enrollmentsCount!: number;
+
+    constructor(data?: IUserResponseDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["enrollments"])) {
+                this.enrollments = [] as any;
+                for (let item of _data["enrollments"])
+                    this.enrollments!.push(EnrollmentRequestDto.fromJS(item));
+            }
+            this.enrollmentsCount = _data["enrollmentsCount"];
+        }
+    }
+
+    static override fromJS(data: any): UserResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.enrollments)) {
+            data["enrollments"] = [];
+            for (let item of this.enrollments)
+                data["enrollments"].push(item.toJSON());
+        }
+        data["enrollmentsCount"] = this.enrollmentsCount;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IUserResponseDto extends IUserRequestDto {
+    enrollments?: EnrollmentRequestDto[] | undefined;
+    enrollmentsCount: number;
+}
+
+export class EnrollmentRequestDto implements IEnrollmentRequestDto {
+    id?: string | undefined;
+    studentId?: string | undefined;
+    crewId?: string | undefined;
+    startDate?: Date | undefined;
+    endDate?: Date | undefined;
+    active!: boolean;
+
+    constructor(data?: IEnrollmentRequestDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.studentId = _data["studentId"];
+            this.crewId = _data["crewId"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            this.active = _data["active"];
+        }
+    }
+
+    static fromJS(data: any): EnrollmentRequestDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new EnrollmentRequestDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["studentId"] = this.studentId;
+        data["crewId"] = this.crewId;
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        data["active"] = this.active;
+        return data;
+    }
+}
+
+export interface IEnrollmentRequestDto {
+    id?: string | undefined;
+    studentId?: string | undefined;
+    crewId?: string | undefined;
+    startDate?: Date | undefined;
+    endDate?: Date | undefined;
+    active: boolean;
+}
+
+export type ObservationType = 0 | 1;
 
 export class ObservationRequestRequestDto implements IObservationRequestRequestDto {
     id?: string | undefined;
@@ -9078,18 +7060,31 @@ export interface IObservationRequestRequestDto {
 }
 
 export class ObservationRequestResponseDto extends ObservationRequestRequestDto implements IObservationRequestResponseDto {
-    question?: QuestionRequestDto | undefined;
+    question?: QuestionResponseDto | undefined;
+    observations!: ObservationResponseDto[];
+    observationsCount!: number;
     userId?: string | undefined;
+    user?: UserResponseDto | undefined;
 
     constructor(data?: IObservationRequestResponseDto) {
         super(data);
+        if (!data) {
+            this.observations = [];
+        }
     }
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.question = _data["question"] ? QuestionRequestDto.fromJS(_data["question"]) : <any>undefined;
+            this.question = _data["question"] ? QuestionResponseDto.fromJS(_data["question"]) : <any>undefined;
+            if (Array.isArray(_data["observations"])) {
+                this.observations = [] as any;
+                for (let item of _data["observations"])
+                    this.observations!.push(ObservationResponseDto.fromJS(item));
+            }
+            this.observationsCount = _data["observationsCount"];
             this.userId = _data["userId"];
+            this.user = _data["user"] ? UserResponseDto.fromJS(_data["user"]) : <any>undefined;
         }
     }
 
@@ -9103,18 +7098,78 @@ export class ObservationRequestResponseDto extends ObservationRequestRequestDto 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["question"] = this.question ? this.question.toJSON() : <any>undefined;
+        if (Array.isArray(this.observations)) {
+            data["observations"] = [];
+            for (let item of this.observations)
+                data["observations"].push(item.toJSON());
+        }
+        data["observationsCount"] = this.observationsCount;
         data["userId"] = this.userId;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
 }
 
 export interface IObservationRequestResponseDto extends IObservationRequestRequestDto {
-    question?: QuestionRequestDto | undefined;
+    question?: QuestionResponseDto | undefined;
+    observations: ObservationResponseDto[];
+    observationsCount: number;
     userId?: string | undefined;
+    user?: UserResponseDto | undefined;
 }
 
-export type ObservationType = 0 | 1;
+export class DisciplineRequestDto implements IDisciplineRequestDto {
+    id!: string;
+    name!: string;
+    description!: string;
+    image?: string | undefined;
+    parentId?: string | undefined;
+
+    constructor(data?: IDisciplineRequestDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.image = _data["image"];
+            this.parentId = _data["parentId"];
+        }
+    }
+
+    static fromJS(data: any): DisciplineRequestDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DisciplineRequestDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["image"] = this.image;
+        data["parentId"] = this.parentId;
+        return data;
+    }
+}
+
+export interface IDisciplineRequestDto {
+    id: string;
+    name: string;
+    description: string;
+    image?: string | undefined;
+    parentId?: string | undefined;
+}
 
 export class DisciplineResponseDto extends DisciplineRequestDto implements IDisciplineResponseDto {
     parentName!: string;
@@ -9183,6 +7238,58 @@ export interface IDisciplineResponseDto extends IDisciplineRequestDto {
     parent?: DisciplineResponseDto | undefined;
     childs: DisciplineResponseDto[];
     questions: QuestionResponseDto[];
+}
+
+export class AlternativeRequestDto implements IAlternativeRequestDto {
+    id?: string | undefined;
+    questionId?: string | undefined;
+    text!: string;
+    correct!: boolean;
+    aiExplanation!: string;
+
+    constructor(data?: IAlternativeRequestDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.questionId = _data["questionId"];
+            this.text = _data["text"];
+            this.correct = _data["correct"];
+            this.aiExplanation = _data["aiExplanation"];
+        }
+    }
+
+    static fromJS(data: any): AlternativeRequestDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AlternativeRequestDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["questionId"] = this.questionId;
+        data["text"] = this.text;
+        data["correct"] = this.correct;
+        data["aiExplanation"] = this.aiExplanation;
+        return data;
+    }
+}
+
+export interface IAlternativeRequestDto {
+    id?: string | undefined;
+    questionId?: string | undefined;
+    text: string;
+    correct: boolean;
+    aiExplanation: string;
 }
 
 export class QuizAttemptRequestDto implements IQuizAttemptRequestDto {
@@ -9300,171 +7407,6 @@ export class QuizAttemptResponseDto extends QuizAttemptRequestDto implements IQu
 export interface IQuizAttemptResponseDto extends IQuizAttemptRequestDto {
     questions: QuestionResponseDto[];
     answers: AnswerResponseDto[];
-}
-
-export class UserRequestDto implements IUserRequestDto {
-    id?: string | undefined;
-    name!: string;
-    address?: string | undefined;
-    birthDay?: Date | undefined;
-    image?: string | undefined;
-    email!: string;
-    role?: string | undefined;
-    sid?: string | undefined;
-
-    constructor(data?: IUserRequestDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.address = _data["address"];
-            this.birthDay = _data["birthDay"] ? new Date(_data["birthDay"].toString()) : <any>undefined;
-            this.image = _data["image"];
-            this.email = _data["email"];
-            this.role = _data["role"];
-            this.sid = _data["sid"];
-        }
-    }
-
-    static fromJS(data: any): UserRequestDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserRequestDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["address"] = this.address;
-        data["birthDay"] = this.birthDay ? this.birthDay.toISOString() : <any>undefined;
-        data["image"] = this.image;
-        data["email"] = this.email;
-        data["role"] = this.role;
-        data["sid"] = this.sid;
-        return data;
-    }
-}
-
-export interface IUserRequestDto {
-    id?: string | undefined;
-    name: string;
-    address?: string | undefined;
-    birthDay?: Date | undefined;
-    image?: string | undefined;
-    email: string;
-    role?: string | undefined;
-    sid?: string | undefined;
-}
-
-export class UserResponseDto extends UserRequestDto implements IUserResponseDto {
-    enrollments?: EnrollmentRequestDto[] | undefined;
-    enrollmentsCount!: number;
-
-    constructor(data?: IUserResponseDto) {
-        super(data);
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (Array.isArray(_data["enrollments"])) {
-                this.enrollments = [] as any;
-                for (let item of _data["enrollments"])
-                    this.enrollments!.push(EnrollmentRequestDto.fromJS(item));
-            }
-            this.enrollmentsCount = _data["enrollmentsCount"];
-        }
-    }
-
-    static override fromJS(data: any): UserResponseDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserResponseDto();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.enrollments)) {
-            data["enrollments"] = [];
-            for (let item of this.enrollments)
-                data["enrollments"].push(item.toJSON());
-        }
-        data["enrollmentsCount"] = this.enrollmentsCount;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IUserResponseDto extends IUserRequestDto {
-    enrollments?: EnrollmentRequestDto[] | undefined;
-    enrollmentsCount: number;
-}
-
-export class EnrollmentRequestDto implements IEnrollmentRequestDto {
-    id?: string | undefined;
-    studentId?: string | undefined;
-    crewId?: string | undefined;
-    startDate?: Date | undefined;
-    endDate?: Date | undefined;
-    active!: boolean;
-
-    constructor(data?: IEnrollmentRequestDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.studentId = _data["studentId"];
-            this.crewId = _data["crewId"];
-            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
-            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
-            this.active = _data["active"];
-        }
-    }
-
-    static fromJS(data: any): EnrollmentRequestDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new EnrollmentRequestDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["studentId"] = this.studentId;
-        data["crewId"] = this.crewId;
-        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
-        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
-        data["active"] = this.active;
-        return data;
-    }
-}
-
-export interface IEnrollmentRequestDto {
-    id?: string | undefined;
-    studentId?: string | undefined;
-    crewId?: string | undefined;
-    startDate?: Date | undefined;
-    endDate?: Date | undefined;
-    active: boolean;
 }
 
 export class Message implements IMessage {
@@ -9991,66 +7933,6 @@ export class AssignRolesRequest implements IAssignRolesRequest {
 export interface IAssignRolesRequest {
     /** Role IDs to assign to the user. */
     roles?: string[] | undefined;
-}
-
-export class UpdateUserProfileRequestDto implements IUpdateUserProfileRequestDto {
-    name!: string;
-    address!: string;
-    birthDay!: Date;
-    image?: string | undefined;
-    email!: string;
-    phoneNumber!: string;
-    crew!: string;
-
-    constructor(data?: IUpdateUserProfileRequestDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.address = _data["address"];
-            this.birthDay = _data["birthDay"] ? new Date(_data["birthDay"].toString()) : <any>undefined;
-            this.image = _data["image"];
-            this.email = _data["email"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.crew = _data["crew"];
-        }
-    }
-
-    static fromJS(data: any): UpdateUserProfileRequestDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateUserProfileRequestDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["address"] = this.address;
-        data["birthDay"] = this.birthDay ? this.birthDay.toISOString() : <any>undefined;
-        data["image"] = this.image;
-        data["email"] = this.email;
-        data["phoneNumber"] = this.phoneNumber;
-        data["crew"] = this.crew;
-        return data;
-    }
-}
-
-export interface IUpdateUserProfileRequestDto {
-    name: string;
-    address: string;
-    birthDay: Date;
-    image?: string | undefined;
-    email: string;
-    phoneNumber: string;
-    crew: string;
 }
 
 /** PagedResult{TSource} */
@@ -10818,6 +8700,98 @@ export interface IPagedResultOfQuestionBankResponseDto extends IPagedResult {
 }
 
 /** PagedResult{TSource} */
+export class PagedResultOfQuestionResponseDto extends PagedResult implements IPagedResultOfQuestionResponseDto {
+    queryable!: QuestionResponseDto[];
+
+    constructor(data?: IPagedResultOfQuestionResponseDto) {
+        super(data);
+        if (!data) {
+            this.queryable = [];
+        }
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["queryable"])) {
+                this.queryable = [] as any;
+                for (let item of _data["queryable"])
+                    this.queryable!.push(QuestionResponseDto.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): PagedResultOfQuestionResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfQuestionResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.queryable)) {
+            data["queryable"] = [];
+            for (let item of this.queryable)
+                data["queryable"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+/** PagedResult{TSource} */
+export interface IPagedResultOfQuestionResponseDto extends IPagedResult {
+    queryable: QuestionResponseDto[];
+}
+
+/** PagedResult{TSource} */
+export class PagedResultOfQuestionRequestDto extends PagedResult implements IPagedResultOfQuestionRequestDto {
+    queryable!: QuestionRequestDto[];
+
+    constructor(data?: IPagedResultOfQuestionRequestDto) {
+        super(data);
+        if (!data) {
+            this.queryable = [];
+        }
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["queryable"])) {
+                this.queryable = [] as any;
+                for (let item of _data["queryable"])
+                    this.queryable!.push(QuestionRequestDto.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): PagedResultOfQuestionRequestDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfQuestionRequestDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.queryable)) {
+            data["queryable"] = [];
+            for (let item of this.queryable)
+                data["queryable"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+/** PagedResult{TSource} */
+export interface IPagedResultOfQuestionRequestDto extends IPagedResult {
+    queryable: QuestionRequestDto[];
+}
+
+/** PagedResult{TSource} */
 export class PagedResultOfSelectListItem extends PagedResult implements IPagedResultOfSelectListItem {
     queryable!: SelectListItem[];
 
@@ -10953,98 +8927,6 @@ export class SelectListGroup implements ISelectListGroup {
 export interface ISelectListGroup {
     disabled: boolean;
     name?: string | undefined;
-}
-
-/** PagedResult{TSource} */
-export class PagedResultOfQuestionRequestDto extends PagedResult implements IPagedResultOfQuestionRequestDto {
-    queryable!: QuestionRequestDto[];
-
-    constructor(data?: IPagedResultOfQuestionRequestDto) {
-        super(data);
-        if (!data) {
-            this.queryable = [];
-        }
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (Array.isArray(_data["queryable"])) {
-                this.queryable = [] as any;
-                for (let item of _data["queryable"])
-                    this.queryable!.push(QuestionRequestDto.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): PagedResultOfQuestionRequestDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new PagedResultOfQuestionRequestDto();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.queryable)) {
-            data["queryable"] = [];
-            for (let item of this.queryable)
-                data["queryable"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-/** PagedResult{TSource} */
-export interface IPagedResultOfQuestionRequestDto extends IPagedResult {
-    queryable: QuestionRequestDto[];
-}
-
-/** PagedResult{TSource} */
-export class PagedResultOfQuestionResponseDto extends PagedResult implements IPagedResultOfQuestionResponseDto {
-    queryable!: QuestionResponseDto[];
-
-    constructor(data?: IPagedResultOfQuestionResponseDto) {
-        super(data);
-        if (!data) {
-            this.queryable = [];
-        }
-    }
-
-    override init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            if (Array.isArray(_data["queryable"])) {
-                this.queryable = [] as any;
-                for (let item of _data["queryable"])
-                    this.queryable!.push(QuestionResponseDto.fromJS(item));
-            }
-        }
-    }
-
-    static override fromJS(data: any): PagedResultOfQuestionResponseDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new PagedResultOfQuestionResponseDto();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.queryable)) {
-            data["queryable"] = [];
-            for (let item of this.queryable)
-                data["queryable"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-/** PagedResult{TSource} */
-export interface IPagedResultOfQuestionResponseDto extends IPagedResult {
-    queryable: QuestionResponseDto[];
 }
 
 /** PagedResult{TSource} */
@@ -12027,11 +9909,6 @@ export class Queryable implements IQueryable {
 export interface IQueryable {
 
     [key: string]: any;
-}
-
-export interface FileParameter {
-    data: any;
-    fileName: string;
 }
 
 export interface FileResponse {

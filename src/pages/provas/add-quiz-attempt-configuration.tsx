@@ -9,7 +9,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import {Controller, useForm} from "react-hook-form";
-import {QuestionBankRequestDto, QuizAttemptConfigurationRequestDto} from "../../types_custom.ts";
+import {QuizAttemptConfigurationRequestDto} from "../../types_custom.ts";
 import {object} from "yup";
 import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
 import {post} from "../../_helpers/api.ts";
@@ -19,6 +19,7 @@ import ImageUpload from "../../components/image-upload";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'
 import {QuestionPicker} from "../questions/question-picker.tsx";
+import {apiUrl} from "../../_helpers/utils.ts";
 
 const createSchema = object().shape({
 });
@@ -28,9 +29,9 @@ export const AddQuizAttemptConfiguration = () => {
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File>();
   const [imageUrl, setImageUrl] = useState("");
-  const [boards, setBoards] = useState([""]);
-  const [description, setDescription] = useState("");
-  const [institutionIds, setInstitutionIds] = useState([""]);
+  // const [boards, setBoards] = useState([""]);
+  // const [description, setDescription] = useState("");
+  // const [institutionIds, setInstitutionIds] = useState([""]);
   const [isActive, setIsActive] = useState(true);
 
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
@@ -47,7 +48,6 @@ export const AddQuizAttemptConfiguration = () => {
     resolver: yupResolver(createSchema)
   });
   const onSubmit = async (data: QuizAttemptConfigurationRequestDto) => {
-    const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
     data.questionsIds = Array.from(selectedKeys).join(",");
     data.userIds = "";
     data.crewsIds = "";
@@ -77,8 +77,7 @@ export const AddQuizAttemptConfiguration = () => {
                   Nova Prova
                 </ModalHeader>
                 <ModalBody>
-                  <ImageUpload setFile={setFile} setImageUrl={setImageUrl} folderName={"quiz-attempt-configs"}
-                  />
+                  <ImageUpload setFile={setFile} setImageUrl={setImageUrl} folderName={"quiz-attempt-configs"}/>
                   <Input {...register("name")} label="Nome"
                          variant="bordered"
                   />

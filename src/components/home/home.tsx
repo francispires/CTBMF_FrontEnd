@@ -1,7 +1,5 @@
 import Calendar from "../calendar";
 import {MyCard} from "../layout/MyCard.tsx";
-import {QuestionRight} from "../charts/question-right.tsx";
-import {UserCard} from "./user-card.tsx";
 import {GeneralRank} from "./general-rank.tsx";
 
 export const Home = () => (

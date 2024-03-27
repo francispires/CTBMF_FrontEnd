@@ -38,7 +38,6 @@ export default function EditDiscipline() {
 
   const mutation = useMutation({
     mutationFn: async (updatedDiscipline: Discipline) => {
-      const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
       const url = `${apiUrl}/disciplines/${id}`
       const res = await patch<Discipline>(url, updatedDiscipline);
 
@@ -127,7 +126,8 @@ export default function EditDiscipline() {
                 {...field}
                 setValue={setParentId}
                 valueProp={"id"}
-                textProp={"id"}
+                textProp={"name"}
+                useKey={true}
                 url={"disciplines"}
                 selectionMode="single"
                 className="max-w-xs"

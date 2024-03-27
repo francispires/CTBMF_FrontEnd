@@ -7,6 +7,12 @@ export const SidebarWrapper = tv({
     collapsed: {
       true: "translate-x-0 ml-0 [display:inherit] w-auto",
     },
+    stage: {
+        0: "hidden"
+    },
+    visible: {
+      false: "",
+    },
   },
   // ""
   //   "@md": {

@@ -18,86 +18,15 @@ import {AddNoteIcon} from "../icons/AddNoteIcon.tsx";
 import {CopyDocumentIcon} from "../icons/CopyDocumentIcon.tsx";
 import {EditDocumentIcon} from "../icons/EditDocumentIcon.tsx";
 import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
+import {IUserResponseDto, UserResponseDto} from "../../types_custom.ts";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCheck, faXmark} from "@fortawesome/free-solid-svg-icons";
+import {TableActions} from "./table/table-actions.tsx";
 
-export const RenderUserCell2 = ( user:AuthUser, columnKey:string ):ReactNode => {
-  const cellValue = user[columnKey as keyof AuthUser];
-  switch (columnKey) {
-    case "name":
-      return (
-        <User
-          avatarProps={{
-            src: user.picture,
-          }}
-          name={cellValue}
-        >
-          {user.email}
-        </User>
-      );
-    case "role":
-      return (
-        <div>
-          <div>
-            <span>{cellValue}</span>
-          </div>
-          <div>
-            <span>{user.crew}</span>
-          </div>
-        </div>
-      );
-    case "status":
-      return (
-        <Chip
-          size="sm"
-          variant="flat"
-          color={
-            cellValue === "ativo"
-              ? "success"
-              : cellValue === "pausado"
-              ? "danger"
-              : "warning"
-          }
-        >
-          <span className="capitalize text-xs">{cellValue}</span>
-        </Chip>
-      );
-
-    case "actions":
-      return (
-          <div className="relative flex justify-end items-center gap-2">
-
-              <div>
-                  <Tooltip content="Detalhe">
-                      <button onClick={() => console.log("Detalhe", user.userId)}>
-                          <EyeIcon size={20} fill="#979797"/>
-                      </button>
-                  </Tooltip>
-              </div>
-              <div>
-                  <Tooltip content="Editar" color="secondary">
-                      <button onClick={() => console.log("Editar", user.userId)}>
-                          <EditIcon size={20} fill="#979797"/>
-                      </button>
-                  </Tooltip>
-              </div>
-              <div>
-                  <Tooltip
-                      content="Remover"
-                      color="danger"
-                      onClick={() => console.log("Remover", user.userId)}
-                  >
-                      <button>
-                          <DeleteIcon size={20} fill="#FF0080"/>
-                      </button>
-                  </Tooltip>
-              </div>
-          </div>
-      );
-      default:
-          return cellValue;
-  }
-};
-
-export const RenderUserCell = (user: AuthUser, columnKey: string) => {
+export const RenderUserCell = (user: UserResponseDto, columnKey: string,
+                               confirmRemoval?: (id: string) => void,
+                               editItem?: (id: string) => void,
+                               viewItem?: (id: string) => void) => {
     const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
     const statusColorMap: Record<string, ChipProps["color"]> = {
         active: "success",
@@ -105,15 +34,15 @@ export const RenderUserCell = (user: AuthUser, columnKey: string) => {
         vacation: "warning",
     };
 
-    const cellValue = user[columnKey as keyof AuthUser];
+    const cellValue = user[columnKey as keyof UserResponseDto];
 
     switch (columnKey) {
-        case "nickName":
+        case "image":
             return (
                 <User
-                    avatarProps={{radius: "lg", src: user.picture}}
+                    avatarProps={{radius: "lg", src: user.image}}
                     description={user.email}
-                    name={cellValue}
+                    name={user.name}
                 >
                     {user.email}
                 </User>
@@ -125,11 +54,13 @@ export const RenderUserCell = (user: AuthUser, columnKey: string) => {
                     <p className="text-bold text-tiny capitalize text-default-400">{user.crew}</p>
                 </div>
             );
-        case "status":
+        case "enrollmentsCount":
             return (
-                <Chip className="capitalize" color={statusColorMap[user.status as keyof Record<string, ChipProps["color"]>]} size="sm" variant="flat">
-                    {cellValue}
-                </Chip>
+                <div className="flex flex-col center">
+                    {cellValue ?
+                        <FontAwesomeIcon className={"text-success"} icon={faCheck} /> :
+                        <FontAwesomeIcon className={"text-danger"} icon={faXmark} />}
+                </div>
             );
         case "emailVerified":
             return (
@@ -144,48 +75,9 @@ export const RenderUserCell = (user: AuthUser, columnKey: string) => {
             );
         case "actions":
             return (
-                <div className="relative flex justify-end items-center gap-2">
-                    <Dropdown>
-                        <DropdownTrigger>
-                            <Button isIconOnly size="sm" variant="light">
-                                <VerticalDotsIcon className="text-default-300" />
-                            </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu disabledKeys={"hide"}  variant="faded" aria-label="Dropdown menu with description">
-                            <DropdownSection title="Ações" showDivider>
-                                <DropdownItem key={user.emailVerified?"hide":"show"}
-                                    shortcut="⌘N"
-                                    description="Aprovar o usuário"
-                                    startContent={<AddNoteIcon className={iconClasses} />}
-                                >Aprovar</DropdownItem>
-                                <DropdownItem
-                                    key="details"
-                                    shortcut="⌘D"
-                                    description="Exibe os detalhes do usuário"
-                                    startContent={<CopyDocumentIcon className={iconClasses} />}
-                                >Detalhes</DropdownItem>
-                                <DropdownItem
-                                    key="edit"
-                                    shortcut="⌘⇧E"
-                                    description="Editar o usuário"
-                                    startContent={<EditDocumentIcon className={iconClasses} />}
-                                >Editar</DropdownItem>
-                            </DropdownSection>
-                            <DropdownSection title="Zona Perigosa">
-                                <DropdownItem
-                                    key="delete"
-                                    className="text-danger"
-                                    color="danger"
-                                    shortcut="⌘⇧R"
-                                    description="Remove o usuário"
-                                    startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
-                                >Remover</DropdownItem>
-                            </DropdownSection>
-                        </DropdownMenu>
-                    </Dropdown>
-                </div>
+                <TableActions view={viewItem} edit={editItem} remove={confirmRemoval}></TableActions>
             );
         default:
-            return cellValue;
+            return <>{cellValue}</>;
     }
 }

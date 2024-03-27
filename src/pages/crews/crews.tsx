@@ -1,68 +1,71 @@
-import { useNavigate } from "react-router-dom";
-import TTable from "../../components/table/table";
-import { AddDiscipline } from "./add-discipline.tsx";
-import { RenderDisciplineCell } from "./render-discipline-cell.tsx";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@nextui-org/react";
-import { useState } from "react";
-import { remove } from "../../_helpers/api.ts";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import {apiUrl} from "../../_helpers/utils.ts";
+import {useNavigate} from "react-router-dom";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    Spinner,
+    useDisclosure
+} from "@nextui-org/react";
+import {useState} from "react";
 import t from "../../_helpers/Translations.ts";
+import {apiUrl} from "../../_helpers/utils.ts";
+import {remove} from "../../_helpers/api.ts";
+import {toast} from "react-toastify";
+import TTable from "../../components/table/table";
+import {RenderCrewCell} from "./render-crew-cell.tsx";
+import {AddCrew} from "./add-crew.tsx";
 
-export const Disciplines = () => {
+export const Crews = () => {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const [disciplineIdToDelete, setDisciplineIdToDelete] = useState<string | null>(null)
 
     const columns = [
-        { name: t['name'], uid: 'name', sortable: true,filterable:true },
-        { name: t['description'], uid: 'description', sortable: true,filterable:true },
-        { name: t['image'], uid: 'image', sortable: true },
-        { name: t['parentId'], uid: 'parentId', sortable: true },
-        { name: t['parentName'], uid: 'parentName', sortable: true,filterable:true },
-        { name: t['childsCount'], uid: 'childsCount', sortable: true },
-        { name: 'Ações', uid: 'actions' },
+        {name: t['name'], uid: 'name', sortable: true, filterable: true},
+        {name: t['description'], uid: 'description', sortable: true, filterable: true},
+        {name: 'Ações', uid: 'actions'},
     ] as Column[];
 
-    const initialVisibleColumns = ["name", "description", "parentName", "childsCount", "actions"];
+    const initialVisibleColumns = ["name", "description", "actions"];
 
-    const fetchData = async (disciplineId: string | null) => {
-        if (!disciplineId) return
+    const fetchData = async (crewId: string | null) => {
+        if (!crewId) return
 
-        const url = `${apiUrl}/disciplines`
+        const url = `${apiUrl}/crews`
 
-        const res = await remove<boolean>(url, disciplineId)
-        
-        return res
+        return await remove<boolean>(url, crewId)
     }
-    
+
     const mutation = useMutation({
         mutationFn: fetchData,
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ['qryKey']});
-            toast.success("Disciplina removida com sucesso.")
+            await queryClient.invalidateQueries({queryKey: ['qryCrews']});
+            toast.success("Turma removida com sucesso.")
         },
         onError: () => {
-            toast.error("Erro ao remover a disciplina.")
+            toast.error("Erro ao remover a Turma.")
         }
     })
 
-    function goToDisciplineDetailsPage(id: string) {
-        navigate(`/view-discipline/${id}`)
+    function goToCrewDetailsPage(id: string) {
+        navigate(`/view-crew/${id}`)
     }
 
-    function goToEditDisciplinePage(id: string) {
-        navigate(`/edit-discipline/${id}`)
+    function goToEditCrewPage(id: string) {
+        navigate(`/edit-crew/${id}`)
     }
 
-    function openRemoveDisciplineModal(id: string) {
+    function openRemoveCrewModal(id: string) {
         setDisciplineIdToDelete(id)
         onOpen()
     }
 
-    async function handleRemoveDiscipline() {
+    async function handleRemoveCrew() {
         mutation.mutate(disciplineIdToDelete)
         setDisciplineIdToDelete(null)
         onClose()
@@ -76,16 +79,16 @@ export const Disciplines = () => {
     return (
         <div className="my-5 max-w-[99rem] mx-auto w-full flex flex-col gap-10">
             <TTable<Discipline>
-                what={"Disciplinas"}
+                what={"Turmas"}
                 rowId={"Id"}
-                RenderCell={RenderDisciplineCell}
+                RenderCell={RenderCrewCell}
                 Columns={columns}
-                url={"disciplines"}
+                url={"crews"}
                 initialVisibleColumns={initialVisibleColumns}
-                addNew={<AddDiscipline />}
-                viewItem={goToDisciplineDetailsPage}
-                editItem={goToEditDisciplinePage}
-                confirmRemoval={openRemoveDisciplineModal}
+                addNew={<AddCrew/>}
+                viewItem={goToCrewDetailsPage}
+                editItem={goToEditCrewPage}
+                confirmRemoval={openRemoveCrewModal}
             >
             </TTable>
 
@@ -98,21 +101,21 @@ export const Disciplines = () => {
                     {(onClose) => (
                         <>
                             <ModalHeader className="flex flex-col gap-1">
-                                Remover disciplina
+                                Remover Turma
                             </ModalHeader>
                             <ModalBody>
-                                <span>Tem certeza que deseja remover a disciplina?</span>
+                                <span>Tem certeza que deseja remover a turma?</span>
                             </ModalBody>
                             <ModalFooter>
                                 <Button
                                     color="danger"
                                     variant="flat"
-                                    onClick={handleRemoveDiscipline}
+                                    onClick={handleRemoveCrew}
                                     disabled={mutation.isPending}
                                     className="disabled:cursor-not-allowed"
                                 >
                                     {mutation.isPending ? (
-                                        <Spinner size="sm" />
+                                        <Spinner size="sm"/>
                                     ) : (
                                         <span>Remover</span>
                                     )}

@@ -1,8 +1,5 @@
-import TTable from "../../components/table/table";
-import {AddQuizAttemptConfiguration} from "./add-quiz-attempt-configuration.tsx";
-import {RenderQuizConfigCell} from "./render-quiz_config-cell.tsx";
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {
     Button,
     Modal,
@@ -13,79 +10,83 @@ import {
     Spinner,
     useDisclosure
 } from "@nextui-org/react";
-import {QuizAttemptConfigurationResponseDto} from "../../types_custom.ts";
-import {remove} from "../../_helpers/api.ts";
+import {useState} from "react";
+import t from "../../_helpers/Translations.ts";
 import {apiUrl} from "../../_helpers/utils.ts";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {remove} from "../../_helpers/api.ts";
 import {toast} from "react-toastify";
+import TTable from "../../components/table/table";
+import {ConfigResponseDto} from "../../types_custom.ts";
+import {RenderConfigCell} from "./render-config-cell.tsx";
+import {AddConfig} from "./add-config.tsx";
 
-
-export const QuizAttemptConfiguration = () => {
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const [quizIdToDelete, setQuizIdToDelete] = useState<string | null>(null);
+export const Configs = () => {
+    const navigate = useNavigate()
+    const queryClient = useQueryClient()
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+    const [disciplineIdToDelete, setConfigIdToDelete] = useState<string | null>(null)
 
     const columns = [
-        {name: 'name', uid: 'name',sortable:true},
-        {name: 'Questões', uid: 'questionsCount',sortable:true},
-        {name: 'description', uid: 'description',sortable:true},
-        {name: 'institution', uid: 'institution',sortable:true},
+        {name: t['name'], uid: 'key', sortable: true, filterable: true},
+        {name: t['value'], uid: 'value', sortable: true, filterable: true},
         {name: 'Ações', uid: 'actions'},
     ] as Column[];
 
-    const initialVisibleColumns = ["name","questionsCount","description","actions"];
+    const initialVisibleColumns = ["key", "value", "actions"];
 
-
-    const fetchData = async (quizId: string | null) => {
-        if (quizId)
-            return await remove<boolean>(`${apiUrl}/quiz_attempt_configs`,quizId)
+    const deleteConfig = async (id: string) => {
+        const url = `${apiUrl}/configs`
+        return await remove<boolean>(url, id)
     }
 
     const mutation = useMutation({
-        mutationFn: fetchData,
+        mutationFn: deleteConfig,
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ['qryKey']});
-            toast.success("Simulado removido com sucesso.")
+            await queryClient.invalidateQueries({queryKey: ['qryConfigs']});
+            toast.success("Configuração removida com sucesso.")
         },
         onError: () => {
-            toast.error("Erro ao remover a Simulado.")
+            toast.error("Erro ao remover a configuração.")
         }
     })
 
-    function goToQuizDetailsPage(id: string) {
-        navigate(`/view-quiz/${id}`)
+    function viewConfigPage(id: string) {
+        navigate(`/view-config/${id}`)
     }
 
-    function goToEditQuizPage(id: string) {
-        navigate(`/edit-quiz/${id}`)
+    function editConfigPage(id: string) {
+        navigate(`/edit-config/${id}`)
     }
-    function openRemoveQuizModal(id: string) {
-        setQuizIdToDelete(id)
+
+    function openRemoveModal(id: string) {
+        setConfigIdToDelete(id)
         onOpen()
     }
-    async function handleRemoveEnroll() {
-        mutation.mutate(quizIdToDelete)
-        setQuizIdToDelete(null)
+
+    async function handleRemoveConfig() {
+        disciplineIdToDelete && mutation.mutate(disciplineIdToDelete)
+        setConfigIdToDelete(null)
         onClose()
     }
+
     function handleOpenChange() {
-        setQuizIdToDelete(() => null)
+        setConfigIdToDelete(() => null)
         onOpenChange()
     }
+
     return (
         <div className="my-5 max-w-[99rem] mx-auto w-full flex flex-col gap-10">
-            <TTable<QuizAttemptConfigurationResponseDto>
-                what={"Simulados"}
+            <TTable<ConfigResponseDto>
+                what={"Configurações"}
                 rowId={"Id"}
-                RenderCell={RenderQuizConfigCell}
+                RenderCell={RenderConfigCell}
                 Columns={columns}
-                url={"quiz_attempt_configs"}
+                url={"configs"}
                 initialVisibleColumns={initialVisibleColumns}
-                addNew={<AddQuizAttemptConfiguration/>}
-                viewItem={goToQuizDetailsPage}
-                editItem={goToEditQuizPage}
-                confirmRemoval={openRemoveQuizModal}
+                addNew={<AddConfig/>}
+                viewItem={viewConfigPage}
+                editItem={editConfigPage}
+                confirmRemoval={openRemoveModal}
             >
             </TTable>
 
@@ -98,16 +99,16 @@ export const QuizAttemptConfiguration = () => {
                     {(onClose) => (
                         <>
                             <ModalHeader className="flex flex-col gap-1">
-                                Remover Simulado
+                                Remover disciplina
                             </ModalHeader>
                             <ModalBody>
-                                <span>Tem certeza que deseja remover o Simulado?</span>
+                                <span>Tem certeza que deseja remover a configuração?</span>
                             </ModalBody>
                             <ModalFooter>
                                 <Button
                                     color="danger"
                                     variant="flat"
-                                    onClick={handleRemoveEnroll}
+                                    onClick={handleRemoveConfig}
                                     disabled={mutation.isPending}
                                     className="disabled:cursor-not-allowed"
                                 >

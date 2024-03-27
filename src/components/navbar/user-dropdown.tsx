@@ -74,7 +74,7 @@ export const UserDropdown = () => {
         {/*  <p>Entrou como</p>*/}
         {/*  <p>{user?.email}</p>*/}
         {/*</DropdownItem>*/}
-        <DropdownItem key="settings">Meu Perfil</DropdownItem>
+        <DropdownItem href={"profile"} key="settings">Meu Perfil</DropdownItem>
         {/*<DropdownItem key="team_settings">Minha Turma</DropdownItem>*/}
         {/*<DropdownItem key="analytics">Estatísticas</DropdownItem>*/}
         {/*<DropdownItem key="system">Sistema</DropdownItem>*/}

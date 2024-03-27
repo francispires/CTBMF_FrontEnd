@@ -1,12 +1,13 @@
 export function shortName(name: string) {
-  const splittedName = name.split(' ')
+    const splittedName = name.indexOf(' ') > -1 ? name.split(' ') : name.split('@');
 
-  // capitalize slipttedName
+
+    // capitalize slipttedName
     splittedName.forEach((part, index) => {
         splittedName[index] = part.charAt(0).toUpperCase() + part.slice(1)
     })
 
-  if (splittedName.length === 1) return splittedName[0]
-  const shortedName = splittedName[0] + ' ' + splittedName[splittedName.length - 1].charAt(0) + '.'
-  return shortedName
+    if (splittedName.length === 1) return splittedName[0]
+    const shortedName = splittedName[0] + ' ' + splittedName[splittedName.length - 1].charAt(0) + '.'
+    return shortedName
 }

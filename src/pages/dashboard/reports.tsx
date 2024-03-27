@@ -10,8 +10,11 @@ import {useAuth0} from "@auth0/auth0-react";
 import {Worst} from "../../components/charts/worst.tsx";
 import {fetchRankingData} from "../../_helpers/api.ts";
 import {IRankingAnswersResponseDto} from "../../types_custom.ts";
+import {DaySteam} from "../../components/charts/daySteam.tsx";
+import {QuestionByDiscipline} from "../../components/charts/question-by-discipline.tsx";
+import {ChartWrap} from "../../components/layout/ChartWrap.tsx";
 
-export const DashBoard = () => {
+export const Reports = () => {
     const {user} = useAuth0();
 
     const filterMyAnswersOnly = (data: IRankingAnswersResponseDto[]) => {
@@ -30,44 +33,41 @@ export const DashBoard = () => {
         return <div>Ocorreu um erro ao buscar os dados.</div>
 
     return (
-        <div className="grid
-        sm:grid-cols-1 md:grid-cols-3
-        gap-6
-        sm:w-5/6
-        md:w-full
-        pt-3 px-4 lg:px-0 flex-wrap xl:flex-nowrap
-        justify-center mx-auto w-full">
-            <div className="flex flex-col md:col-span-2">
+
+        <div className="grid grid-cols-3 justify-center gap-2 xl:gap-6 pt-3 px-4 lg:px-0 flex-wrap xl:flex-nowrap max-w-[99rem] mx-auto w-full">
+            <div className="flex flex-col col-span-3">
                 <div className="flex flex-col">
-                    <div className="justify-center xl:grid xl:grid-cols-2 gap-6">
+                    <h3 className="text-xl font-semibold">Relatórios</h3>
+                    <div className="grid md:grid-cols-3 grid-cols-1 2xl:grid-cols-3 gap-5  justify-center w-full">
                         <MyCard>
-                            {!user || (
-                                <UserCard myAnswers={answers}/>
-                            )}
+                            <ChartWrap title={"Questões por dia"}>
+                                <DaySteam myAnswers={answers}/>
+                            </ChartWrap>
+
                         </MyCard>
-                        <MyCard className={"bg-danger-100 md:my-0"}>
-                            <WeekBalance myAnswers={answers}
-                            />
+                        <MyCard>
+                            <ChartWrap title={"Aproveitamento"}>
+                                <QuestionRight myAnswers={answers}/>
+                            </ChartWrap>
                         </MyCard>
-                        <MyCard className="col-span-2">
-                            <GeneralRank/>
+                        <MyCard>
+                            <ChartWrap title={"Distribuição do Estudo"}>
+                                <QuestionByDiscipline myAnswers={answers}/>
+                            </ChartWrap>
                         </MyCard>
-                    </div>
-                </div>
-                <div className="justify-center gap-6">
-                    <div className="w-full bg-default-50 shadow-lg rounded-2xl mt-6">
-                        <Steam myAnswers={answers}/>
+                       
+                        <MyCard>
+                            <Worst myAnswers={answers}/>
+                        </MyCard>
                     </div>
                 </div>
             </div>
+
+            {/* Left Section */}
             <div className="flex flex-col">
-                <div className="flex flex-col justify-center gap-6 flex-wrap md:flex-nowrap md:flex-col">
-                    <MyCard>
-                        <QuestionRight myAnswers={answers}/>
-                    </MyCard>
-                    <MyCard>
-                        <Worst myAnswers={answers}/>
-                    </MyCard>
+                <h3 className="text-xl font-semibold">Estudos</h3>
+                <div className="flex flex-col justify-center gap-4 flex-wrap md:flex-nowrap md:flex-col">
+
                 </div>
             </div>
         </div>

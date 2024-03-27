@@ -1,6 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import TTable from "../../components/table/table";
-import {AddConfig} from "./add-config.tsx";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {
     Button,
     Modal,
@@ -12,81 +11,88 @@ import {
     useDisclosure
 } from "@nextui-org/react";
 import {useState} from "react";
-import {remove} from "../../_helpers/api.ts";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {toast} from "react-toastify";
-import {apiUrl} from "../../_helpers/utils.ts";
 import t from "../../_helpers/Translations.ts";
-import {RenderConfigCell} from "./render-config-cell.tsx";
-import {ConfigResponseDto} from "../../types_custom.ts";
+import {apiUrl} from "../../_helpers/utils.ts";
+import {remove} from "../../_helpers/api.ts";
+import {toast} from "react-toastify";
+import TTable from "../../components/table/table";
+import {EnrollmentResponseDto} from "../../types_custom.ts";
+import {RenderEnrollCell} from "./render-enroll-cell.tsx";
+import {AddEnroll} from "./add-enroll.tsx";
 
-export const Configs = () => {
+export const element = "enrollments";
+export const Enrollments = () => {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-    const [disciplineIdToDelete, setConfigIdToDelete] = useState<string | null>(null)
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+    const [enrollIdToDelete, setEnrollIdToDelete] = useState<string | null>(null)
 
     const columns = [
-        { name: t['name'], uid: 'key', sortable: true,filterable:true },
-        { name: t['value'], uid: 'value', sortable: true,filterable:true },
-        { name: 'Ações', uid: 'actions' },
+        {name: t['student'], uid: 'studentName', sortable: true, filterable: true},
+        {name: t['crew'], uid: 'crewName', sortable: true, filterable: true},
+        {name: t['startDate'], uid: 'startDate', sortable: true, filterable: true},
+        {name: t['endDate'], uid: 'endDate', sortable: true, filterable: true},
+        {name: 'Ações', uid: 'actions'},
     ] as Column[];
 
-    const initialVisibleColumns = ["key", "value","actions"];
+    const initialVisibleColumns = ["studentName", "crewName", "startDate", "endDate", "actions"];
 
-    const deleteConfig = async (id:string) => {
-        const url = `${apiUrl}/configs`
-        return await remove<boolean>(url, id)
+    const fetchData = async (enrollId: string | null) => {
+        if (!enrollId) return
+
+        const url = `${apiUrl}/enrollments`
+
+        return await remove<boolean>(url, enrollId)
     }
-    
+
     const mutation = useMutation({
-        mutationFn: deleteConfig,
+        mutationFn: fetchData,
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ['qryConfigs']});
-            toast.success("Configuração removida com sucesso.")
+            await queryClient.invalidateQueries({queryKey: ['qryKey']});
+            toast.success("Matrícula removida com sucesso.")
         },
         onError: () => {
-            toast.error("Erro ao remover a configuração.")
+            toast.error("Erro ao remover a Matrícula.")
         }
     })
 
-    function viewConfigPage(id: string) {
-        navigate(`/view-config/${id}`)
+    function goToEnrollDetailsPage(id: string) {
+        navigate(`/view-enroll/${id}`)
     }
 
-    function editConfigPage(id: string) {
-        navigate(`/edit-config/${id}`)
+    function goToEditEnrollPage(id: string) {
+        navigate(`/edit-enroll/${id}`)
     }
 
-    function openRemoveModal(id: string) {
-        setConfigIdToDelete(id)
+    function openRemoveEnrollModal(id: string) {
+        setEnrollIdToDelete(id)
         onOpen()
     }
 
-    async function handleRemoveConfig() {
-        disciplineIdToDelete && mutation.mutate(disciplineIdToDelete)
-        setConfigIdToDelete(null)
+    async function handleRemoveEnroll() {
+        mutation.mutate(enrollIdToDelete)
+        setEnrollIdToDelete(null)
         onClose()
     }
 
     function handleOpenChange() {
-        setConfigIdToDelete(() => null)
+        setEnrollIdToDelete(() => null)
         onOpenChange()
     }
 
     return (
         <div className="my-5 max-w-[99rem] mx-auto w-full flex flex-col gap-10">
-            <TTable<ConfigResponseDto>
-                what={"Configurações"}
+            <TTable<EnrollmentResponseDto>
+                what={"Matrículas"}
                 rowId={"Id"}
-                RenderCell={RenderConfigCell}
+                RenderCell={RenderEnrollCell}
                 Columns={columns}
-                url={"configs"}
+                url={"enrollments"}
                 initialVisibleColumns={initialVisibleColumns}
-                addNew={<AddConfig />}
-                viewItem={viewConfigPage}
-                editItem={editConfigPage}
-                confirmRemoval={openRemoveModal}
+                addNew={<AddEnroll/>}
+                viewItem={goToEnrollDetailsPage}
+                editItem={goToEditEnrollPage}
+                confirmRemoval={openRemoveEnrollModal}
             >
             </TTable>
 
@@ -99,21 +105,21 @@ export const Configs = () => {
                     {(onClose) => (
                         <>
                             <ModalHeader className="flex flex-col gap-1">
-                                Remover disciplina
+                                Remover Matrícula
                             </ModalHeader>
                             <ModalBody>
-                                <span>Tem certeza que deseja remover a configuração?</span>
+                                <span>Tem certeza que deseja remover a turma?</span>
                             </ModalBody>
                             <ModalFooter>
                                 <Button
                                     color="danger"
                                     variant="flat"
-                                    onClick={handleRemoveConfig}
+                                    onClick={handleRemoveEnroll}
                                     disabled={mutation.isPending}
                                     className="disabled:cursor-not-allowed"
                                 >
                                     {mutation.isPending ? (
-                                        <Spinner size="sm" />
+                                        <Spinner size="sm"/>
                                     ) : (
                                         <span>Remover</span>
                                     )}

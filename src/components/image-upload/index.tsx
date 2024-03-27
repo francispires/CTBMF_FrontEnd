@@ -6,11 +6,12 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup/src/yup.js';
 
 import Cropper, { Area } from 'react-easy-crop'
-import { Button } from '@nextui-org/react';
+import {Button, Image} from '@nextui-org/react';
 import getCroppedImg from './crop-functions';
 import { DeleteDocumentIcon } from '../icons/DeleteDocumentIcon';
 import {uploadFile} from "../../_helpers/api.ts";
 import axios from "axios";
+import {getImageUrl} from "../../_helpers/utils.ts";
 
 const profileFormSchema = yup.object({
   image: yup
@@ -34,10 +35,11 @@ type ImageFormData = yup.InferType<typeof profileFormSchema>;
 interface ImageUploadProps {
   setFile: (file: File | undefined) => void,
   folderName: string,
-  setImageUrl?: (url: string) => void
+  setImageUrl?: (url: string) => void,
+  actualImageUrl?: string
 }
 
-export default function ImageUpload({ setFile,folderName,setImageUrl }: ImageUploadProps) {
+export default function ImageUpload({ setFile,folderName,setImageUrl,actualImageUrl }: ImageUploadProps) {
   const {
     register,
     reset,
@@ -85,7 +87,9 @@ export default function ImageUpload({ setFile,folderName,setImageUrl }: ImageUpl
         fd.append('file', reader.result);
         const result = await uploadFile(folderName,fileName, fd);
         if (result.statusCode===201) {
-          setImageUrl(result.imageUrl?result.imageUrl:"");
+          if (setImageUrl) {
+            setImageUrl(result.imageUrl ? result.imageUrl : "");
+          }
         }
       }
 
@@ -140,7 +144,8 @@ export default function ImageUpload({ setFile,folderName,setImageUrl }: ImageUpl
       <div className="flex flex-col items-center justify-center px-6 relative">
         <label className="w-52 h-[138px] rounded-2xl overflow-hidden bg-gradient-to-r from-[#8ED5A0] to-[#E6CC73] p-1 cursor-pointer">
           <div className="rounded-xl overflow-hidden flex justify-center items-center bg-white h-full w-full">
-            {!imagePreview && <PlusIcon className="w-16 h-16 text-gray-300" />}
+            {!actualImageUrl || isCroppingImage || <Image src={getImageUrl(folderName,actualImageUrl)}></Image>}
+            {!imagePreview && !actualImageUrl && <PlusIcon className="w-16 h-16 text-gray-300" />}
             <input
               type="file"
               accept="image/jpg, image/jpeg, image/png"

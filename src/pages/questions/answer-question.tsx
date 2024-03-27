@@ -18,14 +18,16 @@ import {post} from "../../_helpers/api.ts";
 import {useAuth0} from "@auth0/auth0-react";
 import {v4 as uuidv4} from "uuid";
 import {toast} from "react-toastify";
-import {abc, htmlText, imageUrl, toggleCorrectAlternative} from "../../_helpers/utils.ts";
+import {abc, htmlText, getImageUrl, toggleCorrectAlternative} from "../../_helpers/utils.ts";
 import {AddObservation} from "./add-observation.tsx";
 import ReactCardFlip from "react-card-flip";
-import {PageLoader} from "../../components/page-loader.tsx";
+import {useConfig} from "../../_helpers/queries.ts";
 type Props = {
     question: QuestionResponseDto,
     quizAttemptId: string | undefined,
     onAnswer: () => void,
+    onNext: () => void,
+    onObservation: () => void,
     questionLoading: boolean
 };
 export const AnswerQuestion = (props: Props) => {
@@ -43,6 +45,8 @@ export const AnswerQuestion = (props: Props) => {
         if (!id) return;
         setAlternatives(toggleCorrectAlternative(alternatives, id));
     }
+
+    const {data:config} = useConfig();
 
     useEffect(() => {
         const alternatives = props.question.alternatives.map(x => new AlternativeRequestDto({...x, correct: false}));
@@ -73,9 +77,9 @@ export const AnswerQuestion = (props: Props) => {
                 result.correctId && setCorrectAlternative(result.correctId);
                 result.alternativeId && setSelectedAlternative(result.alternativeId);
                 if (result.correct) {
-                    toast.success("Você acertou a questão!");
+                    toast.success(config?.get("correctAnswerMessage") || "Você acertou a questão!");
                 } else {
-                    toast.error("Você errou a questão!");
+                    toast.error(config?.get("wrongAnswerMessage") || "Você errou a questão!");
                 }
             } else {
                 toast.error("Houve um erro de servidor na resposta da questão");
@@ -84,14 +88,12 @@ export const AnswerQuestion = (props: Props) => {
     }
 
     async function nextQuestion() {
-        await props.onAnswer();
+        props.onNext();
         setIsFlipped(false)
     }
 
-    const helps = props.question.observationRequests.filter(x => x.type === 0);
-    const reports = props.question.observationRequests.filter(x => x.type === 1);
-
-    // round this
+    const [helps,setHelps] = useState(props.question.observationRequests.filter(x => x.type === 0));
+    const [reports,setReports] =useState(props.question.observationRequests.filter(x => x.type === 1));
 
     const correctPercent =Math.round(props.question.answersCorrectCount==0?0: (props.question.answersCorrectCount / props.question.answersCount) * 100);
     const chipColor = correctPercent <= 0 ? "danger" : correctPercent < 50 ? "warning" : correctPercent < 75 ? "primary" : "success";
@@ -123,13 +125,15 @@ export const AnswerQuestion = (props: Props) => {
                             </Chip>
                         </div>
                         <div className={"col-span-2"}>
-                                <AddObservation observationRequests={helps}
-                                                type={0}
-                                                question={props.question}>
+                                <AddObservation
+                                    onObservation={props.onObservation}
+                                    type={0}
+                                    question={props.question}>
                                 </AddObservation>
-                                <AddObservation observationRequests={reports}
-                                                type={1}
-                                                question={props.question}>
+                                <AddObservation
+                                    onObservation={props.onObservation}
+                                    type={1}
+                                    question={props.question}>
                                 </AddObservation>
                         </div>
                     </div>
@@ -137,7 +141,7 @@ export const AnswerQuestion = (props: Props) => {
                 <Divider/>
                 <CardBody className="grid md:grid-cols-12 grid-cols-12 2xl:grid-cols-12 p-1 items-left pl-10 flex">
                     {props.question.image &&
-                        <Image className={"col-span-12"} src={imageUrl("questions",props.question.image)} alt="Question Image" width={"500px"}/>}
+                        <Image className={"col-span-12"} src={getImageUrl("questions",props.question.image)} alt="Question Image" width={"500px"}/>}
                     <p dangerouslySetInnerHTML={htmlText(props.question.text!)} className={"col-span-12 text-left"}></p>
                 </CardBody>
                 <Divider/>
@@ -175,12 +179,24 @@ export const AnswerQuestion = (props: Props) => {
                                          }>
                                         <span className="justify-self-end">{abc[i]})</span>
                                         <span
-                                            className={"flex col-span-11 rounded-small p-2 ml-2 " + (correctAlternative === alternative.id ? "bg-green-100" : "bg-danger-100")}>
+                                            className={"flex col-span-11 rounded-small p-2 ml-2 " + (correctAlternative === alternative.id ? "bg-green-600" : "bg-danger-100")}>
                                     <Checkbox color={correctAlternative === alternative.id ? "success" : "danger"}
                                               isSelected={selectedAlternative == alternative.id}>
                                     <span dangerouslySetInnerHTML={htmlText(alternative.text)}></span>
+                                        {
+                                            correctAlternative === alternative.id && helps.length > 0 &&(
+                                                <>
+                                                    <span className={"bg-success-100 rounded p-3 flex items-center"}>
+                                                    <span className={"text-sm"}>Observação do professor:&nbsp;
+                                                        {helps[0].text}
+                                                    </span>
+                                                </span>
+                                                </>
+                                            )
+                                        }
                                         </Checkbox>
                                 </span>
+
                                     </div>
                             )}
                         </div>

@@ -3,7 +3,7 @@ import { AnswerQuestion } from "./questions/answer-question.tsx";
 import { useEffect, useState } from "react";
 import { get } from "../_helpers/api.ts";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
-import {AnswerResponseDto, QuestionResponseDto} from "../types_custom.ts";
+import {QuestionResponseDto} from "../types_custom.ts";
 import {addParams, apiUrl} from "../_helpers/utils.ts";
 
 export const UserQuestions = () => {
@@ -21,6 +21,7 @@ export const UserQuestions = () => {
     const [onlyWrongs, setOnlyWrongs] = useState<boolean | undefined>();
     const [random, setRandom] = useState<boolean | undefined>();
     const [url, setUrl] = useState("");
+    const [question, setQuestion] = useState<QuestionResponseDto>();
     const queryClient = useQueryClient();
     useEffect(() => {
         const u = new URL(`${apiUrl}/questions/filter`);
@@ -36,11 +37,13 @@ export const UserQuestions = () => {
         if (typeof random != "undefined") u.searchParams.append("random", random.toString());
         if (typeof questionNumber != "undefined") u.searchParams.append("questionNumber", questionNumber?.toString());
         setUrl(u.toString());
-    }, [boards, institutionIds, disciplines, years, onlyAnswereds, onlyCorrects,onlyNotAnswereds,onlyWrongs, random, questionNumber,subDisciplines])
+    }, [boards, institutionIds, disciplines, years, onlyAnswereds, onlyCorrects,onlyNotAnswereds,onlyWrongs, random, question?.questionNumber,subDisciplines])
 
     const fetchData = async () => {
         const r = await get<PagedResponse<QuestionResponseDto>>(url);
         setTriggerFilter(false);
+        setQuestion(r.queryable[0])
+
         return r;
     }
 
@@ -55,6 +58,16 @@ export const UserQuestions = () => {
     }
 
     const onAnswer = async () => {
+        await queryClient.invalidateQueries({queryKey: ['qryFilterQuestions', url]});
+        filterChanged();
+    };
+    const onNext = async () => {
+            await queryClient.invalidateQueries({queryKey: ['qryFilterQuestions', url]});
+            filterChanged();
+
+    };
+
+    const onObservation = async () => {
         await queryClient.invalidateQueries({queryKey: ['qryFilterQuestions', url]});
         filterChanged();
     };
@@ -82,11 +95,13 @@ export const UserQuestions = () => {
             />
             {isLoading && <div>Carregando...</div>}
             {data && data.queryable.length === 0 && !isLoading && <div>Não existem mais questões a responder</div>}
-            {!isLoading && data != undefined && data.queryable[0] && (<AnswerQuestion
+            {question && !isLoading && data != undefined && data.queryable[0] && (<AnswerQuestion
                 questionLoading={isLoading}
                 quizAttemptId={""}
                 onAnswer={onAnswer}
-                question={data.queryable[0]} />)}
+                onNext={onNext}
+                onObservation={onObservation}
+                question={question} />)}
         </div>
     );
 }

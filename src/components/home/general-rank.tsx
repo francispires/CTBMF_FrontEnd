@@ -1,18 +1,13 @@
 import {Tab, Tabs} from "@nextui-org/react";
 import {StudentsScoreList} from "../podium/score-list";
 import {ThreeBestPodiumProps, Top3} from "../podium/three-best";
-import {apiUrl} from "../../_helpers/utils.ts";
-import {get} from "../../_helpers/api.ts";
-import {IRankingAnswersResponseDto, RankingAnswersResponseDto} from "../../types_custom.ts";
+import {fetchRankingData} from "../../_helpers/api.ts";
+import {IRankingAnswersResponseDto} from "../../types_custom.ts";
 import _ from "lodash";
 import {useQuery} from "@tanstack/react-query";
 import {PageLoader} from "../page-loader.tsx";
 import {useAuth0} from "@auth0/auth0-react";
 
-export const fetchRankingData = async () => {
-  const url = `${apiUrl}/answers/ranking`
-  return await get<RankingAnswersResponseDto[]>(url)
-}
 export const GeneralRank = () => {
   const { user } = useAuth0();
   const transformData = (data: IRankingAnswersResponseDto[]) => {
@@ -24,15 +19,14 @@ export const GeneralRank = () => {
       return {...userAnswers[0], questionScore: sum};
     });
     ranking.sort((a:IRankingAnswersResponseDto, b:IRankingAnswersResponseDto) => b.questionScore - a.questionScore);
-    const ret =  {
+    return {
       first: ranking[0],
       second: ranking[1],
       third: ranking[2],
       others: ranking.slice(3),
       all: ranking,
-      position: ranking.findIndex((r:IRankingAnswersResponseDto) => r.userSid === user?.sub)
+      position: ranking.findIndex((r: IRankingAnswersResponseDto) => r.userSid === user?.sub)
     } as ThreeBestPodiumProps;
-    return ret;
   }
   const { isLoading, isError, data: ranking } = useQuery({
     queryKey: ['ranking'],
@@ -61,6 +55,7 @@ export const GeneralRank = () => {
             </div>
           </div>
         </Tab>
+        {user && (
         <Tab key="class" title="Turma">
           <h1 className="mb-2 font-base">Ranking da turma</h1>
           {ranking.position === 0 ? (
@@ -78,6 +73,7 @@ export const GeneralRank = () => {
             <StudentsScoreList students={ranking.all} isLarge />
           )}
         </Tab>
+        )}
       </Tabs>
     </>
   )

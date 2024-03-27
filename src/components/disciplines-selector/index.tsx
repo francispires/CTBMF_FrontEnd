@@ -9,19 +9,21 @@ import {DeleteDocumentIcon} from "../icons/DeleteDocumentIcon.tsx";
 type Props = {
     setValues: (value: string[]) => void,
     setValues2: (value: string[]) => void,
+    onlySubDisciplines?: boolean
 };
 
-export default function DisciplinesSelector(props:Props) {
+export default function DisciplinesSelector(props: Props) {
 
-    const[disciplines,setDisciplines] = useState<DisciplineResponseDto[]>([]);
-    const[subDisciplines,setSubDisciplines] = useState<DisciplineResponseDto[]>([]);
+    const [disciplines, setDisciplines] = useState<DisciplineResponseDto[]>([]);
+    const [subDisciplines, setSubDisciplines] = useState<DisciplineResponseDto[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [values, setValues] = useState(new Set([""]));
-    const [values2, setValues2] = useState(new Set([""]));
+    const [disciplinesValues, setDisciplinesValues] = useState(new Set<string>([]));
+    const [subDisciplinesValues, setSubDisciplinesValues] = useState(new Set<string>([]));
+
     const fetchDisciplines = async () => {
         setIsLoading(false);
         const url = `${apiUrl}/disciplines?currentPage=1&pageSize=1000&sort=name`
-        const r =  await get<PagedResponse<DisciplineResponseDto>>(url);
+        const r = await get<PagedResponse<DisciplineResponseDto>>(url);
         setDisciplines(r.queryable.filter((d) => d.childsCount > 0));
         setSubDisciplines(r.queryable.filter((d) => d.childsCount > 0));
         setIsLoading(false);
@@ -32,25 +34,23 @@ export default function DisciplinesSelector(props:Props) {
         fetchDisciplines();
     }, []);
 
-    const clearItems = () => {
-        setValues(new Set([]));
-        props.setValues([""]);
-        setDisciplines([])
+    const clearDisciplines = () => {
+        setDisciplinesValues(new Set([]));
+        props.setValues([]);
     }
-    const clearItems2 = () => {
-        setValues2(new Set([""]));
+    const clearSubDisciplines = () => {
+        setSubDisciplinesValues(new Set([]));
         props.setValues2([""]);
-        setSubDisciplines([])
     }
-    const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleChangeDisciplinas = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const set = new Set(e.target.value.split(","));
-        if (set.size) setValues(set);
-        if (set.size) props.setValues(Array.from(set));
+        setDisciplinesValues(set);
+        props.setValues(Array.from(set));
     };
 
-    const handleSelectionChange2 = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleChangeSubDisciplines = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const set = new Set(e.target.value.split(","));
-        if (set.size) setValues2(set);
+        if (set.size) setSubDisciplinesValues(set);
         if (set.size) props.setValues2(Array.from(set));
     };
 
@@ -58,52 +58,66 @@ export default function DisciplinesSelector(props:Props) {
 
     return (
         <>
-        <Select
-            classNames={{
-                innerWrapper: "h-auto w-full",
-                value: "whitespace-break-spaces",
-            }}
-            endContent={!clean(Array.from(values)).length || <DeleteDocumentIcon onClick={clearItems} />}
-            label="Disciplina"
-            placeholder="Disciplina"
-            size={"lg"}
-            selectionMode={"multiple"}
-            isMultiline={true}
-            items={disciplines}
-            onChange={handleSelectionChange}
-            renderValue={(items) => {
-                return (
-                    <div className="flex flex-wrap gap-2">
-                        {items.map((item) => (
-                            <Chip className={"whitespace-break-spaces p-3"} key={item.key}>{item.textValue}</Chip>
-                        ))}
-                    </div>
-                );
-            }}
-        >
-            {(discipline) => (
-                <SelectItem key={discipline.id} textValue={discipline.name}>
-                    <div className="flex gap-2 items-center">
-                        <div className="flex flex-col">
-                            <span className="text-small">{discipline.name}</span>
-                        </div>
-                    </div>
-                </SelectItem>
+            {!props.onlySubDisciplines && (
+                <Select
+                    classNames={{
+                        innerWrapper: "h-auto w-full",
+                        value: "whitespace-break-spaces",
+                    }}
+                    selectedKeys={disciplinesValues}
+                    onSelectionChange={(s) => {
+                        setDisciplinesValues(new Set(Array.from(s).join(",")));
+                    }}
+                    endContent={!clean(Array.from(disciplinesValues)).length ||
+                        <DeleteDocumentIcon onClick={clearDisciplines}/>}
+                    label="Disciplina (Temas genéricos)"
+                    placeholder="Disciplina"
+                    size={"lg"}
+                    selectionMode={"multiple"}
+                    isMultiline={true}
+                    onChange={handleChangeDisciplinas}
+                    renderValue={(items) => {
+                        return (
+                            <div className="flex flex-wrap gap-2">
+                                {items.map((item) => (
+                                    <Chip className={"whitespace-break-spaces p-3"}
+                                          key={item.key}>{item.textValue}</Chip>
+                                ))}
+                            </div>
+                        );
+                    }}
+                >
+
+                    {
+                        disciplines.map((discipline) => (
+                            <SelectItem key={`p_${discipline.id}`} textValue={discipline.name}>
+                                <div className="flex gap-2 items-center">
+                                    <div className="flex flex-col">
+                                        <span className="text-small">{discipline.name}</span>
+                                    </div>
+                                </div>
+                            </SelectItem>
+                        ))
+                    }
+                </Select>
             )}
-        </Select>
             <Select
-                label="Conteúdo"
+                label="Conteúdo (Temas específicos)"
                 placeholder="Conteúdo"
-                items={subDisciplines}
                 classNames={{
                     innerWrapper: "h-auto w-full",
                     value: "whitespace-break-spaces",
                 }}
-                endContent={!clean(Array.from(values2)).length || <DeleteDocumentIcon onClick={clearItems2} />}
+                selectedKeys={subDisciplinesValues}
+                onSelectionChange={(s) => {
+                    setSubDisciplinesValues(new Set(Array.from(s).join(",")));
+                }}
+                endContent={!clean(Array.from(subDisciplinesValues)).length ||
+                    <DeleteDocumentIcon onClick={clearSubDisciplines}/>}
                 size={"lg"}
                 selectionMode={"multiple"}
                 isMultiline={true}
-                onChange={handleSelectionChange2}
+                onChange={handleChangeSubDisciplines}
                 renderValue={(items) => {
                     return (
                         <div className="flex flex-wrap gap-2">
@@ -114,20 +128,21 @@ export default function DisciplinesSelector(props:Props) {
                     );
                 }}
             >
-                {(discipline) => (
-                    <SelectSection showDivider title={discipline.name}>
+                {subDisciplines.map((discipline) => (
+                    <SelectSection key={`g_${discipline.id}`} showDivider title={discipline.name}>
                         {
                             discipline.childs.map((subDiscipline) => (
-                            <SelectItem key={subDiscipline.id} textValue={subDiscipline.name}>
-                                <div className="flex gap-2 items-center">
-                                    <div className="flex flex-col">
-                                        <span className="text-small">{subDiscipline.name}</span>
+                                <SelectItem key={`s_${subDiscipline.id}`} textValue={subDiscipline.name}>
+                                    <div className="flex gap-2 items-center">
+                                        <div className="flex flex-col">
+                                            <span className="text-small">{subDiscipline.name}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            </SelectItem>
-                        ))}
+                                </SelectItem>
+                            ))
+                        }
                     </SelectSection>
-                )}
+                ))}
             </Select>
         </>
     );

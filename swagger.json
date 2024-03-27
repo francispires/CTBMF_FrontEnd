@@ -60,23 +60,6 @@
         }
       }
     },
-    "/api/answers/generate": {
-      "get": {
-        "tags": [
-          "Answer"
-        ],
-        "operationId": "Answer_GenerateFakeAnswers",
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
     "/api/answers": {
       "get": {
         "tags": [
@@ -254,118 +237,6 @@
           "200": {
             "x-nullable": true,
             "description": "True on success, false otherwise",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/answers/file": {
-      "post": {
-        "tags": [
-          "Answer"
-        ],
-        "operationId": "Answer_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "AlternativeId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Correct",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Answer"
-        ],
-        "operationId": "Answer_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "AlternativeId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Correct",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
             "schema": {
               "type": "file"
             }
@@ -885,51 +756,11 @@
         }
       }
     },
-    "/api/auth/update_profile": {
-      "patch": {
-        "tags": [
-          "Auth"
-        ],
-        "operationId": "Auth_UpdateProfile",
-        "consumes": [
-          "application/json-patch+json",
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "name": "userRequest",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/UpdateUserProfileRequestDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
     "/api/configs": {
       "get": {
         "tags": [
           "Config"
         ],
-        "summary": "Get all records of type T",
         "operationId": "Config_GetAll",
         "produces": [
           "text/plain",
@@ -967,7 +798,7 @@
         "responses": {
           "200": {
             "x-nullable": false,
-            "description": "A PagedResult T with queryable holding the items",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/PagedResultOfConfigResponseDto"
             }
@@ -1101,88 +932,6 @@
           "200": {
             "x-nullable": true,
             "description": "True on success, false otherwise",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/configs/file": {
-      "post": {
-        "tags": [
-          "Config"
-        ],
-        "operationId": "Config_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Key",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Value",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Config"
-        ],
-        "operationId": "Config_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Key",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Value",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
             "schema": {
               "type": "file"
             }
@@ -1483,100 +1232,6 @@
         }
       }
     },
-    "/api/crews/file": {
-      "post": {
-        "tags": [
-          "Crew"
-        ],
-        "operationId": "Crew_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Data",
-            "in": "formData",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Crew"
-        ],
-        "operationId": "Crew_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Data",
-            "in": "formData",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
     "/api/crews/upload": {
       "post": {
         "tags": [
@@ -1870,114 +1525,6 @@
         }
       }
     },
-    "/api/disciplines/file": {
-      "post": {
-        "tags": [
-          "Disciplines"
-        ],
-        "operationId": "Disciplines_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Disciplines"
-        ],
-        "operationId": "Disciplines_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
     "/api/disciplines/upload": {
       "post": {
         "tags": [
@@ -2264,132 +1811,6 @@
           "200": {
             "x-nullable": true,
             "description": "True on success, false otherwise",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/enrollments/file": {
-      "post": {
-        "tags": [
-          "Enrollment"
-        ],
-        "operationId": "Enrollment_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "StudentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "CrewId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "StartDate",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "EndDate",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Active",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Enrollment"
-        ],
-        "operationId": "Enrollment_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "StudentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "CrewId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "StartDate",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "EndDate",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Active",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
             "schema": {
               "type": "file"
             }
@@ -2722,112 +2143,6 @@
         }
       }
     },
-    "/api/institutions/file": {
-      "post": {
-        "tags": [
-          "Institutions"
-        ],
-        "operationId": "Institutions_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "State",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "Stadual",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "PrivateInstitution",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Institutions"
-        ],
-        "operationId": "Institutions_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "State",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "Stadual",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "PrivateInstitution",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
     "/api/institutions/upload": {
       "post": {
         "tags": [
@@ -3119,1076 +2434,6 @@
         }
       }
     },
-    "/api/observations/file": {
-      "post": {
-        "tags": [
-          "Observations"
-        ],
-        "operationId": "Observations_CreateWithFile",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "Question.Year",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Board",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.Text",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "Question.Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "Question.Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "Question.QuestionNumber",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.QuestionBankId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.DisciplineId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Question.Alternatives",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/AlternativeRequestDto"
-            }
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Question.IsValid",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "file",
-            "name": "Question.File",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequestId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.Question.Year",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Board",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Text",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.Question.Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "ObservationRequest.Question.Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.Question.QuestionNumber",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.QuestionBankId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.DisciplineId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "ObservationRequest.Question.Alternatives",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/AlternativeRequestDto"
-            }
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "ObservationRequest.Question.IsValid",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "file",
-            "name": "ObservationRequest.Question.File",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequestId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.ObservationRequest.Question.Year",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Board",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Text",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.ObservationRequest.Question.Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "ObservationRequest.ObservationRequest.Question.Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.ObservationRequest.Question.QuestionNumber",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.QuestionBankId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.DisciplineId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "ObservationRequest.ObservationRequest.Question.Alternatives",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/AlternativeRequestDto"
-            }
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "ObservationRequest.ObservationRequest.Question.IsValid",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "file",
-            "name": "ObservationRequest.ObservationRequest.Question.File",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.ObservationRequestId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "object",
-            "name": "ObservationRequest.ObservationRequest.ObservationRequest",
-            "in": "formData",
-            "x-schema": {
-              "$ref": "#/definitions/ObservationRequestDto"
-            },
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Text",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.User",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Text",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.User",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Text",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "User",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Observations"
-        ],
-        "operationId": "Observations_UpdateWithFile",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "Question.Year",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Board",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.Text",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "Question.Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "Question.Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "Question.QuestionNumber",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.QuestionBankId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.DisciplineId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Question.Alternatives",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/AlternativeRequestDto"
-            }
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Question.Discipline.ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Question.IsValid",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "file",
-            "name": "Question.File",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequestId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.Question.Year",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Board",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Text",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.Question.Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "ObservationRequest.Question.Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.Question.QuestionNumber",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.QuestionBankId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.DisciplineId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "ObservationRequest.Question.Alternatives",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/AlternativeRequestDto"
-            }
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Question.Discipline.ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "ObservationRequest.Question.IsValid",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "file",
-            "name": "ObservationRequest.Question.File",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequestId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.ObservationRequest.Question.Year",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Board",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Text",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.ObservationRequest.Question.Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "ObservationRequest.ObservationRequest.Question.Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "ObservationRequest.ObservationRequest.Question.QuestionNumber",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.QuestionBankId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.DisciplineId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "ObservationRequest.ObservationRequest.Question.Alternatives",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/AlternativeRequestDto"
-            }
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Question.Discipline.ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "ObservationRequest.ObservationRequest.Question.IsValid",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "file",
-            "name": "ObservationRequest.ObservationRequest.Question.File",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.ObservationRequestId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "object",
-            "name": "ObservationRequest.ObservationRequest.ObservationRequest",
-            "in": "formData",
-            "x-schema": {
-              "$ref": "#/definitions/ObservationRequestDto"
-            },
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.Text",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.ObservationRequest.User",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.Text",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ObservationRequest.User",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Text",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "User",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
     "/api/observations/upload": {
       "post": {
         "tags": [
@@ -4381,6 +2626,111 @@
         }
       }
     },
+    "/api/observations_request/question/{id}": {
+      "get": {
+        "tags": [
+          "ObservationsRequest"
+        ],
+        "operationId": "ObservationsRequest_GetByQuestionId",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "CurrentPage",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Sort",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PagedResultOfObservationRequestResponseDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/observations_request/answer/{id}": {
+      "post": {
+        "tags": [
+          "ObservationsRequest"
+        ],
+        "operationId": "ObservationsRequest_Answer",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "request",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ObservationRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PagedResultOfObservationRequestResponseDto"
+            }
+          }
+        }
+      }
+    },
     "/api/observations_request/{id}": {
       "get": {
         "tags": [
@@ -4473,128 +2823,6 @@
           "200": {
             "x-nullable": true,
             "description": "True on success, false otherwise",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/observations_request/file": {
-      "post": {
-        "tags": [
-          "ObservationsRequest"
-        ],
-        "operationId": "ObservationsRequest_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Resolved",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "Type",
-            "in": "formData",
-            "x-schema": {
-              "$ref": "#/definitions/ObservationType"
-            },
-            "x-nullable": false,
-            "enum": [
-              0,
-              1
-            ]
-          },
-          {
-            "type": "string",
-            "name": "Text",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "ObservationsRequest"
-        ],
-        "operationId": "ObservationsRequest_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "QuestionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Resolved",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "Type",
-            "in": "formData",
-            "x-schema": {
-              "$ref": "#/definitions/ObservationType"
-            },
-            "x-nullable": false,
-            "enum": [
-              0,
-              1
-            ]
-          },
-          {
-            "type": "string",
-            "name": "Text",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
             "schema": {
               "type": "file"
             }
@@ -4961,90 +3189,6 @@
         }
       }
     },
-    "/api/question_banks/file": {
-      "post": {
-        "tags": [
-          "QuestionBank"
-        ],
-        "operationId": "QuestionBank_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "QuestionBank"
-        ],
-        "operationId": "QuestionBank_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
     "/api/question_banks/upload": {
       "post": {
         "tags": [
@@ -5323,12 +3467,12 @@
         }
       }
     },
-    "/api/questions/boards": {
+    "/api/questions": {
       "get": {
         "tags": [
           "Question"
         ],
-        "operationId": "Question_Boards",
+        "operationId": "Question_GetAll",
         "produces": [
           "text/plain",
           "application/json",
@@ -5367,57 +3511,7 @@
             "x-nullable": false,
             "description": "",
             "schema": {
-              "$ref": "#/definitions/PagedResultOfSelectListItem"
-            }
-          }
-        }
-      }
-    },
-    "/api/questions/numbers": {
-      "get": {
-        "tags": [
-          "Question"
-        ],
-        "operationId": "Question_Numbers",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "type": "integer",
-            "name": "CurrentPage",
-            "in": "query",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "PageSize",
-            "in": "query",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Sort",
-            "in": "query",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Filter",
-            "in": "query",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/PagedResultOfSelectListItem"
+              "$ref": "#/definitions/PagedResultOfQuestionResponseDto"
             }
           }
         }
@@ -5626,13 +3720,12 @@
         }
       }
     },
-    "/api/questions": {
+    "/api/questions/boards": {
       "get": {
         "tags": [
           "Question"
         ],
-        "summary": "Get all records of type T",
-        "operationId": "Question_GetAll",
+        "operationId": "Question_Boards",
         "produces": [
           "text/plain",
           "application/json",
@@ -5669,327 +3762,59 @@
         "responses": {
           "200": {
             "x-nullable": false,
-            "description": "A PagedResult T with queryable holding the items",
+            "description": "",
             "schema": {
-              "$ref": "#/definitions/PagedResultOfQuestionResponseDto"
+              "$ref": "#/definitions/PagedResultOfSelectListItem"
             }
           }
         }
       }
     },
-    "/api/questions/file": {
-      "post": {
+    "/api/questions/numbers": {
+      "get": {
         "tags": [
           "Question"
         ],
-        "operationId": "Question_CreateWithFile",
-        "consumes": [
-          "multipart/form-data"
+        "operationId": "Question_Numbers",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
         ],
         "parameters": [
           {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
+            "type": "integer",
+            "name": "CurrentPage",
+            "in": "query",
+            "format": "int32",
             "x-nullable": false
           },
           {
             "type": "integer",
-            "name": "Year",
-            "in": "formData",
+            "name": "PageSize",
+            "in": "query",
             "format": "int32",
             "x-nullable": false
           },
           {
             "type": "string",
-            "name": "Board",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Image",
-            "in": "formData",
+            "name": "Sort",
+            "in": "query",
             "x-nullable": true
           },
           {
             "type": "string",
-            "name": "Text",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "QuestionNumber",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "QuestionBankId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "DisciplineId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Alternatives",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/AlternativeRequestDto"
-            }
-          },
-          {
-            "type": "string",
-            "name": "Discipline.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Discipline.Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Discipline.Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Discipline.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Discipline.ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "IsValid",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "file",
-            "name": "File",
-            "in": "formData",
+            "name": "Filter",
+            "in": "query",
             "x-nullable": true
           }
         ],
         "responses": {
           "200": {
-            "x-nullable": true,
+            "x-nullable": false,
             "description": "",
             "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Question"
-        ],
-        "operationId": "Question_UpdateWithFile",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "Year",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Board",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Text",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "QuestionNumber",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "InstitutionId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "QuestionBankId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "QuizAttemptId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "DisciplineId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Alternatives",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/AlternativeRequestDto"
-            }
-          },
-          {
-            "type": "string",
-            "name": "Discipline.Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Discipline.Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Discipline.Description",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Discipline.Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Discipline.ParentId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "IsValid",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "file",
-            "name": "File",
-            "in": "formData",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
+              "$ref": "#/definitions/PagedResultOfSelectListItem"
             }
           }
         }
@@ -6209,146 +4034,6 @@
           "200": {
             "x-nullable": true,
             "description": "The created item T",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/quiz_attempts/file": {
-      "post": {
-        "tags": [
-          "QuizAttempt"
-        ],
-        "operationId": "QuizAttempt_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "StartedAt",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "FinishedAt",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "DConfigureServicesuration",
-            "in": "formData",
-            "format": "duration",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "Total",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "Passed",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "QuizAttempt"
-        ],
-        "operationId": "QuizAttempt_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "StartedAt",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "FinishedAt",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "DConfigureServicesuration",
-            "in": "formData",
-            "format": "duration",
-            "x-nullable": true
-          },
-          {
-            "type": "integer",
-            "name": "Score",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "Total",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "Passed",
-            "in": "formData",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
             "schema": {
               "type": "file"
             }
@@ -6620,6 +4305,46 @@
       }
     },
     "/api/quiz_attempt_configs/{id}": {
+      "patch": {
+        "tags": [
+          "QuizAttemptConfiguration"
+        ],
+        "operationId": "QuizAttemptConfiguration_Update",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QuizAttemptConfigurationRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
       "get": {
         "tags": [
           "QuizAttemptConfiguration"
@@ -6668,439 +4393,6 @@
           "200": {
             "x-nullable": true,
             "description": "True on success, false otherwise",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "summary": "Update a record of type T by id",
-        "operationId": "QuizAttemptConfiguration_Update",
-        "consumes": [
-          "application/json-patch+json",
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The id of the item to be updated",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "The updated body to be saved",
-            "schema": {
-              "$ref": "#/definitions/QuizAttemptConfigurationRequestDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "True on success, false otherwise",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/quiz_attempt_configs/file": {
-      "post": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "operationId": "QuizAttemptConfiguration_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Description",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Boards",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "type": "array",
-            "name": "Years",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "type": "array",
-            "name": "Institutions",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "type": "array",
-            "name": "Disciplines",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "type": "boolean",
-            "name": "Random",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "OnlyNotAnswered",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "OnlyWrongs",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "ShowOnFront",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "array",
-            "name": "Users",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "type": "integer",
-            "name": "UsersCount",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "UserIds",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Crews",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/CrewRequestDto"
-            }
-          },
-          {
-            "type": "integer",
-            "name": "CrewsCount",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "CrewsIds",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Questions",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/QuestionRequestDto"
-            }
-          },
-          {
-            "type": "integer",
-            "name": "QuestionsCount",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "QuestionsIds",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Data",
-            "in": "formData",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "operationId": "QuizAttemptConfiguration_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Description",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Boards",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "type": "array",
-            "name": "Years",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "type": "array",
-            "name": "Institutions",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "type": "array",
-            "name": "Disciplines",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "string",
-              "format": "guid"
-            }
-          },
-          {
-            "type": "boolean",
-            "name": "Random",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "OnlyNotAnswered",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "OnlyWrongs",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "boolean",
-            "name": "Active",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "boolean",
-            "name": "ShowOnFront",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "array",
-            "name": "Users",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "type": "integer",
-            "name": "UsersCount",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "UserIds",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Crews",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/CrewRequestDto"
-            }
-          },
-          {
-            "type": "integer",
-            "name": "CrewsCount",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "CrewsIds",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "array",
-            "name": "Questions",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "$ref": "#/definitions/QuestionRequestDto"
-            }
-          },
-          {
-            "type": "integer",
-            "name": "QuestionsCount",
-            "in": "formData",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "QuestionsIds",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Data",
-            "in": "formData",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
             "schema": {
               "type": "file"
             }
@@ -7212,6 +4504,65 @@
             "description": "",
             "schema": {
               "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/users/me": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "Users_UpdateMe",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "userRequestDto",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "Users_Me",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
             }
           }
         }
@@ -7393,150 +4744,6 @@
           "200": {
             "x-nullable": true,
             "description": "True on success, false otherwise",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/users/file": {
-      "post": {
-        "tags": [
-          "Users"
-        ],
-        "operationId": "Users_CreateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Address",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "BirthDay",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Email",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Role",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Sid",
-            "in": "formData",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "Users"
-        ],
-        "operationId": "Users_UpdateWithFile",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Id",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Address",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "BirthDay",
-            "in": "formData",
-            "format": "date-time",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Image",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Email",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Role",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Sid",
-            "in": "formData",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
             "schema": {
               "type": "file"
             }
@@ -7792,6 +4999,7 @@
             "discipline",
             "questionNumber",
             "disciplineName",
+            "disciplineParentName",
             "institutionName",
             "alternativesCount",
             "observationsCount",
@@ -7832,6 +5040,9 @@
               "format": "int32"
             },
             "disciplineName": {
+              "type": "string"
+            },
+            "disciplineParentName": {
               "type": "string"
             },
             "institutionName": {
@@ -7921,346 +5132,13 @@
             "userId": {
               "type": "string",
               "format": "guid"
+            },
+            "user": {
+              "$ref": "#/definitions/UserResponseDto"
             }
           }
         }
       ]
-    },
-    "ObservationRequestDto": {
-      "type": "object",
-      "required": [
-        "id",
-        "text",
-        "user"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "questionId": {
-          "type": "string",
-          "format": "guid"
-        },
-        "question": {
-          "$ref": "#/definitions/QuestionRequestDto"
-        },
-        "observationRequestId": {
-          "type": "string",
-          "format": "guid"
-        },
-        "observationRequest": {
-          "$ref": "#/definitions/ObservationRequestDto"
-        },
-        "text": {
-          "type": "string"
-        },
-        "user": {
-          "type": "string"
-        }
-      }
-    },
-    "QuestionRequestDto": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/HasFile"
-        },
-        {
-          "type": "object",
-          "required": [
-            "id",
-            "year",
-            "board",
-            "score",
-            "active",
-            "isValid"
-          ],
-          "properties": {
-            "id": {
-              "type": "string",
-              "format": "guid"
-            },
-            "year": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "board": {
-              "type": "string"
-            },
-            "image": {
-              "type": "string"
-            },
-            "text": {
-              "type": "string"
-            },
-            "score": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "active": {
-              "type": "boolean"
-            },
-            "questionNumber": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "institutionId": {
-              "type": "string",
-              "format": "guid"
-            },
-            "questionBankId": {
-              "type": "string",
-              "format": "guid"
-            },
-            "quizAttemptId": {
-              "type": "string",
-              "format": "guid"
-            },
-            "disciplineId": {
-              "type": "string",
-              "format": "guid"
-            },
-            "alternatives": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/AlternativeRequestDto"
-              }
-            },
-            "discipline": {
-              "$ref": "#/definitions/DisciplineRequestDto"
-            },
-            "isValid": {
-              "type": "boolean"
-            }
-          }
-        }
-      ]
-    },
-    "AlternativeRequestDto": {
-      "type": "object",
-      "required": [
-        "text",
-        "correct",
-        "aiExplanation"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "questionId": {
-          "type": "string",
-          "format": "guid"
-        },
-        "text": {
-          "type": "string"
-        },
-        "correct": {
-          "type": "boolean"
-        },
-        "aiExplanation": {
-          "type": "string"
-        }
-      }
-    },
-    "DisciplineRequestDto": {
-      "type": "object",
-      "required": [
-        "id",
-        "name",
-        "description"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "image": {
-          "type": "string"
-        },
-        "parentId": {
-          "type": "string",
-          "format": "guid"
-        }
-      }
-    },
-    "HasFile": {
-      "type": "object",
-      "properties": {
-        "file": {
-          "type": "file"
-        }
-      }
-    },
-    "ObservationRequestResponseDto": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/ObservationRequestRequestDto"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "question": {
-              "$ref": "#/definitions/QuestionRequestDto"
-            },
-            "userId": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        }
-      ]
-    },
-    "ObservationRequestRequestDto": {
-      "type": "object",
-      "required": [
-        "type",
-        "text"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "questionId": {
-          "type": "string",
-          "format": "guid"
-        },
-        "resolved": {
-          "type": "boolean"
-        },
-        "type": {
-          "$ref": "#/definitions/ObservationType"
-        },
-        "text": {
-          "type": "string"
-        }
-      }
-    },
-    "ObservationType": {
-      "type": "integer",
-      "description": "",
-      "x-enumNames": [
-        "Help",
-        "Report"
-      ],
-      "enum": [
-        0,
-        1
-      ]
-    },
-    "DisciplineResponseDto": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/DisciplineRequestDto"
-        },
-        {
-          "type": "object",
-          "required": [
-            "parentName",
-            "childsCount",
-            "childs",
-            "questions"
-          ],
-          "properties": {
-            "parentName": {
-              "type": "string"
-            },
-            "childsCount": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "parent": {
-              "$ref": "#/definitions/DisciplineResponseDto"
-            },
-            "childs": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/DisciplineResponseDto"
-              }
-            },
-            "questions": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/QuestionResponseDto"
-              }
-            }
-          }
-        }
-      ]
-    },
-    "QuizAttemptResponseDto": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/QuizAttemptRequestDto"
-        },
-        {
-          "type": "object",
-          "required": [
-            "questions",
-            "answers"
-          ],
-          "properties": {
-            "questions": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/QuestionResponseDto"
-              }
-            },
-            "answers": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/AnswerResponseDto"
-              }
-            }
-          }
-        }
-      ]
-    },
-    "QuizAttemptRequestDto": {
-      "type": "object",
-      "required": [
-        "id",
-        "startedAt",
-        "score",
-        "total",
-        "passed"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "startedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "finishedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "dConfigureServicesuration": {
-          "type": "string",
-          "format": "duration"
-        },
-        "score": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "passed": {
-          "type": "boolean"
-        }
-      }
     },
     "UserResponseDto": {
       "allOf": [
@@ -8345,11 +5223,346 @@
         "email": {
           "type": "string"
         },
+        "phoneNumber": {
+          "type": "string"
+        },
         "role": {
           "type": "string"
         },
         "sid": {
           "type": "string"
+        },
+        "crewId": {
+          "type": "string",
+          "format": "guid"
+        }
+      }
+    },
+    "ObservationRequestDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "text"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "questionId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "type": {
+          "$ref": "#/definitions/ObservationType"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "ObservationType": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Help",
+        "Report"
+      ],
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "ObservationRequestResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ObservationRequestRequestDto"
+        },
+        {
+          "type": "object",
+          "required": [
+            "observations",
+            "observationsCount"
+          ],
+          "properties": {
+            "question": {
+              "$ref": "#/definitions/QuestionResponseDto"
+            },
+            "observations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ObservationResponseDto"
+              }
+            },
+            "observationsCount": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "userId": {
+              "type": "string",
+              "format": "guid"
+            },
+            "user": {
+              "$ref": "#/definitions/UserResponseDto"
+            }
+          }
+        }
+      ]
+    },
+    "ObservationRequestRequestDto": {
+      "type": "object",
+      "required": [
+        "type",
+        "text"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "questionId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "resolved": {
+          "type": "boolean"
+        },
+        "type": {
+          "$ref": "#/definitions/ObservationType"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "DisciplineResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/DisciplineRequestDto"
+        },
+        {
+          "type": "object",
+          "required": [
+            "parentName",
+            "childsCount",
+            "childs",
+            "questions"
+          ],
+          "properties": {
+            "parentName": {
+              "type": "string"
+            },
+            "childsCount": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "parent": {
+              "$ref": "#/definitions/DisciplineResponseDto"
+            },
+            "childs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DisciplineResponseDto"
+              }
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuestionResponseDto"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "DisciplineRequestDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "parentId": {
+          "type": "string",
+          "format": "guid"
+        }
+      }
+    },
+    "QuestionRequestDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "year",
+        "board",
+        "score",
+        "active",
+        "isValid"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "year": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "board": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "score": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "questionNumber": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "institutionId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "questionBankId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "quizAttemptId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "disciplineId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AlternativeRequestDto"
+          }
+        },
+        "discipline": {
+          "$ref": "#/definitions/DisciplineRequestDto"
+        },
+        "isValid": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AlternativeRequestDto": {
+      "type": "object",
+      "required": [
+        "text",
+        "correct",
+        "aiExplanation"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "questionId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "text": {
+          "type": "string"
+        },
+        "correct": {
+          "type": "boolean"
+        },
+        "aiExplanation": {
+          "type": "string"
+        }
+      }
+    },
+    "QuizAttemptResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/QuizAttemptRequestDto"
+        },
+        {
+          "type": "object",
+          "required": [
+            "questions",
+            "answers"
+          ],
+          "properties": {
+            "questions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuestionResponseDto"
+              }
+            },
+            "answers": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AnswerResponseDto"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "QuizAttemptRequestDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "startedAt",
+        "score",
+        "total",
+        "passed"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finishedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "dConfigureServicesuration": {
+          "type": "string",
+          "format": "duration"
+        },
+        "score": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "passed": {
+          "type": "boolean"
         }
       }
     },
@@ -8640,41 +5853,6 @@
           "items": {
             "type": "string"
           }
-        }
-      }
-    },
-    "UpdateUserProfileRequestDto": {
-      "type": "object",
-      "required": [
-        "name",
-        "address",
-        "birthDay",
-        "email",
-        "phoneNumber",
-        "crew"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "address": {
-          "type": "string"
-        },
-        "birthDay": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "image": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "phoneNumber": {
-          "type": "string"
-        },
-        "crew": {
-          "type": "string"
         }
       }
     },
@@ -9048,6 +6226,50 @@
         }
       ]
     },
+    "PagedResultOfQuestionResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PagedResult"
+        },
+        {
+          "type": "object",
+          "description": "PagedResult{TSource}",
+          "required": [
+            "queryable"
+          ],
+          "properties": {
+            "queryable": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuestionResponseDto"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "PagedResultOfQuestionRequestDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PagedResult"
+        },
+        {
+          "type": "object",
+          "description": "PagedResult{TSource}",
+          "required": [
+            "queryable"
+          ],
+          "properties": {
+            "queryable": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuestionRequestDto"
+              }
+            }
+          }
+        }
+      ]
+    },
     "PagedResultOfSelectListItem": {
       "allOf": [
         {
@@ -9107,50 +6329,6 @@
           "type": "string"
         }
       }
-    },
-    "PagedResultOfQuestionRequestDto": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/PagedResult"
-        },
-        {
-          "type": "object",
-          "description": "PagedResult{TSource}",
-          "required": [
-            "queryable"
-          ],
-          "properties": {
-            "queryable": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/QuestionRequestDto"
-              }
-            }
-          }
-        }
-      ]
-    },
-    "PagedResultOfQuestionResponseDto": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/PagedResult"
-        },
-        {
-          "type": "object",
-          "description": "PagedResult{TSource}",
-          "required": [
-            "queryable"
-          ],
-          "properties": {
-            "queryable": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/QuestionResponseDto"
-              }
-            }
-          }
-        }
-      ]
     },
     "PagedResultOfQuizAttemptResponseDto": {
       "allOf": [

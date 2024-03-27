@@ -10,7 +10,7 @@ import {
     TableRow,
     TableCell,
     Selection,
-    SortDescriptor, Spinner, PopoverContent
+    SortDescriptor, Spinner
 } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -29,6 +29,7 @@ type Props<T> = {
     confirmRemoval?: (id: string) => void,
     luceneFilter?:boolean,
     setSelecteds?: (selected: Selection) => void,
+    selectedKeys?: Set<string>;
     RenderCell: (
         t: T,
         columnKey: string,
@@ -41,9 +42,9 @@ type Props<T> = {
 export default function TTable<T>(props: Props<T>) {
     const [filterValue, setFilterValue] = useState("");
     const [appliedFilter, setAppliedFilter] = useState("");
-    const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
-    const [visibleColumns, setVisibleColumnsState] = useState<Selection>(new Set(props.initialVisibleColumns));
-    const [customFieldFilter, setCustomFieldFilter] = useState<Selection>("all");
+    const [selectedKeys, setSelectedKeys] = useState(props.selectedKeys || new Set([]));
+    const [visibleColumns, setVisibleColumnsState] = useState(new Set(props.initialVisibleColumns));
+    const [customFieldFilter, setCustomFieldFilter] = useState("all");
     const [paging, setPaging] = useState({ currentPage: 1, pageSize: 10, sort: "", filter: "" } as PagedRequest);
     const [rowCount, setRowCount] = useState(0);
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
@@ -89,7 +90,6 @@ export default function TTable<T>(props: Props<T>) {
     }
 
     const setFilter = (filter: string) => {
-        //setPaging({ ...paging, filter: filter });
         const fill = props.Columns
             .filter((column) => column.filterable)
             .map((column) => `${column.uid}:${filter}`)
@@ -108,6 +108,7 @@ export default function TTable<T>(props: Props<T>) {
     return (
         <>
         <Table
+
             className={""}
             key={"ttt"}
             onSortChange={setSortDescriptor}
@@ -115,7 +116,8 @@ export default function TTable<T>(props: Props<T>) {
             selectedKeys={selectedKeys}
             sortDescriptor={sortDescriptor}
             aria-label="Table"
-            isHeaderSticky
+            isStriped={true}
+            isHeaderSticky={true}
             selectionMode="multiple"
             topContentPlacement="outside"
             bottomContentPlacement="outside"
@@ -152,6 +154,7 @@ export default function TTable<T>(props: Props<T>) {
             <TableHeader columns={headerColumns}>
                 {(column) => (
                     <TableColumn
+                        className={column.uid === "actions" ? "sticky right-0" : ""}
                         key={column.uid}
                         align={column.uid === "actions" ? "center" : "center"}
                         allowsSorting={column.sortable}
@@ -161,6 +164,7 @@ export default function TTable<T>(props: Props<T>) {
                 )}
             </TableHeader>
             <TableBody
+                onLoadMore={() => setSelectedKeys(props.selectedKeys)}
                 emptyContent={"Sem registros"}
                 items={paging.filter ? data?.queryable : data?.queryable ?? []}
                 loadingContent={<Spinner />}
@@ -168,7 +172,10 @@ export default function TTable<T>(props: Props<T>) {
             >
                 {(item) => (
                     <TableRow key={props.rowId ? item[props.rowId as keyof T] as Key : JSON.stringify(item)}>
-                        {(columnKey) => <TableCell align={"center"}>
+                        {(columnKey) =>
+                            <TableCell align={"center"}
+                                       className={columnKey === "actions" ? "sticky right-0" : ""}
+                            >
                             {renderCell(item, columnKey as string, props.confirmRemoval, props.editItem, props.viewItem)}
                         </TableCell>}
                     </TableRow>

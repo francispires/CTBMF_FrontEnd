@@ -1,5 +1,6 @@
 import React from "react";
 import {Card, CardBody} from "@nextui-org/react";
+
 interface Props {
     children: React.ReactNode;
     className?: string;
@@ -13,3 +14,4 @@ export const MyCard = ({ children, className }: Props) => {
         </Card>
     );
 };
+

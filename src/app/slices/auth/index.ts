@@ -65,8 +65,7 @@ export const authSlice = createSlice({
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('user', JSON.stringify(user));
             state.user = user;
-            setTimeout(() => {get(apiUrl+"/users/me");}, 1);
-
+            //setTimeout(() => {get(apiUrl+"/users/me");}, 1);
 
             // get return url from location state or default to home page
             // const { from } = history.location.state || { from: { pathname: '/' } };

@@ -1,7 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import TTable from "../../components/table/table";
-import {AddEnroll} from "./add-enroll.tsx";
-import {RenderEnrollCell} from "./render-enroll-cell.tsx";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {
     Button,
     Modal,
@@ -13,88 +11,86 @@ import {
     useDisclosure
 } from "@nextui-org/react";
 import {useState} from "react";
-import {remove} from "../../_helpers/api.ts";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {toast} from "react-toastify";
-import {apiUrl} from "../../_helpers/utils.ts";
 import t from "../../_helpers/Translations.ts";
-import {EnrollmentResponseDto} from "../../types_custom.ts";
+import {apiUrl} from "../../_helpers/utils.ts";
+import {remove} from "../../_helpers/api.ts";
+import {toast} from "react-toastify";
+import TTable from "../../components/table/table";
+import {RenderDisciplineCell} from "./render-discipline-cell.tsx";
+import {AddDiscipline} from "./add-discipline.tsx";
 
-export const element = "enrollments";
-
-
-export const Enrollments = () => {
+export const Disciplines = () => {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-    const [enrollIdToDelete, setEnrollIdToDelete] = useState<string | null>(null)
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
+    const [disciplineIdToDelete, setDisciplineIdToDelete] = useState<string | null>(null)
 
     const columns = [
-        { name: t['student'], uid: 'studentName', sortable: true,filterable:true },
-        { name: t['crew'], uid: 'crewName', sortable: true,filterable:true },
-        { name: t['startDate'], uid: 'startDate', sortable: true,filterable:true },
-        { name: t['endDate'], uid: 'endDate', sortable: true,filterable:true },
-        { name: 'Ações', uid: 'actions' },
+        {name: t['name'], uid: 'name', sortable: true, filterable: true},
+        {name: t['description'], uid: 'description', sortable: true, filterable: true},
+        {name: t['image'], uid: 'image', sortable: true},
+        {name: t['parentId'], uid: 'parentId', sortable: true},
+        {name: t['parentName'], uid: 'parentName', sortable: true, filterable: true},
+        {name: t['childsCount'], uid: 'childsCount', sortable: true},
+        {name: 'Ações', uid: 'actions'},
     ] as Column[];
 
-    const initialVisibleColumns = ["studentName", "crewName","startDate","endDate", "actions"];
+    const initialVisibleColumns = ["name", "description", "parentName", "childsCount", "actions"];
 
-    const fetchData = async (enrollId: string | null) => {
-        if (!enrollId) return
+    const fetchData = async (disciplineId: string | null) => {
+        if (!disciplineId) return
 
-        const url = `${apiUrl}/enrollments`
-
-        return await remove<boolean>(url, enrollId)
+        return await remove<boolean>(`${apiUrl}/disciplines`, disciplineId)
     }
-    
+
     const mutation = useMutation({
         mutationFn: fetchData,
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ['qryEnrollments']});
-            toast.success("Matrícula removida com sucesso.")
+            await queryClient.invalidateQueries({queryKey: ['qryKey']});
+            toast.success("Disciplina removida com sucesso.")
         },
         onError: () => {
-            toast.error("Erro ao remover a Matrícula.")
+            toast.error("Erro ao remover a disciplina.")
         }
     })
 
-    function goToEnrollDetailsPage(id: string) {
-        navigate(`/view-enroll/${id}`)
+    function goToDisciplineDetailsPage(id: string) {
+        navigate(`/view-discipline/${id}`)
     }
 
-    function goToEditEnrollPage(id: string) {
-        navigate(`/edit-enroll/${id}`)
+    function goToEditDisciplinePage(id: string) {
+        navigate(`/edit-discipline/${id}`)
     }
 
-    function openRemoveEnrollModal(id: string) {
-        setEnrollIdToDelete(id)
+    function openRemoveDisciplineModal(id: string) {
+        setDisciplineIdToDelete(id)
         onOpen()
     }
 
-    async function handleRemoveEnroll() {
-        mutation.mutate(enrollIdToDelete)
-        setEnrollIdToDelete(null)
+    async function handleRemoveDiscipline() {
+        mutation.mutate(disciplineIdToDelete)
+        setDisciplineIdToDelete(null)
         onClose()
     }
 
     function handleOpenChange() {
-        setEnrollIdToDelete(() => null)
+        setDisciplineIdToDelete(() => null)
         onOpenChange()
     }
 
     return (
         <div className="my-5 max-w-[99rem] mx-auto w-full flex flex-col gap-10">
-            <TTable<EnrollmentResponseDto>
-                what={"Matrículas"}
+            <TTable<Discipline>
+                what={"Disciplinas"}
                 rowId={"Id"}
-                RenderCell={RenderEnrollCell}
+                RenderCell={RenderDisciplineCell}
                 Columns={columns}
-                url={"enrollments"}
+                url={"disciplines"}
                 initialVisibleColumns={initialVisibleColumns}
-                addNew={<AddEnroll />}
-                viewItem={goToEnrollDetailsPage}
-                editItem={goToEditEnrollPage}
-                confirmRemoval={openRemoveEnrollModal}
+                addNew={<AddDiscipline/>}
+                viewItem={goToDisciplineDetailsPage}
+                editItem={goToEditDisciplinePage}
+                confirmRemoval={openRemoveDisciplineModal}
             >
             </TTable>
 
@@ -107,21 +103,21 @@ export const Enrollments = () => {
                     {(onClose) => (
                         <>
                             <ModalHeader className="flex flex-col gap-1">
-                                Remover Matrícula
+                                Remover disciplina
                             </ModalHeader>
                             <ModalBody>
-                                <span>Tem certeza que deseja remover a turma?</span>
+                                <span>Tem certeza que deseja remover a disciplina?</span>
                             </ModalBody>
                             <ModalFooter>
                                 <Button
                                     color="danger"
                                     variant="flat"
-                                    onClick={handleRemoveEnroll}
+                                    onClick={handleRemoveDiscipline}
                                     disabled={mutation.isPending}
                                     className="disabled:cursor-not-allowed"
                                 >
                                     {mutation.isPending ? (
-                                        <Spinner size="sm" />
+                                        <Spinner size="sm"/>
                                     ) : (
                                         <span>Remover</span>
                                     )}

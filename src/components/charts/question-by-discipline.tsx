@@ -52,16 +52,13 @@ export const QuestionByDiscipline = ({myAnswers}:MyProps) => {
     }, []);
     return (
         <>
-            <div id="chart">
-                <h3>Distribuição de estudo</h3>
-                {!options || (
-                <Chart
-                    options={options.options}
-                    series={options.series}
-                    type="donut"
-                />
-                )}
-            </div>
+            {!options || (
+            <Chart
+                options={options.options}
+                series={options.series}
+                type="donut"
+            />
+            )}
         </>
     );
 };

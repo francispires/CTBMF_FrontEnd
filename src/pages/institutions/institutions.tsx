@@ -1,27 +1,36 @@
-import TTable from "../../components/table/table";
-import { AddInstitution } from "./add-institution.tsx";
-import { RenderInstitutionCell } from "./render-institution-cell.tsx";
-import { InstitutionResponseDto } from "../../types_custom.ts";
+import {useNavigate} from "react-router-dom";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    Spinner,
+    useDisclosure
+} from "@nextui-org/react";
+import {useState} from "react";
+import {InstitutionResponseDto} from "../../types_custom.ts";
 import t from "../../_helpers/Translations.ts";
-import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@nextui-org/react";
-import { useState } from "react";
-import { remove } from "../../_helpers/api.ts";
-import { toast } from "react-toastify";
+import {remove} from "../../_helpers/api.ts";
+import {toast} from "react-toastify";
+import TTable from "../../components/table/table";
+import {RenderInstitutionCell} from "./render-institution-cell.tsx";
+import {AddInstitution} from "./add-institution.tsx";
 
 export const Institutions = () => {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const [institutionIdToDelete, setInstitutionIdToDelete] = useState<string | null>(null)
 
     const allColumns = Object.keys(new InstitutionResponseDto())
         .filter((key) => typeof new InstitutionResponseDto()[key as keyof InstitutionResponseDto] !== 'object')
         .map((key) => {
-            return { name: t[key as keyof t] || key, uid: key, sortable: true, filterable: true };
+            return {name: t[key as keyof t] || key, uid: key, sortable: true, filterable: true};
         }) as Column[];
-    allColumns.push({ name: 'Ações', uid: 'actions' });
+    allColumns.push({name: 'Ações', uid: 'actions'});
 
     const initialVisibleColumns = allColumns.map((c) => c.uid).filter(value => value !== "id");
     //const initialVisibleColumns = Utils.GetInitialVisibleColumns(InstitutionResponseDto);/
@@ -40,7 +49,7 @@ export const Institutions = () => {
     const mutation = useMutation({
         mutationFn: fetchData,
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['qryKey'] });
+            await queryClient.invalidateQueries({queryKey: ['qryKey']});
             toast.success("Instituição removida com sucesso.")
         },
         onError: () => {
@@ -86,7 +95,7 @@ export const Institutions = () => {
                 Columns={allColumns}
                 url={"institutions"}
                 initialVisibleColumns={initialVisibleColumns}
-                addNew={<AddInstitution />}
+                addNew={<AddInstitution/>}
                 viewItem={goToInstitutionDetailsPage}
                 editItem={goToEditInstitutionPage}
                 confirmRemoval={openRemoveInstitutionModal}
@@ -116,7 +125,7 @@ export const Institutions = () => {
                                     className="disabled:cursor-not-allowed"
                                 >
                                     {mutation.isPending ? (
-                                        <Spinner size="sm" />
+                                        <Spinner size="sm"/>
                                     ) : (
                                         <span>Remover</span>
                                     )}

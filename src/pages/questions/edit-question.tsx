@@ -1,5 +1,5 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {Button, Checkbox, Input, Spinner} from "@nextui-org/react";
+import {Button, Checkbox, Input, Select, SelectItem, SelectSection, Spinner} from "@nextui-org/react";
 import {useNavigate, useParams} from "react-router-dom";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {get, patch} from "../../_helpers/api.ts";
@@ -25,10 +25,10 @@ import {toast} from "react-toastify";
 
 import {
     AlternativeRequestDto,
-    AnswerResponseDto, DisciplineRequestDto, ObservationRequestDto,
+    AnswerResponseDto, DisciplineRequestDto, DisciplineResponseDto, ObservationRequestDto,
     ObservationResponseDto, QuestionBankRequestDto, QuizAttemptRequestDto,
 } from "../../types_custom.ts";
-import {abc, toggleCorrectAlternativeReq} from "../../_helpers/utils.ts";
+import {abc, apiUrl, toggleCorrectAlternativeReq} from "../../_helpers/utils.ts";
 import ReactQuill from "react-quill";
 
 interface Question {
@@ -90,6 +90,16 @@ export function EditQuestion() {
     const {register, handleSubmit, control, formState: {errors}} = useForm<SchemaQuestion>({
         resolver: yupResolver(updateSchema)
     });
+
+    const fetchDisciplines = async () => {
+        const url = `${apiUrl}/disciplines?currentPage=1&pageSize=1000&sort=name`
+        return await get<PagedResponse<DisciplineResponseDto>>(url);
+    }
+
+    const {isLoading: loadingDisciplines, data: disciplines} = useQuery({
+        queryKey: ['disciplines'],
+        queryFn: fetchDisciplines
+    });
     const mutation = useMutation({
         mutationFn: async (updatedQuestion: Question) => {
             const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
@@ -113,6 +123,7 @@ export function EditQuestion() {
     })
 
     const [text, setText] = useState("");
+    const [actualDisciplineId, setActualDisciplineId] = useState("");
 
     const fetchData = async () => {
         const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
@@ -131,6 +142,7 @@ export function EditQuestion() {
     useEffect(() => {
         if (question) {
             setText(question.text)
+            setActualDisciplineId(question.disciplineId)
         }
     }, [question]);
 
@@ -244,6 +256,15 @@ export function EditQuestion() {
         navigation('/questions')
     }
 
+    const setDisciplineWrapper = (id: string) => {
+
+        const d = disciplines.queryable.find(d => d.id === id)
+        if (d) {
+            setDiscipline(d.name)
+            setActualDisciplineId(d.id)
+        }
+    }
+
     return (
         <div>
             <Button variant="ghost" className="mb-6" onClick={handleBackToQuestions}><FaArrowLeft/> Voltar</Button>
@@ -263,21 +284,36 @@ export function EditQuestion() {
                             control={control}
                             render={() => {
                                 return (
-                                    <Select2
-                                        name="discipline"
-                                        value={discipline}
-                                        setValue={setDiscipline}
-                                        setIsNew={setIsNewDiscipline}
-                                        defaultInputValue={question.discipline.name}
-                                        valueProp={"id"}
-                                        textProp={"name"}
-                                        allowsCustomValue={true}
-                                        url={"disciplines"}
-                                        selectionMode="single"
-                                        className="max-w"
-                                        label="Disciplina"
-                                        placeholder="Selecione uma Disciplina">
-                                    </Select2>
+                                    <>
+                                        <Select
+                                            label="Conteúdo (Temas específicos)"
+                                            placeholder="Conteúdo"
+                                            selectedKeys={disciplines && disciplines.queryable.length?[actualDisciplineId]:[]}
+                                            selectionMode={"single"}
+                                            variant="bordered"
+                                            isLoading={loadingDisciplines}
+                                            onSelectionChange={(s) => {
+                                                setDisciplineWrapper(s.anchorKey)
+                                            }}
+                                        >
+                                            {disciplines && disciplines.queryable.filter(d => d.childsCount > 0).map((discipline) => (
+                                                <SelectSection key={discipline.id} showDivider title={discipline.name}>
+                                                    {
+                                                        discipline.childs.map((subDiscipline) => (
+                                                            <SelectItem key={subDiscipline.id}
+                                                                        textValue={subDiscipline.name}>
+                                                                <div className="flex gap-2 items-center">
+                                                                    <div className="flex flex-col">
+                                                                        <span
+                                                                            className="text-small">{subDiscipline.name}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </SelectItem>
+                                                        ))}
+                                                </SelectSection>
+                                            ))}
+                                        </Select>
+                                    </>
                                 );
                             }}
                         />

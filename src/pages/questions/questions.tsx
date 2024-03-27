@@ -1,45 +1,50 @@
-import TTable from "../../components/table/table";
-import { AddQuestion } from "./add-question.tsx";
-import { RenderQuestionCell } from "./render-question-cell.tsx";
-import { QuestionResponseDto } from "../../types_custom.ts";
+import {useNavigate} from "react-router-dom";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    Spinner,
+    useDisclosure
+} from "@nextui-org/react";
+import {useState} from "react";
+import {QuestionResponseDto} from "../../types_custom.ts";
 import t from "../../_helpers/Translations.ts";
-import { useNavigate } from "react-router-dom";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@nextui-org/react";
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { remove } from "../../_helpers/api.ts";
-import { toast } from "react-toastify";
+import {remove} from "../../_helpers/api.ts";
+import {toast} from "react-toastify";
+import TTable from "../../components/table/table";
+import {RenderQuestionCell} from "./render-question-cell.tsx";
+import {AddQuestion} from "./add-question.tsx";
+import {apiUrl} from "../../_helpers/utils.ts";
 
 export const Questions = () => {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const [questionIdToDelete, setQuestionIdToDelete] = useState<string | null>(null)
 
     const allColumns = Object.keys(new QuestionResponseDto())
         .filter((key) => typeof new QuestionResponseDto()[key as keyof QuestionResponseDto] !== 'object')
         .map((key) => {
-            return { name: t[key as keyof t] || key, uid: key, sortable: true, filterable: true };
+            return {name: t[key as keyof t] || key, uid: key, sortable: true, filterable: true};
         }) as Column[];
-    allColumns.push({ name: 'Ações', uid: 'actions' });
+    allColumns.push({name: 'Ações', uid: 'actions'});
 
     const initialVisibleColumns = allColumns
         .filter((c) => c.uid !== 'id' && !c.uid.endsWith("Id"))
         .map((c) => c.uid);
 
-    const fetchData = async (questionId: string | null) => {
+    const removeQuestion = async (questionId: string | null) => {
         if (!questionId) return
-
-        const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
         const url = `${apiUrl}/questions`
-
-        const res = await remove<boolean>(url, questionId)
-
-        return res
+        return await remove<boolean>(url, questionId)
     }
 
     const mutation = useMutation({
-        mutationFn: fetchData,
+        mutationFn: removeQuestion,
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ['qryKey']});
             toast.success("Questão removida com sucesso.")
@@ -82,7 +87,7 @@ export const Questions = () => {
                 Columns={allColumns}
                 url={"questions"}
                 initialVisibleColumns={initialVisibleColumns}
-                addNew={<AddQuestion />}
+                addNew={<AddQuestion/>}
                 viewItem={goToQuestionDetailsPage}
                 editItem={goToEditQuestionPage}
                 confirmRemoval={openRemoveQuestionModal}
@@ -112,7 +117,7 @@ export const Questions = () => {
                                     className="disabled:cursor-not-allowed"
                                 >
                                     {mutation.isPending ? (
-                                        <Spinner size="sm" />
+                                        <Spinner size="sm"/>
                                     ) : (
                                         <span>Remover</span>
                                     )}

@@ -26,6 +26,7 @@ export const StudentsScoreList = ({
     <Table
       aria-label="Ranque dos estudantes"
       hideHeader
+      isStriped
       classNames={{
         base: `${isLarge ? 'max-h-[310px]' : 'max-h-[210px]'} overflow-auto`,
         table: "min-h-[210px]",
@@ -66,9 +67,10 @@ export const StudentsScoreList = ({
                   <span>{student.userName}</span>
                 </div>
               </TableCell>
-              <TableCell>{student.questionScore} P</TableCell>
+              <TableCell className={"text-success"}><div className="flex gap-3 items-center pl-6">{student.questionScore} P</div>
+              </TableCell>
             </TableRow>
-          )
+        )
         })}
       </TableBody>
     </Table>

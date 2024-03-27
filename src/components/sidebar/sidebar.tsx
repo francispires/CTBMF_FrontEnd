@@ -15,7 +15,7 @@ import {
 export const SidebarWrapper = () => {
     const {pathname} = useLocation()
 
-    const {collapsed, setCollapsed} = useSidebarContext();
+    const {collapsed, setCollapsed, visible, setVisible, stage} = useSidebarContext();
     const {user} = useAuth0();
     const darkMode = useDarkMode(false);
 
@@ -27,13 +27,15 @@ export const SidebarWrapper = () => {
     }
 
     return (
-        <aside className="h-screen z-[202] sticky top-0 items-center">
+        <aside className={"h-screen z-[202] sticky top-0 items-center " + (stage === 0 ? "hidden" : "")}>
             {collapsed ? (
                 <div className={Sidebar.Overlay()} onClick={setCollapsed}/>
             ) : null}
             <div
                 className={Sidebar({
                     collapsed: collapsed,
+                    visible: visible,
+                    stage: stage
                 })}
             >
                 <div className={Sidebar.Header()}>
@@ -71,8 +73,8 @@ export const SidebarWrapper = () => {
                                 href="dashboard"
                             />
                             <SidebarItem
-                                isActive={pathname === "/provas"}
-                                href="provas"
+                                isActive={pathname === "/simulados"}
+                                href="simulados"
                                 title="Simulados"
                                 icon={<FontAwesomeIcon icon={faClipboardCheck} size={iconSize} title={"Simulados"}
                                                        className={"max-w-1/4 text-gray-500"}/>}
@@ -109,8 +111,8 @@ export const SidebarWrapper = () => {
                         {isInRole("Teacher") && (
                             <SidebarMenu title={!collapsed ? "" : "Coordenador"}>
                                 <SidebarItem
-                                    isActive={pathname === "/provas"}
-                                    href="config_provas"
+                                    isActive={pathname === "/quizzes"}
+                                    href="quizzes"
                                     title="Simulados"
                                     icon={<FontAwesomeIcon icon={faClipboardCheck} size={iconSize} title={"Simulados"}
                                                            className={iconClass}/>}

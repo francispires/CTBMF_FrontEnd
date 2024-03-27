@@ -1,6 +1,7 @@
 import {store} from "../app/store.ts";
 import axios from 'axios';
 import {apiUrl} from "./utils.ts";
+import {RankingAnswersResponseDto, UserResponseDto} from "../types_custom.ts";
 
 axios.interceptors.request.use(function (config) {
     if (authToken())
@@ -45,7 +46,6 @@ export async function post<T>(url: string, body: T, file?: File) {
                 "content-type": "multipart/form-data"
             },
         } : {};
-        //if (file) {url = url + '/file';}
         const {data, status} = await axios.post(url, {...body, file}, config);
         if (status>=400) {
             console.log(JSON.stringify(data, null, 4));
@@ -136,4 +136,20 @@ export async function uploadFile(folderName: string, fileName: string, formData:
 
 function authToken() {
     return store.getState().auth.user?.token;
+}
+
+export async function getById<T>(url:string,id:string|undefined) {
+    return await get<T>(`${apiUrl}/${url}/${id}`)
+}
+
+export async function getMe() {
+    return await get<UserResponseDto>(`${apiUrl}/users/me`)
+}
+
+export async function getByAll<T>(id:string,url:string) {
+    return await get<T>(`${apiUrl}/${url}/${id}`)
+}
+export const fetchRankingData = async () => {
+    const url = `${apiUrl}/answers/ranking`
+    return await get<RankingAnswersResponseDto[]>(url)
 }

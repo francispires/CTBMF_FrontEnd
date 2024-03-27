@@ -31,6 +31,9 @@ type Props = {
 
 
 export const QuestionsFilter = (props: Props) => {
+    const classNames = {
+        wrapper: "md:w-1/4",
+    }
     return (
         <>
             <div className="grid md:grid-cols-3 grid-cols-1 2xl:grid-cols-3 gap-5 justify-center w-full">
@@ -85,15 +88,23 @@ export const QuestionsFilter = (props: Props) => {
                     placeholder="Id da Questão">
                 </SelectStatic>
             </div>
-            <div className="grid md:grid-cols-5 grid-cols-1 2xl:grid-cols-5 gap-5 justify-center w-full">
-                <Switch isSelected={props.onlyAnswereds} onValueChange={props.setOnlyAnswereds}>Somente
-                    Respondidas</Switch>
-                <Switch isSelected={props.onlyNotAnswereds} onValueChange={props.setOnlyNotAnswereds}>Somente
-                    Não Respondidas</Switch>
-                <Switch isSelected={props.onlyCorrects} onValueChange={props.setOnlyCorrects}>Somente Corretas</Switch>
-                <Switch isSelected={props.onlyWrongs} onValueChange={props.setOnlyWrongs}>Somente Erradas</Switch>
-                <Switch isSelected={props.random} onValueChange={props.setRandom}>Ordem Aleatória</Switch>
-                <Button onClick={props.FilterChanged}>Filtrar</Button>
+            <div className="grid md:grid-cols-2 grid-cols-1 2xl:grid-cols-6 gap-5 justify-center w-full">
+                <Switch isSelected={props.onlyAnswereds} onValueChange={props.setOnlyAnswereds}>
+                    Somente Respondidas
+                </Switch>
+                <Switch isSelected={props.onlyNotAnswereds} onValueChange={props.setOnlyNotAnswereds}>
+                    Somente Não Respondidas
+                </Switch>
+                <Switch isSelected={props.onlyCorrects} onValueChange={props.setOnlyCorrects}>
+                    Somente Corretas
+                </Switch>
+                <Switch isSelected={props.onlyWrongs} onValueChange={props.setOnlyWrongs}>
+                    Somente Erradas
+                </Switch>
+                <Switch isSelected={props.random} onValueChange={props.setRandom}>
+                    Ordem Aleatória
+                </Switch>
+                <Button className={""} color={"danger"} variant={"shadow"} size={"md"} onClick={props.FilterChanged}>Filtrar</Button>
             </div>
         </>
     );

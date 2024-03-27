@@ -29,16 +29,24 @@ abstract class t {
     public static parentId="MãeId";
     public static institutionName="Instituição";
     public static active="Ativa";
-    public static disciplineName="Disciplina";
+    public static disciplineName="Conteúdo";
+    public static disciplineParentName="Disciplina";
     public static disciplineId="DisciplinaId";
     public static id="Id";
     public static value="Valor";
     public static daysToAnswer="Dias para Responder";
+    public static correctAnswerMessage="Mensagem Correta";
+    public static wrongAnswerMessage="Mensagem Errada";
+    public static quizBackGroundImage="Imagem de Fundo Simulados";
     public static m2mToken  = "Token";
     public static m2mToken_date = "Data Token";
     public static student = "Aluno";
     public static crew = "Turma";
     public static startDate = "Início";
     public static endDate = "Fim";
+    public static question = "Questão";
+    public static observationRequest = "Pedido";
+    public static user = "Usuário";
+    public static type = "Tipo";
 }
 export default t;

@@ -6,10 +6,10 @@ import { Button } from "@nextui-org/react";
 import { FaArrowLeft } from "react-icons/fa";
 import { MyCard } from "../../components/layout/MyCard.tsx";
 import {apiUrl} from "../../_helpers/utils.ts";
-import {element} from "./enrollments.tsx";
+import {element} from "./users.tsx";
 import {IEnrollmentResponseDto} from "../../types_custom.ts";
 
-export default function ViewEnroll() {
+export default function ViewUser() {
   const { id } = useParams();
   const navigation = useNavigate()
 

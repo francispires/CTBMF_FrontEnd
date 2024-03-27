@@ -12,18 +12,18 @@ import {useQueryClient} from "@tanstack/react-query";
 import {post} from "../../_helpers/api.ts";
 import {Controller, useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup/src/index.ts";
-//import {object} from "yup";
 import {toast} from "react-toastify";
-import {EnrollmentRequestDto} from "../../types_custom.ts";
+import {UserRequestDto} from "../../types_custom.ts";
 import {apiUrl} from "../../_helpers/utils.ts";
 import Select2 from "../../components/select2";
 import {object} from "yup";
+import {element} from "./users.tsx";
 
 const createSchema = object({
 
 });
 
-export const AddEnroll = () => {
+export const AddUser = () => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
     const queryClient = useQueryClient();
 
@@ -32,16 +32,14 @@ export const AddEnroll = () => {
         control,
         handleSubmit,
         formState: {errors}
-    } = useForm<EnrollmentRequestDto>({
+    } = useForm<UserRequestDto>({
         resolver: yupResolver(createSchema)
     });
 
-    const onSubmit = async (data: EnrollmentRequestDto) => {
-        data.startDate = new Date(data.startDate).toISOString();
-        data.endDate = new Date(data.endDate).toISOString();
-        await post<EnrollmentRequestDto>(`${apiUrl}/enrollments`, data);
-        await queryClient.invalidateQueries({queryKey: ['qryKey']});
-        toast.success("Matrícula adicionada com sucesso")
+    const onSubmit = async (data: UserRequestDto) => {
+        await post<UserRequestDto>(`${apiUrl}/${element}`, data);
+        await queryClient.invalidateQueries({queryKey: [`qry_${element}`]});
+        toast.success("Usuário adicionado com sucesso")
         onClose();
     };
 
@@ -63,28 +61,10 @@ export const AddEnroll = () => {
                                     Nova Matrícula
                                 </ModalHeader>
                                 <ModalBody>
-                                    <Controller
-                                        name="studentId"
-                                        control={control}
-                                        render={({ field }) => {
-                                            return (
-                                                <Select2
-                                                    {...field}
-                                                    setValue={(s:string)=>{field.onChange(s)}}
-                                                    valueProp={"id"}
-                                                    textProp={"name"}
-                                                    allowsCustomValue={false}
-                                                    url={"users"}
-                                                    useKey={true}
-                                                    selectionMode="single"
-                                                    className="max-w"
-                                                    label="Aluno"
-                                                    placeholder="Selecione um Aluno">
-                                                </Select2>
-                                            );
-                                        }}
-                                    />
-                                    {errors.studentId && <p>{errors.studentId.message}</p>}
+                                    <Input {...register("name")} label="Nome" variant="bordered"/>
+                                    {errors.name && <p>{errors.name.message}</p>}
+                                    <Input {...register("email")} label="Email" variant="bordered"/>
+                                    {errors.email && <p>{errors.email.message}</p>}
                                     <Controller
                                         name="crewId"
                                         control={control}
@@ -107,10 +87,6 @@ export const AddEnroll = () => {
                                         }}
                                     />
                                     {errors.crewId && <p>{errors.crewId.message}</p>}
-                                    <Input {...register("startDate")} label="Início" pattern="YYYY-MM-DDTHH:mm:ss.sssZ" variant="bordered" type={"date"}/>
-                                    {errors.startDate && <p>{errors.startDate.message}</p>}
-                                    <Input {...register("endDate")} label="Fim" variant="bordered" type={"date"}/>
-                                    {errors.endDate && <p>{errors.endDate.message}</p>}
                                 </ModalBody>
                                 <ModalFooter>
                                     <Button color="danger" variant="flat" onClick={onClose}>

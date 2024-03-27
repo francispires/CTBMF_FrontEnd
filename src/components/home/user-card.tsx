@@ -2,6 +2,7 @@ import {Avatar} from "@nextui-org/react";
 import {useAuth0} from "@auth0/auth0-react";
 import {IRankingAnswersResponseDto} from "../../types_custom.ts";
 import _ from "lodash";
+import {groupByDisciplines} from "../../_helpers/utils.ts";
 
 interface Props {
     myAnswers:IRankingAnswersResponseDto[]
@@ -10,17 +11,10 @@ interface Props {
 export const UserCard = ({myAnswers}:Props) => {
     const {user} = useAuth0();
     const score = _.sumBy(myAnswers, 'questionScore');
-    const disciplinesAnswer = _.toArray(_.groupBy(myAnswers, a => a.questionDisciplineParentId));
-    const result = disciplinesAnswer
-        .map((userAnswers: IRankingAnswersResponseDto[]) => {
-            const corrects = userAnswers
-                .filter((answer: IRankingAnswersResponseDto) => answer.correct);
-            const sum = _.sumBy(corrects, 'questionScore');
-            return {...userAnswers[0], questionScore: sum};
-        });
-    result.sort((a: IRankingAnswersResponseDto, b: IRankingAnswersResponseDto) => b.questionScore - a.questionScore);
-    const best = result[0];
-    const worst = result[result.length - 1];
+    const result = groupByDisciplines(myAnswers);
+    result.sort((a, b) => b.balance - a.balance);
+    const best = result.length>0? result[0]:null;
+    const worst = result.length>0?result[result.length - 1]:null;
     const total = myAnswers.length;
     return (
         <>
@@ -39,12 +33,30 @@ export const UserCard = ({myAnswers}:Props) => {
                 </div>
             </div>
             <div className="grid grid-cols-2 gap-1">
-                <h2 className="font-bold text-medium tracking-wide">Melhor:</h2>
-                <span className="font-bold text-sm text-success tracking-wide">{best.questionDisciplineParentName ||best.questionDisciplineName}</span>
-                <h2 className="font-bold text-medium tracking-wide">Pior:</h2>
-                <span className="font-bold text-sm text-danger tracking-wide">{worst.questionDisciplineParentName ||worst.questionDisciplineName}</span>
-                <h2 className="font-bold text-medium tracking-wide">Respostas:</h2>
-                <span className="font-bold text-sm text-success tracking-wide">{total}</span>
+                {total==0 || (
+                    <>
+                        <h2 className="font-bold text-medium tracking-wide">Melhor:</h2>
+                        <span
+                            className="font-bold text-sm text-success tracking-wide">{best?.questionDisciplineParentName || best?.discipline}</span>
+                        <h2 className="font-bold text-medium tracking-wide">Pior:</h2>
+                        <span
+                            className="font-bold text-sm text-danger tracking-wide">{worst?.questionDisciplineParentName || worst?.discipline}</span>
+                        <h2 className="font-bold text-medium tracking-wide">Respostas:</h2>
+                        <span className="font-bold text-sm text-success tracking-wide">{total}</span>
+                    </>
+                )}
+                {total!=0 || (
+                    <>
+                        <h2 className="font-bold text-medium tracking-wide">Melhor:</h2>
+                        <span
+                            className="font-bold text-sm text-success tracking-wide">Você ainda não tem repostas corretas</span>
+                        <h2 className="font-bold text-medium tracking-wide">Pior:</h2>
+                        <span
+                            className="font-bold text-sm text-danger tracking-wide">Você ainda não tem respostas erradas</span>
+                        <h2 className="font-bold text-medium tracking-wide">Respostas:</h2>
+                        <span className="font-bold text-sm text-success tracking-wide">{total}</span>
+                    </>
+                )}
             </div>
         </>
     );
