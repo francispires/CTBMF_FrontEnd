@@ -1346,7 +1346,6 @@
         "tags": [
           "Disciplines"
         ],
-        "summary": "Get all records of type T",
         "operationId": "Disciplines_GetAll",
         "produces": [
           "text/plain",
@@ -1384,7 +1383,7 @@
         "responses": {
           "200": {
             "x-nullable": false,
-            "description": "A PagedResult T with queryable holding the items",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/PagedResultOfDisciplineResponseDto"
             }
@@ -2543,6 +2542,72 @@
         }
       }
     },
+    "/api/messages/public": {
+      "get": {
+        "tags": [
+          "Messages"
+        ],
+        "operationId": "Messages_GetPublicMessage",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        }
+      }
+    },
+    "/api/messages/protected": {
+      "get": {
+        "tags": [
+          "Messages"
+        ],
+        "operationId": "Messages_GetProtectedMessage",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        }
+      }
+    },
+    "/api/messages/admin": {
+      "get": {
+        "tags": [
+          "Messages"
+        ],
+        "operationId": "Messages_GetAdminMessage",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        }
+      }
+    },
     "/api/observations_request": {
       "post": {
         "tags": [
@@ -2934,72 +2999,6 @@
             "description": "",
             "schema": {
               "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/messages/public": {
-      "get": {
-        "tags": [
-          "Messages"
-        ],
-        "operationId": "Messages_GetPublicMessage",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Message"
-            }
-          }
-        }
-      }
-    },
-    "/api/messages/protected": {
-      "get": {
-        "tags": [
-          "Messages"
-        ],
-        "operationId": "Messages_GetProtectedMessage",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Message"
-            }
-          }
-        }
-      }
-    },
-    "/api/messages/admin": {
-      "get": {
-        "tags": [
-          "Messages"
-        ],
-        "operationId": "Messages_GetAdminMessage",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Message"
             }
           }
         }
@@ -3639,6 +3638,13 @@
             "x-nullable": true
           },
           {
+            "type": "integer",
+            "name": "OldQuestionNumber",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": true
+          },
+          {
             "type": "string",
             "name": "AttemptId",
             "in": "query",
@@ -3655,6 +3661,12 @@
           {
             "type": "boolean",
             "name": "GetAll",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "boolean",
+            "name": "Next",
             "in": "query",
             "x-nullable": false
           }
@@ -3898,6 +3910,293 @@
           "Question"
         ],
         "operationId": "Question_Upload64",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "file",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempt_configs": {
+      "get": {
+        "tags": [
+          "QuizAttemptConfiguration"
+        ],
+        "operationId": "QuizAttemptConfiguration_GetAll",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "CurrentPage",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "integer",
+            "name": "PageSize",
+            "in": "query",
+            "format": "int32",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Sort",
+            "in": "query",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Filter",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PagedResultOfQuizAttemptConfigurationResponseDto"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "QuizAttemptConfiguration"
+        ],
+        "operationId": "QuizAttemptConfiguration_Create",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QuizAttemptConfigurationRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempt_configs/{id}": {
+      "patch": {
+        "tags": [
+          "QuizAttemptConfiguration"
+        ],
+        "operationId": "QuizAttemptConfiguration_Update",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QuizAttemptConfigurationRequestDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "QuizAttemptConfiguration"
+        ],
+        "summary": "Get a record of type T by id",
+        "operationId": "QuizAttemptConfiguration_Get",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "A item T",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "QuizAttemptConfiguration"
+        ],
+        "summary": "Delete a record of type T by id",
+        "operationId": "QuizAttemptConfiguration_Delete",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the item to be removed",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "True on success, false otherwise",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempt_configs/upload": {
+      "post": {
+        "tags": [
+          "QuizAttemptConfiguration"
+        ],
+        "operationId": "QuizAttemptConfiguration_Upload",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "ContentType",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "ContentDisposition",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "array",
+            "name": "Headers",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": false,
+            "items": {
+              "additionalProperties": {}
+            }
+          },
+          {
+            "type": "integer",
+            "name": "Length",
+            "in": "formData",
+            "format": "int64",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "Name",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "FileName",
+            "in": "formData",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "fileName",
+            "in": "query",
+            "x-nullable": false
+          },
+          {
+            "type": "string",
+            "name": "folderName",
+            "in": "query",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/quiz_attempt_configs/upload64": {
+      "post": {
+        "tags": [
+          "QuizAttemptConfiguration"
+        ],
+        "operationId": "QuizAttemptConfiguration_Upload64",
         "parameters": [
           {
             "type": "string",
@@ -4191,293 +4490,6 @@
           "QuizAttempt"
         ],
         "operationId": "QuizAttempt_Upload64",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "file",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "fileName",
-            "in": "query",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "folderName",
-            "in": "query",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/quiz_attempt_configs": {
-      "get": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "operationId": "QuizAttemptConfiguration_GetAll",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "type": "integer",
-            "name": "CurrentPage",
-            "in": "query",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "integer",
-            "name": "PageSize",
-            "in": "query",
-            "format": "int32",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Sort",
-            "in": "query",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Filter",
-            "in": "query",
-            "x-nullable": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/PagedResultOfQuizAttemptConfigurationResponseDto"
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "operationId": "QuizAttemptConfiguration_Create",
-        "consumes": [
-          "application/json-patch+json",
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/QuizAttemptConfigurationRequestDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/quiz_attempt_configs/{id}": {
-      "patch": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "operationId": "QuizAttemptConfiguration_Update",
-        "consumes": [
-          "application/json-patch+json",
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/QuizAttemptConfigurationRequestDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "summary": "Get a record of type T by id",
-        "operationId": "QuizAttemptConfiguration_Get",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The id of the item",
-            "format": "guid",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "A item T",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "summary": "Delete a record of type T by id",
-        "operationId": "QuizAttemptConfiguration_Delete",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "The id of the item to be removed",
-            "format": "guid",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "True on success, false otherwise",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/quiz_attempt_configs/upload": {
-      "post": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "operationId": "QuizAttemptConfiguration_Upload",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "ContentType",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "ContentDisposition",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "array",
-            "name": "Headers",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": false,
-            "items": {
-              "additionalProperties": {}
-            }
-          },
-          {
-            "type": "integer",
-            "name": "Length",
-            "in": "formData",
-            "format": "int64",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Name",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "FileName",
-            "in": "formData",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "fileName",
-            "in": "query",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "folderName",
-            "in": "query",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/api/quiz_attempt_configs/upload64": {
-      "post": {
-        "tags": [
-          "QuizAttemptConfiguration"
-        ],
-        "operationId": "QuizAttemptConfiguration_Upload64",
         "parameters": [
           {
             "type": "string",
@@ -5522,16 +5534,280 @@
               "items": {
                 "$ref": "#/definitions/AnswerResponseDto"
               }
+            },
+            "quizAttemptConfiguration": {
+              "$ref": "#/definitions/QuizAttemptConfigurationResponseDto"
             }
           }
         }
       ]
     },
+    "QuizAttemptConfigurationResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/QuizAttemptConfigurationRequestDto"
+        },
+        {
+          "type": "object",
+          "required": [
+            "disciplines"
+          ],
+          "properties": {
+            "institution": {
+              "$ref": "#/definitions/InstitutionResponseDto"
+            },
+            "disciplines": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/DisciplineResponseDto"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "InstitutionResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/InstitutionRequestDto"
+        },
+        {
+          "type": "object",
+          "required": [
+            "questions",
+            "questionBanks"
+          ],
+          "properties": {
+            "questions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuestionResponseDto"
+              }
+            },
+            "questionBanks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuestionBankResponseDto"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "QuestionBankResponseDto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/QuestionBankRequestDto"
+        },
+        {
+          "type": "object",
+          "required": [
+            "questions",
+            "questionsCount"
+          ],
+          "properties": {
+            "institution": {
+              "$ref": "#/definitions/InstitutionResponseDto"
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuestionResponseDto"
+              }
+            },
+            "questionsCount": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      ]
+    },
+    "QuestionBankRequestDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "institutionId": {
+          "type": "string",
+          "format": "guid"
+        }
+      }
+    },
+    "InstitutionRequestDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "state",
+        "stadual",
+        "privateInstitution"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "stadual": {
+          "type": "boolean"
+        },
+        "privateInstitution": {
+          "type": "boolean"
+        }
+      }
+    },
+    "QuizAttemptConfigurationRequestDto": {
+      "type": "object",
+      "required": [
+        "name",
+        "active",
+        "showOnFront",
+        "usersCount",
+        "crewsCount",
+        "questionsCount"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "boards": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "years": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "institutions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "guid"
+          }
+        },
+        "disciplines": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "guid"
+          }
+        },
+        "random": {
+          "type": "boolean"
+        },
+        "onlyNotAnswered": {
+          "type": "boolean"
+        },
+        "onlyWrongs": {
+          "type": "boolean"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "showOnFront": {
+          "type": "boolean"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "usersCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userIds": {
+          "type": "string"
+        },
+        "crews": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CrewRequestDto"
+          }
+        },
+        "crewsCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "crewsIds": {
+          "type": "string"
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/QuestionRequestDto"
+          }
+        },
+        "questionsCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "questionsIds": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      }
+    },
+    "CrewRequestDto": {
+      "type": "object",
+      "required": [
+        "name",
+        "description"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      }
+    },
     "QuizAttemptRequestDto": {
       "type": "object",
       "required": [
         "id",
-        "startedAt",
+        "type",
         "score",
         "total",
         "passed"
@@ -5541,7 +5817,11 @@
           "type": "string",
           "format": "guid"
         },
-        "startedAt": {
+        "startAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endAt": {
           "type": "string",
           "format": "date-time"
         },
@@ -5549,9 +5829,12 @@
           "type": "string",
           "format": "date-time"
         },
-        "dConfigureServicesuration": {
+        "duration": {
           "type": "string",
           "format": "duration"
+        },
+        "type": {
+          "$ref": "#/definitions/QuizAttemptType"
         },
         "score": {
           "type": "integer",
@@ -5565,6 +5848,22 @@
           "type": "boolean"
         }
       }
+    },
+    "QuizAttemptType": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Practice",
+        "Exam",
+        "Simulation",
+        "Custom"
+      ],
+      "enum": [
+        0,
+        1,
+        2,
+        3
+      ]
     },
     "AnswerRequestDto": {
       "type": "object",
@@ -5939,28 +6238,6 @@
         }
       ]
     },
-    "CrewRequestDto": {
-      "type": "object",
-      "required": [
-        "name",
-        "description"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "data": {
-          "type": "string"
-        }
-      }
-    },
     "PagedResultOfDisciplineResponseDto": {
       "allOf": [
         {
@@ -6054,111 +6331,6 @@
           }
         }
       ]
-    },
-    "InstitutionResponseDto": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/InstitutionRequestDto"
-        },
-        {
-          "type": "object",
-          "required": [
-            "questions",
-            "questionBanks"
-          ],
-          "properties": {
-            "questions": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/QuestionResponseDto"
-              }
-            },
-            "questionBanks": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/QuestionBankResponseDto"
-              }
-            }
-          }
-        }
-      ]
-    },
-    "QuestionBankResponseDto": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/QuestionBankRequestDto"
-        },
-        {
-          "type": "object",
-          "required": [
-            "questions",
-            "questionsCount"
-          ],
-          "properties": {
-            "institution": {
-              "$ref": "#/definitions/InstitutionResponseDto"
-            },
-            "questions": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/QuestionResponseDto"
-              }
-            },
-            "questionsCount": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        }
-      ]
-    },
-    "QuestionBankRequestDto": {
-      "type": "object",
-      "required": [
-        "id",
-        "name"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "institutionId": {
-          "type": "string",
-          "format": "guid"
-        }
-      }
-    },
-    "InstitutionRequestDto": {
-      "type": "object",
-      "required": [
-        "id",
-        "name",
-        "state",
-        "stadual",
-        "privateInstitution"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "state": {
-          "type": "string"
-        },
-        "stadual": {
-          "type": "boolean"
-        },
-        "privateInstitution": {
-          "type": "boolean"
-        }
-      }
     },
     "PagedResultOfObservationResponseDto": {
       "allOf": [
@@ -6330,28 +6502,6 @@
         }
       }
     },
-    "PagedResultOfQuizAttemptResponseDto": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/PagedResult"
-        },
-        {
-          "type": "object",
-          "description": "PagedResult{TSource}",
-          "required": [
-            "queryable"
-          ],
-          "properties": {
-            "queryable": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/QuizAttemptResponseDto"
-              }
-            }
-          }
-        }
-      ]
-    },
     "PagedResultOfQuizAttemptConfigurationResponseDto": {
       "allOf": [
         {
@@ -6374,139 +6524,27 @@
         }
       ]
     },
-    "QuizAttemptConfigurationResponseDto": {
+    "PagedResultOfQuizAttemptResponseDto": {
       "allOf": [
         {
-          "$ref": "#/definitions/QuizAttemptConfigurationRequestDto"
+          "$ref": "#/definitions/PagedResult"
         },
         {
           "type": "object",
+          "description": "PagedResult{TSource}",
           "required": [
-            "disciplines"
+            "queryable"
           ],
           "properties": {
-            "institution": {
-              "$ref": "#/definitions/InstitutionResponseDto"
-            },
-            "disciplines": {
+            "queryable": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/DisciplineResponseDto"
+                "$ref": "#/definitions/QuizAttemptResponseDto"
               }
             }
           }
         }
       ]
-    },
-    "QuizAttemptConfigurationRequestDto": {
-      "type": "object",
-      "required": [
-        "name",
-        "active",
-        "showOnFront",
-        "usersCount",
-        "crewsCount",
-        "questionsCount"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "image": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "boards": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "years": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "institutions": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "guid"
-          }
-        },
-        "disciplines": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "guid"
-          }
-        },
-        "random": {
-          "type": "boolean"
-        },
-        "onlyNotAnswered": {
-          "type": "boolean"
-        },
-        "onlyWrongs": {
-          "type": "boolean"
-        },
-        "active": {
-          "type": "boolean"
-        },
-        "showOnFront": {
-          "type": "boolean"
-        },
-        "users": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "usersCount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "userIds": {
-          "type": "string"
-        },
-        "crews": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/CrewRequestDto"
-          }
-        },
-        "crewsCount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "crewsIds": {
-          "type": "string"
-        },
-        "questions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/QuestionRequestDto"
-          }
-        },
-        "questionsCount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "questionsIds": {
-          "type": "string"
-        },
-        "data": {
-          "type": "string"
-        }
-      }
     },
     "PagedResultOfUserResponseDto": {
       "allOf": [

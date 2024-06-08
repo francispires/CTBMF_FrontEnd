@@ -15,7 +15,10 @@ export const DashBoard = () => {
     const {user} = useAuth0();
 
     const filterMyAnswersOnly = (data: IRankingAnswersResponseDto[]) => {
-        return data.filter((answer: IRankingAnswersResponseDto) => answer.userSid === user?.sub && answer.questionDisciplineParentName);
+
+        return data.filter((answer: IRankingAnswersResponseDto) => {
+            return answer.userSid === user?.sub && answer.questionDisciplineParentName
+        });
     }
 
     const {isLoading, isError, data: answers} = useQuery({

@@ -89,6 +89,12 @@ export const AddQuizAttemptConfiguration = () => {
                       }}
                       render={({ field }) => (
                           <ReactQuill
+                              formats={[
+                                'header',
+                                'bold', 'italic', 'underline', 'strike', 'blockquote',
+                                'list', 'bullet', 'indent',
+                                'link', 'image'
+                              ]}
                               theme="snow"
                               {...field}
                               placeholder={"Descrição"}

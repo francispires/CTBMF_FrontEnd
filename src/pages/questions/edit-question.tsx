@@ -371,8 +371,12 @@ export function EditQuestion() {
                         </Checkbox>
                     </div>
                     <div>
-                        <Input {...register("score")} label="Pontos" variant="bordered"
-                               defaultValue={String(question.score)}/>
+                        <Input {...register("score")} type={"number"} min={10} max={10}
+                               step={10}
+                               defaultValue={10}
+                               label="Pontos"
+                               variant="bordered"
+                        />
                         {errors.score && <cite className={"text-danger"}>{errors.score.message}</cite>}
                     </div>
                     <div>
@@ -409,6 +413,12 @@ export function EditQuestion() {
                             }}
                             render={({field}) => (
                                 <ReactQuill
+                                    formats={[
+                                        'header',
+                                        'bold', 'italic', 'underline', 'strike', 'blockquote',
+                                        'list', 'bullet', 'indent',
+                                        'link', 'image'
+                                    ]}
                                     theme="snow"
                                     {...field}
                                     value={text}
@@ -451,6 +461,12 @@ export function EditQuestion() {
                                 </div>
                                 <div className={"col-span-10 h-full"}>
                                     <ReactQuill
+                                        formats={[
+                                            'header',
+                                            'bold', 'italic', 'underline', 'strike', 'blockquote',
+                                            'list', 'bullet', 'indent',
+                                            'link', 'image'
+                                        ]}
                                         theme='snow'
                                         placeholder={"Alternativa"}
                                         value={getAlternativeText(a.id || i.toString())}

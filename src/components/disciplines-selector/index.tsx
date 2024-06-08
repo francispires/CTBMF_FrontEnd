@@ -132,7 +132,7 @@ export default function DisciplinesSelector(props: Props) {
                     <SelectSection key={`g_${discipline.id}`} showDivider title={discipline.name}>
                         {
                             discipline.childs.map((subDiscipline) => (
-                                <SelectItem key={`s_${subDiscipline.id}`} textValue={subDiscipline.name}>
+                                <SelectItem key={`${subDiscipline.id}`} textValue={subDiscipline.name}>
                                     <div className="flex gap-2 items-center">
                                         <div className="flex flex-col">
                                             <span className="text-small">{subDiscipline.name}</span>

@@ -13,7 +13,17 @@ export default {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      lineHeight: {
+        'extra-loose': '2.5',
+        '12': '3rem',
+        '20': '2rem',
+        '30': '3rem',
+        '40': '4rem',
+        '50': '5rem',
+        '60': '6rem',
+      }
+    },
   },
   darkMode: "class",
   plugins: [nextui(), tailwindScrollbar()],

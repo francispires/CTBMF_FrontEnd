@@ -74,7 +74,7 @@ export const AddDiscipline = () => {
                                 setValue={field.onChange}
                                 useKey={true}
                                 textProp={"name"}
-                                url={"disciplines"}
+                                url={"disciplines?sort=name"}
                                 selectionMode="single"
                                 className="max-w-xs"
                                 label="Disciplina Mãe"

@@ -1,9 +1,9 @@
-import { QuestionsFilter } from "./questions-filter";
-import { AnswerQuestion } from "./questions/answer-question.tsx";
-import { useEffect, useState } from "react";
-import { get } from "../_helpers/api.ts";
+import {QuestionsFilter} from "./questions-filter";
+import {AnswerQuestion} from "./questions/answer-question.tsx";
+import {useEffect, useState} from "react";
+import {get} from "../_helpers/api.ts";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
-import {QuestionResponseDto} from "../types_custom.ts";
+import {AnswerResponseDto, QuestionResponseDto} from "../types_custom.ts";
 import {addParams, apiUrl} from "../_helpers/utils.ts";
 
 export const UserQuestions = () => {
@@ -20,6 +20,10 @@ export const UserQuestions = () => {
     const [onlyCorrects, setOnlyCorrects] = useState<boolean | undefined>();
     const [onlyWrongs, setOnlyWrongs] = useState<boolean | undefined>();
     const [random, setRandom] = useState<boolean | undefined>();
+    const [next, setNext] = useState<boolean | undefined>();
+    const [nextTick, setNextTick] = useState<number>(0);
+    const [oldQuestionNumber, setOldQuestionNumber] = useState<number| undefined>();
+
     const [url, setUrl] = useState("");
     const [question, setQuestion] = useState<QuestionResponseDto>();
     const queryClient = useQueryClient();
@@ -35,9 +39,13 @@ export const UserQuestions = () => {
         if (typeof onlyNotAnswereds != "undefined") u.searchParams.append("onlynotanswereds", onlyNotAnswereds.toString());
         if (typeof onlyWrongs != "undefined") u.searchParams.append("onlywrongs", onlyWrongs.toString());
         if (typeof random != "undefined") u.searchParams.append("random", random.toString());
+        if (typeof next != "undefined" && next) {
+            u.searchParams.append("next", next.toString());
+            if (next)u.searchParams.append("oldQuestionNumber", question?.questionNumber?.toString());
+        }
         if (typeof questionNumber != "undefined") u.searchParams.append("questionNumber", questionNumber?.toString());
         setUrl(u.toString());
-    }, [boards, institutionIds, disciplines, years, onlyAnswereds, onlyCorrects,onlyNotAnswereds,onlyWrongs, random, question?.questionNumber,subDisciplines])
+    }, [question,boards, institutionIds, disciplines, years, onlyAnswereds, onlyCorrects, onlyNotAnswereds, onlyWrongs, random, subDisciplines,oldQuestionNumber])
 
     const fetchData = async () => {
         const r = await get<PagedResponse<QuestionResponseDto>>(url);
@@ -47,7 +55,7 @@ export const UserQuestions = () => {
         return r;
     }
 
-    const { isLoading, data } = useQuery({
+    const {isLoading, data} = useQuery({
         queryKey: ['qryFilterQuestions', url],
         queryFn: () => fetchData(),
         enabled: !!triggerFilter
@@ -57,14 +65,19 @@ export const UserQuestions = () => {
         setTriggerFilter(true);
     }
 
-    const onAnswer = async () => {
+    const onAnswer = async (answer:AnswerResponseDto|null) => {
         await queryClient.invalidateQueries({queryKey: ['qryFilterQuestions', url]});
         filterChanged();
     };
     const onNext = async () => {
-            await queryClient.invalidateQueries({queryKey: ['qryFilterQuestions', url]});
-            filterChanged();
-
+        if (isLoading) return;
+        setNext(true);
+        setNextTick(nextTick + 1);
+        setOldQuestionNumber(question?.questionNumber);
+        setTriggerFilter(true);
+        await queryClient.invalidateQueries({queryKey: ['qryFilterQuestions', url]});
+        //filterChanged();
+        //setNext(undefined);
     };
 
     const onObservation = async () => {
@@ -95,13 +108,13 @@ export const UserQuestions = () => {
             />
             {isLoading && <div>Carregando...</div>}
             {data && data.queryable.length === 0 && !isLoading && <div>Não existem mais questões a responder</div>}
-            {question && !isLoading && data != undefined && data.queryable[0] && (<AnswerQuestion
+            {!(question && !isLoading) || (<AnswerQuestion
                 questionLoading={isLoading}
                 quizAttemptId={""}
                 onAnswer={onAnswer}
                 onNext={onNext}
                 onObservation={onObservation}
-                question={question} />)}
+                question={question}/>)}
         </div>
     );
 }

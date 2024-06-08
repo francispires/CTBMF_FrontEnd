@@ -1,56 +1,32 @@
-import React, { useEffect, useState } from "react";
-import { CodeSnippet } from "../components/code-snippet.jsx";
-import { PageLayout } from "../components/page-layout.jsx";
-import { getPublicResource } from "../services/message.service";
+import {Button, Image, Link} from "@nextui-org/react";
 
 export const PublicPage = () => {
-  const [message, setMessage] = useState("");
+    return (
+        <div className="min-h-[calc(100vh)] grid sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-2"
+             style={{
+                 background: "url(/img/fundo_home.png)",
+                 backgroundSize: "cover",
+                 backgroundRepeat: "repeat-y",
+             }}>
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const getMessage = async () => {
-      const { data, error } = await getPublicResource();
-
-      if (!isMounted) {
-        return;
-      }
-
-      if (data) {
-        setMessage(JSON.stringify(data, null, 2));
-      }
-
-      if (error) {
-        setMessage(JSON.stringify(error, null, 2));
-      }
-    };
-
-    getMessage();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return (
-    <PageLayout>
-      <div className="content-layout">
-        <h1 id="page-title" className="content__title">
-          Public Page
-        </h1>
-        <div className="content__body">
-          <p id="page-description">
-            <span>
-              This page retrieves a <strong>public message</strong> from an
-              external API.
-            </span>
-            <span>
-              <strong>Any visitor can access this page.</strong>
-            </span>
-          </p>
-          <CodeSnippet title="Public Message" code={message} />
+            <div className={"p-10"}>
+                <h1 className={"text-white xl:text-6xl xl:leading-60 md:text-4xl md:leading-40 font-bold"}>VOCÊ ESTÁ A UM PASSO
+                    DE&nbsp;
+                    <span className={"font-extrabold text-red-600"}>ALCANÇAR A SUA APROVAÇÃO&nbsp;
+                        <span className={"text-white"}>EM BUCOMAXILO!</span>
+                    </span>
+                </h1>
+                <p className={"my-8 text-white"}>Descubra o método que tem ajudado alunos de odontologia, recém formados e
+                    cirurgiões
+                    dentistas a
+                    serem aprovados nas provas de residência por todo Brasil.</p>
+                <Button href={"/dashboard"} className={"bg-red-600 px-10 py-2"}>
+                    <Link className={"text-white"} href={"/dashboard"}>INICIAR MEUS ESTUDOS</Link>
+                </Button>
+            </div>
+            <div className={"p-10 flex content-center"}>
+                <Image className={""} src={"/img/notecell.png"} alt={""}/>
+            </div>
         </div>
-      </div>
-    </PageLayout>
-  );
+    );
 };

@@ -25,7 +25,7 @@ import {useConfig} from "../../_helpers/queries.ts";
 type Props = {
     question: QuestionResponseDto,
     quizAttemptId: string | undefined,
-    onAnswer: () => void,
+    onAnswer: (answer:AnswerResponseDto|null) => void,
     onNext: () => void,
     onObservation: () => void,
     questionLoading: boolean
@@ -71,6 +71,7 @@ export const AnswerQuestion = (props: Props) => {
             const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL;
             const url = `${apiUrl}/${"questions/answer"}`;
             const result = (await post<AnswerRequestDto>(url, answer)) as unknown as AnswerResponseDto | null;
+            props.onAnswer(result);
             setIsLoading(false);
             if (result) {
                 setIsFlipped(true);
@@ -182,7 +183,7 @@ export const AnswerQuestion = (props: Props) => {
                                             className={"flex col-span-11 rounded-small p-2 ml-2 " + (correctAlternative === alternative.id ? "bg-green-600" : "bg-danger-100")}>
                                     <Checkbox color={correctAlternative === alternative.id ? "success" : "danger"}
                                               isSelected={selectedAlternative == alternative.id}>
-                                    <span dangerouslySetInnerHTML={htmlText(alternative.text)}></span>
+                                    <span className={"text-white"} dangerouslySetInnerHTML={htmlText(alternative.text)}></span>
                                         {
                                             correctAlternative === alternative.id && helps.length > 0 &&(
                                                 <>

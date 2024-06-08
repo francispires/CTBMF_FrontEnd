@@ -1,7 +1,7 @@
 import React from "react";
 import {QuizAttemptConfigurationResponseDto} from "../../types_custom.ts";
 import {Button, Card, Image, CardFooter, CardHeader, CardBody} from "@nextui-org/react";
-import {getImageUrl} from "../../_helpers/utils.ts";
+import {getImageUrl, htmlText} from "../../_helpers/utils.ts";
 import {useNavigate} from "react-router-dom";
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 export const QuizConfigCard = ({children, className, config}: Props) => {
     const navigation = useNavigate();
     function gotoAnswerQuiz(attemptConfigId: string) {
-        navigation(`/provas/${attemptConfigId}`)
+        navigation(`/simulados/${attemptConfigId}`)
     }
 
     const avgScore = config.questions?.reduce((acc, q) => acc + q.score, 0) / config.questions.length;
@@ -25,7 +25,7 @@ export const QuizConfigCard = ({children, className, config}: Props) => {
         >
             <CardHeader className="absolute z-10 top-1 flex-col items-start">
                 <p className="text-tiny text-white/60 uppercase font-bold">{config.name}</p>
-                <h4 className="text-white/90 font-medium text-xl">{config.description}</h4>
+                <h4 dangerouslySetInnerHTML={htmlText(config.description??"")} className="text-white/90 font-medium text-xl"></h4>
             </CardHeader>
             {config.image && (
                 <Image

@@ -327,8 +327,9 @@ export const AddQuestion = () => {
                                                     <cite className={"text-danger"}>{errors.active.message}</cite>}
                                             </div>
                                             <div>
-                                                <Input {...register("score")} type={"number"} min={0} max={2000}
-                                                    step={500}
+                                                <Input {...register("score")} type={"number"} min={10} max={10}
+                                                    step={10}
+                                                    defaultValue={10}
                                                     label="Pontos"
                                                     variant="bordered"
                                                 />
@@ -362,6 +363,12 @@ export const AddQuestion = () => {
                                             </div>
                                             <div className={"col-span-2"}>
                                                 <ReactQuill
+                                                    formats={[
+                                                        'header',
+                                                        'bold', 'italic', 'underline', 'strike', 'blockquote',
+                                                        'list', 'bullet', 'indent',
+                                                        'link', 'image'
+                                                    ]}
                                                     theme='snow'
                                                     placeholder={"Enunciado"}
                                                     value={text}

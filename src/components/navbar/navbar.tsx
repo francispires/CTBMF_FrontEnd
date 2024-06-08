@@ -47,7 +47,7 @@ export const NavbarWrapper = ({ children }: Props) => {
           </NavbarContent>
         </NavbarContent>
       </Navbar>
-      <div className="overflow-y-auto max-h-[calc(100vh-65px)] p-6">
+      <div className="overflow-y-auto max-h-[calc(100vh-65px)]">
         {children}
       </div>
     </div>

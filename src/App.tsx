@@ -67,7 +67,7 @@ const App = () => {
             <Route path="/quizzes/:attemptConfigId" element={<QuizzesAttempt/>}/>
             <Route path="/questoes" element={<UserQuestions/>}/>
             <Route path="/relatorios" element={<Reports/>}/>
-            <Route path="/dashboard" element={<DashBoard/>}/>
+            <Route path="/dashboard" element={<AuthenticationGuard component={DashBoard}/>}/>
             <Route path="/profile" element={<AuthenticationGuard component={ProfilePage}/>}/>
 
             {/*System*/}

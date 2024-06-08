@@ -90,8 +90,9 @@ export default function TTable<T>(props: Props<T>) {
     }
 
     const setFilter = (filter: string) => {
+
         const fill = props.Columns
-            .filter((column) => column.filterable)
+            //.filter((column) => column.filterable)
             .map((column) => `${column.uid}:${filter}`)
             .join(" OR ");
         setAppliedFilter(fill);
