@@ -7,7 +7,6 @@ import { Auth0ProviderWithNavigate } from "./auth0-provider-with-navigate.jsx";
 import { Provider } from "react-redux";
 import { store } from './app/store'
 import { Layout } from "./components/layout/layout.tsx";
-import ErrorBoundary from "./ErrorBoundary.tsx";
 import { ToastContainer } from 'react-toastify';
 
 import './index.css'

@@ -2,6 +2,7 @@ import {store} from "../app/store.ts";
 import axios from 'axios';
 import {apiUrl} from "./utils.ts";
 import {RankingAnswersResponseDto, UserResponseDto} from "../types_custom.ts";
+import {toast} from "react-toastify";
 
 axios.interceptors.request.use(function (config) {
     if (authToken())
@@ -21,19 +22,41 @@ export async function get<T>(url: string, abortSignal?: AbortSignal) {
         if (authToken())
             config.headers.Authorization = `Bearer ${authToken()}`;
         const {data, status} = await axios.get<T>(url, config);
-        if (status>=400) {
+        
+        if (status > 400 && status<500) {
             console.log(JSON.stringify(data, null, 4));
             console.log('response status is: ', status);
+            toast("Acesso Negado", {type: 'error'});
+            toast("Entre em contato conosco", {type: 'info'});
+            toast("Vamos desconectar sua conta", {type: 'info',onClose:()=>{
+                   // window.location.href = '/logout';
+                }});
+            return null as T;
         }
         return data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.log('error message: ', error.message);
-            //return error.message;
+            
+            if (error.response.data.error=="insufficient_permissions"){
+                toast("Acesso Negado", {type: 'error'});
+                toast("Entre em contato conosco", {type: 'info'});
+                toast("Vamos desconectar sua conta", {type: 'info',onClose:()=>{
+                        window.location.href = '/logout';
+                    }});
+                return null as T;
+            }
+            
+            if (
+                error.message!='canceled' && error.message.toUpperCase()!=="NETWORK ERROR"
+                && error.code.toUpperCase()!=="ERR_BAD_RESPONSE"
+            )
+            {
+                //window.location.href = '/logout'
+            }
             return null as T;
         } else {
             console.log('unexpected error: ', error);
-            //return 'An unexpected error occurred';
             return null as T;
         }
     }

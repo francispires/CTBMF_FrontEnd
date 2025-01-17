@@ -33,6 +33,7 @@ import 'react-quill/dist/quill.snow.css'
 import Select2 from "../../components/select2";
 import {abc, apiUrl} from "../../_helpers/utils.ts";
 import {v4 as uuidv4} from "uuid";
+import _, {range} from "lodash";
 
 setLocale(ptForm);
 
@@ -213,6 +214,13 @@ export const AddQuestion = () => {
         }
     }
 
+    const years = _.range(1950, new Date().getFullYear())
+        .map(y => ({
+            textValue: y.toString(),
+            year: y
+        }));
+    years.unshift({textValue: "Selecione um ano", year: 0});
+
     return (
         <div className={"z-1000"}>
             <>
@@ -251,15 +259,17 @@ export const AddQuestion = () => {
                                                                     selectionMode={"single"}
                                                                     variant="bordered"
                                                                     isLoading={loadingDisciplines}
+                                                                    onChange={(e) => {
+                                                                        setDisciplineWrapper(e.target.value)
+                                                                    }}
                                                                     onSelectionChange={(s) => {
                                                                         setDisciplineWrapper(s.anchorKey)
                                                                     }}
-
                                                                 >
-                                                                    {disciplines && disciplines.queryable.filter(d => d.childsCount > 0).map((discipline) => (
+                                                                    {(disciplines && disciplines.queryable && disciplines.queryable||[]).filter(d => d.childsCount > 0).map((discipline) => (
                                                                         <SelectSection key={discipline.id} showDivider title={discipline.name}>
                                                                             {
-                                                                                discipline.childs.map((subDiscipline) => (
+                                                                                (discipline.childs ||[]).map((subDiscipline) => (
                                                                                     <SelectItem key={subDiscipline.id}
                                                                                                 textValue={subDiscipline.name}>
                                                                                         <div className="flex gap-2 items-center">
@@ -273,7 +283,6 @@ export const AddQuestion = () => {
                                                                         </SelectSection>
                                                                     ))}
                                                                 </Select>
-
                                                             </>
                                                         );
                                                     }}
@@ -309,10 +318,20 @@ export const AddQuestion = () => {
                                                     <cite className={"text-danger"}>{errors.board.message}</cite>}
                                             </div>
                                             <div>
-                                                <Input {...register("year")} type={"number"} max={2050} min={1900}
+                                                <Select  {...register("year")} classNames={{innerWrapper: "h-auto w-full",
+                                                    value: "whitespace-break-spaces",}}
+                                                    selectionMode={"single"}
                                                     label="Ano"
                                                     variant="bordered"
-                                                />
+                                                        size={"lg"}    
+                                                >
+                                                    {
+                                                        years.map((y) => (
+                                                            <SelectItem textValue={y.textValue} key={y.year}>
+                                                                {y.textValue}
+                                                            </SelectItem>
+                                                        ))}
+                                                </Select>                                               
                                                 {errors.year &&
                                                     <cite className={"text-danger"}>{errors.year.message}</cite>}
                                             </div>

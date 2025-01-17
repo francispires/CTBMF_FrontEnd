@@ -90,7 +90,7 @@ export default function DisciplinesSelector(props: Props) {
 
                     {
                         disciplines.map((discipline) => (
-                            <SelectItem key={`p_${discipline.id}`} textValue={discipline.name}>
+                            <SelectItem key={`${discipline.id}`} textValue={discipline.name}>
                                 <div className="flex gap-2 items-center">
                                     <div className="flex flex-col">
                                         <span className="text-small">{discipline.name}</span>

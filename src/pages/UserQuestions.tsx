@@ -40,10 +40,16 @@ export const UserQuestions = () => {
         if (typeof onlyWrongs != "undefined") u.searchParams.append("onlywrongs", onlyWrongs.toString());
         if (typeof random != "undefined") u.searchParams.append("random", random.toString());
         if (typeof next != "undefined" && next) {
+            const hasQuestionQuestionNumber = Boolean(question?.questionNumber) && next;
             u.searchParams.append("next", next.toString());
-            if (next)u.searchParams.append("oldQuestionNumber", question?.questionNumber?.toString());
+            if (hasQuestionQuestionNumber){
+                u.searchParams.append("oldQuestionNumber", question?.questionNumber ? question?.questionNumber?.toString() : "");
+            }
         }
-        if (typeof questionNumber != "undefined") u.searchParams.append("questionNumber", questionNumber?.toString());
+        const hasQuestionNumber = Boolean(Number(questionNumber)) && typeof questionNumber != "undefined";
+        if (hasQuestionNumber) {
+            u.searchParams.append("questionNumber", questionNumber?.toString());
+        }
         setUrl(u.toString());
     }, [question,boards, institutionIds, disciplines, years, onlyAnswereds, onlyCorrects, onlyNotAnswereds, onlyWrongs, random, subDisciplines,oldQuestionNumber])
 
@@ -66,8 +72,8 @@ export const UserQuestions = () => {
     }
 
     const onAnswer = async (answer:AnswerResponseDto|null) => {
-        await queryClient.invalidateQueries({queryKey: ['qryFilterQuestions', url]});
-        filterChanged();
+        //await queryClient.invalidateQueries({queryKey: ['qryFilterQuestions', url]});
+        //filterChanged();
     };
     const onNext = async () => {
         if (isLoading) return;

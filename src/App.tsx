@@ -40,6 +40,9 @@ import {Questions} from "./pages/questions/questions.tsx";
 import ViewQuiz from "./pages/provas/view-quiz.tsx";
 import EditQuiz from "./pages/provas/edit-quiz.tsx";
 import {Reports} from "./pages/dashboard/reports.tsx";
+import {Logout} from "./login/Logout";
+import ViewUser from "./pages/users/view-user.tsx";
+import EditUser from "./pages/users/edit-user.tsx";
 
 
 const App = () => {
@@ -58,14 +61,15 @@ const App = () => {
             {/*Tests*/}
             <Route path="/public" element={<PublicPage/>}/>
             <Route path="/login" element={<Login/>}/>
+            <Route path="/logout" element={<Logout/>}/>
 
             {/*Student*/}
             <Route path="/" element={<HomePage/>}/>
             <Route path="/banco-de-questoes" element={<UserQuestionBank/>}/>
-            <Route path="/simulados" element={<Provas/>}/>
+            <Route path="/simulados" element={<AuthenticationGuard component={Provas}/>}/>
             <Route path="/simulados/:attemptConfigId" element={<QuizAttempt/>}/>
             <Route path="/quizzes/:attemptConfigId" element={<QuizzesAttempt/>}/>
-            <Route path="/questoes" element={<UserQuestions/>}/>
+            <Route path="/questoes" element={<AuthenticationGuard component={UserQuestions}/>}/>
             <Route path="/relatorios" element={<Reports/>}/>
             <Route path="/dashboard" element={<AuthenticationGuard component={DashBoard}/>}/>
             <Route path="/profile" element={<AuthenticationGuard component={ProfilePage}/>}/>
@@ -77,6 +81,8 @@ const App = () => {
             {/*Teacher*/}
 
             <Route path="/users" element={<AuthenticationGuard component={Accounts}/>}/>
+            <Route path="/view-user/:id" element={<AuthenticationGuard component={ViewUser}/>}/>
+            <Route path="/edit-user/:id" element={<AuthenticationGuard component={EditUser}/>}/>
 
             <Route path="/quizzes" element={<AuthenticationGuard component={QuizAttemptConfiguration}/>}/>
             <Route path="/view-quiz/:id" element={<AuthenticationGuard component={ViewQuiz}/>}/>

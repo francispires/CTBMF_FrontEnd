@@ -10,11 +10,10 @@ import {get, patch} from "../../_helpers/api.ts";
 import {toast} from "react-toastify";
 import {PageLoader} from "../../components/page-loader.tsx";
 import {apiUrl} from "../../_helpers/utils.ts";
-import {EnrollmentResponseDto, IEnrollmentRequestDto} from "../../types_custom.ts";
+import {IUserRequestDto, UserResponseDto} from "../../types_custom.ts";
 
-const editDisciplineSchema = yup.object().shape({
-  name: yup.string().required("Nome obrigatório."),
-  description: yup.string().required("Descrição obrigatória.")
+const editUserSchema = yup.object().shape({
+  name: yup.string().required("Nome obrigatório.")
 });
 
 export default function EditUser() {
@@ -26,35 +25,36 @@ export default function EditUser() {
     handleSubmit,
     control,
     formState: { errors }
-  } = useForm<IEnrollmentRequestDto>({
-    resolver: yupResolver(editDisciplineSchema)
+  } = useForm<IUserRequestDto>({
+    resolver: yupResolver(editUserSchema)
   });
 
   const mutation = useMutation({
-    mutationFn: async (enroll: IEnrollmentRequestDto) => {
-      const url = `${apiUrl}/disciplines/${id}`
-      const res = await patch<IEnrollmentRequestDto>(url, enroll);
+    mutationFn: async (user: IUserRequestDto) => {
+      const url = `${apiUrl}/users/${id}`
+      user.id = id;
+      const res = await patch<IUserRequestDto>(url, user);
 
       if (!res) {
-        throw new Error("Erro ao editar a matrícula.")
+        throw new Error("Erro ao editar o usuário.")
       }
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['qryEnrollments'] });
-      toast.success("Matrícula editada com sucesso.")
+      toast.success("Usuário editado com sucesso.")
     },
     onError: () => {
-      toast.error("Erro ao editar a Matrícula.")
+      toast.error("Erro ao editar o usuário.")
     }
   })
 
   const fetchData = async () => {
-    const url = `${apiUrl}/enrollments/${id}`
-    return await get<EnrollmentResponseDto>(url)
+    const url = `${apiUrl}/users/${id}`
+    return await get<UserResponseDto>(url)
   }
 
-  const { isLoading, isError, data: enrollment } = useQuery({
-    queryKey: ['enrollments'],
+  const { isLoading, isError, data: user } = useQuery({
+    queryKey: ['users'],
     queryFn: fetchData,
   })
 
@@ -64,7 +64,7 @@ export default function EditUser() {
     )
   }
 
-  if (isError || !enrollment) {
+  if (isError || !user) {
     return (
       <div className="flex items-center justify-center h-full">
         <span className="text-red-400">Ocorreu um erro ao buscar dados da matrícula.</span>
@@ -72,54 +72,32 @@ export default function EditUser() {
     )
   }
 
-  const handleBackToEnrollments = () => {
-    navigation('/enrollments')
+  const handleBackToUsers = () => {
+    navigation('/users')
   }
 
-  const onSubmit = async (data: IEnrollmentRequestDto) => {
-    const updatedEnrollment: IEnrollmentRequestDto = {
+  const onSubmit = async (data: IUserRequestDto) => {
+    const updatedUser: IUserRequestDto = {
       ...data
     }
 
     try {
-      await mutation.mutateAsync(updatedEnrollment)
-      handleBackToEnrollments()
+      await mutation.mutateAsync(updatedUser)
+      handleBackToUsers()
     } catch (error) {
-      console.error("Erro ao editar a disciplina:", error)
+      console.error("Erro ao editar o usuário:", error)
     }
   };
 
   return (
     <div>
-      <Button variant="ghost" className="mb-6" onClick={handleBackToEnrollments}><FaArrowLeft /> Voltar</Button>
+      <Button variant="ghost" className="mb-6" onClick={handleBackToUsers}><FaArrowLeft /> Voltar</Button>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-4 w-full max-w-xl mx-auto mb-16"
       >
-        <h1 className="text-center my-6 text-lg font-semibold">Editar disciplina</h1>
-        <Controller
-            name="studentId"
-            control={control}
-            render={({ field }) => {
-              return (
-                  <Select2
-                      {...field}
-                      setValue={(s:string)=>{field.onChange(s)}}
-                      valueProp={"id"}
-                      textProp={"name"}
-                      allowsCustomValue={false}
-                      url={"users"}
-                      useKey={true}
-                      selectionMode="single"
-                      className="max-w"
-                      label="Aluno"
-                      placeholder="Selecione um Aluno">
-                  </Select2>
-              );
-            }}
-        />
-        {errors.studentId && <p>{errors.studentId.message}</p>}
+        <h1 className="text-center my-6 text-lg font-semibold">Editar usuário</h1>
         <Controller
             name="crewId"
             control={control}
@@ -142,11 +120,18 @@ export default function EditUser() {
             }}
         />
         {errors.crewId && <p>{errors.crewId.message}</p>}
-        <Input {...register("startDate")} label="Início" pattern="YYYY-MM-DDTHH:mm:ss.sssZ" variant="bordered" type={"date"}/>
-        {errors.startDate && <p>{errors.startDate.message}</p>}
-        <Input {...register("endDate")} label="Fim" variant="bordered" type={"date"}/>
-        {errors.endDate && <p>{errors.endDate.message}</p>}
-
+        <Input {...register("name")} value={user.name} label="Nome" variant="bordered"/>
+        {errors.name && <p>{errors.name.message}</p>}
+        <Input {...register("email")}  value={user.email} label="Email" variant="bordered"/>
+        {errors.email && <p>{errors.email.message}</p>}
+        <Input {...register("address")} value={user.address} label="Endereço" variant="bordered"/>
+        {errors.address && <p>{errors.address.message}</p>}
+        <Input {...register("birthDay")}  value={user.birthDay?.toString()} label="Nascimento" variant="bordered" type={"date"}/>
+        {errors.birthDay && <p>{errors.birthDay.message}</p>}
+        <Input {...register("phoneNumber")} value={user.phoneNumber} label="Telefone" variant="bordered"/>
+        <Input {...register("role")} value={user.role} type="hidden" className={"hidden"}/>
+        <Input {...register("sid")} value={user.sid} type="hidden" className={"hidden"}/>
+        {errors.phoneNumber && <p>{errors.phoneNumber.message}</p>}
         <Button
           type={"submit"}
           color="primary"

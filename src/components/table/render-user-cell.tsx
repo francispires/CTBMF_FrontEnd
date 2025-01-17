@@ -35,7 +35,23 @@ export const RenderUserCell = (user: UserResponseDto, columnKey: string,
     };
 
     const cellValue = user[columnKey as keyof UserResponseDto];
+    function handleViewItem() {
+        if (viewItem && user.id) {
+            viewItem(user.id)
+        }
+    }
 
+    function handleEditItem() {
+        if (editItem && user.id) {
+            editItem(user.id)
+        }
+    }
+
+    function handleDeleteItem() {
+        if (confirmRemoval && user.id) {
+            confirmRemoval(user.id)
+        }
+    }
     switch (columnKey) {
         case "image":
             return (
@@ -51,7 +67,7 @@ export const RenderUserCell = (user: UserResponseDto, columnKey: string,
             return (
                 <div className="flex flex-col">
                     <p className="text-bold text-small capitalize">{cellValue}</p>
-                    <p className="text-bold text-tiny capitalize text-default-400">{user.crew}</p>
+                    <p className="text-bold text-tiny capitalize text-default-400">{user.crewId}</p>
                 </div>
             );
         case "enrollmentsCount":
@@ -75,7 +91,7 @@ export const RenderUserCell = (user: UserResponseDto, columnKey: string,
             );
         case "actions":
             return (
-                <TableActions view={viewItem} edit={editItem} remove={confirmRemoval}></TableActions>
+                <TableActions view={handleViewItem} edit={handleEditItem} remove={handleDeleteItem}></TableActions>
             );
         default:
             return <>{cellValue}</>;

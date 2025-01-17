@@ -14,8 +14,9 @@ export const CallbackPage = () => {
             const token = await getAccessTokenSilently();
             dispatch(loginAsync({...user, token: token}));
         }
-        fetchToken().then(() => navigate("/"));
-
+        fetchToken().then(() => {
+            navigate("/");
+        });
     }, [error,user,isAuthenticated]);
 
   if (error) {

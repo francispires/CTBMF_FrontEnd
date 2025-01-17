@@ -3,20 +3,39 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useSelector, useDispatch } from 'react-redux';
-
-import { history } from '../_helpers';
 import { authActions } from '../app/slices/auth/index.ts';
+import {useAuth0} from "@auth0/auth0-react";
+import {useNavigate} from "react-router-dom";
 
 export { Login };
 
 function Login() {
+    const { loginWithRedirect,isAuthenticated } = useAuth0();
+
+    const handleLogin = async () => {
+        await loginWithRedirect({
+            appState: {
+                returnTo: "/profile",
+            },
+            authorizationParams: {
+                prompt: "login",
+            },
+        });
+    };
+    
     const dispatch = useDispatch();
     const authUser = useSelector(x => x.auth.user);
     const authError = useSelector(x => x.auth.error);
-
+    const navigate = useNavigate();
     useEffect(() => {
+        
+        if (!isAuthenticated) handleLogin().then();
+        if (isAuthenticated) {
+            navigate('/');
+        }
+        return;
         // redirect to home if already logged in
-        if (authUser) history.navigate('/');
+        //if (authUser) history.navigate('/');
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -37,7 +56,7 @@ function Login() {
     }
 
     return (
-        <div className="col-md-6 offset-md-3 mt-5">
+        <div className="col-md-6 offset-md-3 mt-5" hidden>
             <div className="alert alert-info" hidden>
                 Username: test<br />
                 Password: test

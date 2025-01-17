@@ -14,10 +14,7 @@ import {PlusIcon} from "../../components/icons/PlusIcon.tsx";
 import {
     faCheck,
     faCircleXmark,
-    faDeleteLeft,
-    faTrashArrowUp,
-    faTrashCan,
-    faTrashRestore
+    faTrashCan
 } from "@fortawesome/free-solid-svg-icons";
 import {v4 as uuidv4} from 'uuid';
 import {FaArrowLeft} from "react-icons/fa";
@@ -30,6 +27,7 @@ import {
 } from "../../types_custom.ts";
 import {abc, apiUrl, toggleCorrectAlternativeReq} from "../../_helpers/utils.ts";
 import ReactQuill from "react-quill";
+import _ from "lodash";
 
 interface Question {
     id: string,
@@ -122,17 +120,26 @@ export function EditQuestion() {
         }
     })
 
+    
+    const years = _.range(1950, new Date().getFullYear())
+        .map(y => ({
+            textValue: y.toString(),
+            year: y
+        }));
+    years.unshift({textValue: "Selecione um ano", year: 0});
+    
+    
     const [text, setText] = useState("");
     const [actualDisciplineId, setActualDisciplineId] = useState("");
-
-    const fetchData = async () => {
-        const apiUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
+    const [selectedYear, setSelectedYear] = useState(years[0]);
+    const fetchData = async () => {        
         const url = `${apiUrl}/questions/${id}`
         const res = await get<Question>(url)
         setAlternatives(res.alternatives)
         setIsActive(res.active)
         setBoard(res?.board)
-        setText(res.text)
+        setText(res.text);
+        setSelectedYear(years.find(y => y.year === res.year) || years[0])
         return res
     }
     const {isLoading, isError, data: question} = useQuery({
@@ -348,15 +355,23 @@ export function EditQuestion() {
                         {!board || !board.length && <cite className={"text-danger"}>Banca obrigatória.</cite>}
                     </div>
                     <div>
-                        <Input
-                            {...register("year")}
-                            type={"number"}
-                            max={2050}
-                            min={1900}
-                            defaultValue={String(question.year)}
-                            label="Ano"
-                            variant="bordered"
-                        />
+                        <Select {...register("year")}
+                                 classNames={{innerWrapper: "h-auto w-full",value: "whitespace-break-spaces"}}
+                                 selectionMode={"single"}
+                                 
+                                 label="Ano"
+                                 variant="bordered"
+                                 size={"lg"}
+                                 value={selectedYear.year}
+                        > 
+                            {                                
+                                years.map((y) => (
+                                <SelectItem textValue={y.textValue} key={y.year}>
+                                    {y.textValue}
+                                </SelectItem>
+                                
+                            ))}
+                        </Select>
                         {errors.year && <cite className={"text-danger"}>{errors.year.message}</cite>}
                     </div>
                     <div>

@@ -14,7 +14,7 @@ import {
 import {UserResponseDto} from "../../types_custom.ts";
 
 export const RenderUserCell = (
-    enroll: UserResponseDto,
+    user: UserResponseDto,
     columnKey: string,
     confirmRemoval?: (id: string) => void,
     editItem?: (id: string) => void,
@@ -25,46 +25,46 @@ export const RenderUserCell = (
     //const cellValue = discipline[columnKey as keyof Discipline];
 
     function handleViewItem() {
-        if (viewItem && enroll.id) {
-            viewItem(enroll.id)
+        if (viewItem && user.id) {
+            viewItem(user.id)
         }
     }
 
     function handleEditItem() {
-        if (editItem && enroll.id) {
-            editItem(enroll.id)
+        if (editItem && user.id) {
+            editItem(user.id)
         }
     }
 
     function handleDeleteItem() {
-        if (confirmRemoval && enroll.id) {
-            confirmRemoval(enroll.id)
+        if (confirmRemoval && user.id) {
+            confirmRemoval(user.id)
         }
     }
 
     switch (columnKey) {
-        case "crewName":
+        case "id":
             return (
                 <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{enroll.crewName}</p>
+                    <p className="text-bold text-small capitalize">{user.id}</p>
                 </div>
             );
-        case "studentName":
+        case "name":
             return (
                 <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{enroll.studentName}</p>
+                    <p className="text-bold text-small capitalize">{user.name}</p>
                 </div>
             );
-        case "startDate":
+        case "email":
             return (
                 <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{enroll.startDate?.toString()}</p>
+                    <p className="text-bold text-small capitalize">{user.email?.toString()}</p>
                 </div>
             );
-        case "endDate":
+        case "crewId":
             return (
                 <div className="flex flex-col">
-                    <p className="text-bold text-small capitalize">{enroll.endDate?.toString()}</p>
+                    <p className="text-bold text-small capitalize">{user.crewId?.toString()}</p>
                 </div>
             );
         case "actions":

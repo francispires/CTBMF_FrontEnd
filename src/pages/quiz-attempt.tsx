@@ -133,10 +133,10 @@ export default function QuizAttempt() {
         setTriggerFilter(true);
     }
     const onAnswer = async (answer:AnswerResponseDto|null) => {
-        await queryClient.invalidateQueries({queryKey: ['qryFilterQuestionsAttempt']});
-        setUrl(url);
-        filterChanged();
-        await fetchAttempt();
+        //await queryClient.invalidateQueries({queryKey: ['qryFilterQuestionsAttempt']});
+        //setUrl(url);
+        //filterChanged();
+        //await fetchAttempt();
     };
 
     const onObservation = async () => {

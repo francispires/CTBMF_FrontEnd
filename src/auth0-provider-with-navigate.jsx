@@ -12,7 +12,7 @@ export const Auth0ProviderWithNavigate = ({ children }) => {
   const audience = import.meta.env.VITE_REACT_APP_AUTH0_AUDIENCE;
   const darkMode = useDarkMode(false);
   const onRedirectCallback = (appState) => {
-    navigate(appState?.returnTo || window.location.pathname);
+      navigate(appState?.returnTo || window.location.pathname);
   };
 
   if (!(domain && clientId && redirectUri && audience)) {
